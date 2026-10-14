@@ -1,4 +1,4 @@
-﻿@extends('layout.app')
+@extends('layout.app')
 
 
 
@@ -177,9 +177,18 @@
                         </div>
 
                         <div class="form-group">
-                            <label><i class="fas fa-user-md icon-style"></i> Doctor Name</label>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <label><i class="fas fa-user-md icon-style"></i> Doctor Name</label>
+                                @if (app('hasPermission')(3, 'create'))
+                                    <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                        data-bs-toggle="modal" data-bs-target="#quickAddDoctorModal"
+                                        data-toggle="modal" data-target="#quickAddDoctorModal">
+                                        <i class="fas fa-plus"></i> Add
+                                    </button>
+                                @endif
+                            </div>
                             <select class="form-control select2 doctorSelect" id="doctorSelect" name="doctor_id"
-                                id="doctorSelect" required>
+                                required>
                                 <option value="">Select Doctor</option>
                             </select>
                         </div>
@@ -229,6 +238,9 @@
             </div>
         </div>
     </div>
+
+    @include('components.quick-add-modals')
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
@@ -482,6 +494,17 @@
                         },
                         error: function(xhr) {
                             console.error("API Error:", xhr.status, xhr.responseText);
+                        }
+                    });
+                }
+
+                // Hook shared Quick Add Modals
+                if (typeof window.initQuickAddModals === 'function') {
+                    window.initQuickAddModals({
+                        getToken: function() { return (typeof token !== 'undefined' && token) ? token : ''; },
+                        getBranchId: function() { return localStorage.getItem("selectedBranchId"); },
+                        onDoctorAdded: function(newId) {
+                            loadDoctors(newId);
                         }
                     });
                 }

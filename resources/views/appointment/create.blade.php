@@ -38,8 +38,9 @@
                                                     class="text-danger">*</span></label>
 
                                             @if (app('hasPermission')(5, 'create'))
-                                                <button type="button" class="btn btn-primary btn-sm"
-                                                    data-bs-toggle="modal" data-bs-target="#quickAddPatientModal">
+                                                <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                                    data-bs-toggle="modal" data-bs-target="#quickAddPatientModal"
+                                                    data-toggle="modal" data-target="#quickAddPatientModal">
                                                     <i class="fas fa-plus"></i> Add 
                                                 </button>
                                             @endif
@@ -62,8 +63,9 @@
                                                     class="text-danger">*</span></label>
 
                                             @if (app('hasPermission')(7, 'create'))
-                                                <button type="button" class="btn btn-primary btn-sm"
-                                                    data-bs-toggle="modal" data-bs-target="#quickAddTreatmentModal">
+                                                <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                                    data-bs-toggle="modal" data-bs-target="#quickAddTreatmentModal"
+                                                    data-toggle="modal" data-target="#quickAddTreatmentModal">
                                                     <i class="fas fa-plus"></i> Add 
                                                 </button>
                                             @endif
@@ -83,8 +85,9 @@
                                                     class="text-danger">*</span></label>
 
                                             @if (app('hasPermission')(3, 'create'))
-                                                <button type="button" class="btn btn-primary btn-sm"
-                                                    data-bs-toggle="modal" data-bs-target="#quickAddDoctorModal">
+                                                <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                                    data-bs-toggle="modal" data-bs-target="#quickAddDoctorModal"
+                                                    data-toggle="modal" data-target="#quickAddDoctorModal">
                                                     <i class="fas fa-plus"></i> Add 
                                                 </button>
                                             @endif
@@ -187,159 +190,7 @@
         </div>
     </div>
 
-    <!-- Quick Add Patient Modal -->
-    <div class="modal fade" id="quickAddPatientModal" tabindex="-1" aria-labelledby="quickAddPatientModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="border-radius: 15px; overflow: hidden;">
-                <div class="modal-header" style="background-color: #CFECE0; color: #000;">
-                    <h5 class="modal-title font-weight-bold" id="quickAddPatientModalLabel">
-                        <i class="fas fa-user-plus mr-2"></i> Add Patient
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="quickAddPatientForm">
-                    <div class="modal-body p-4">
-                        <div id="quickPatientAlert" class="alert alert-danger" style="display: none;"></div>
-                        <div class="form-group mb-3">
-                            <label class="font-weight-bold"><i class="fas fa-user icon-style"></i> Full Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="fullname" placeholder="Enter Full Name" required>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label class="font-weight-bold"><i class="fas fa-phone icon-style"></i> Phone <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="phone" placeholder="Enter 10 Digit Phone" maxlength="10" required>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label class="font-weight-bold"><i class="fas fa-venus-mars icon-style"></i> Gender</label>
-                                    <select class="form-control" name="gender">
-                                        <option value="">Select Gender</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label class="font-weight-bold"><i class="fas fa-calendar-alt icon-style"></i> Age</label>
-                                    <input type="number" class="form-control" name="age" placeholder="Age" min="0" max="150">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group mb-2">
-                            <label class="font-weight-bold"><i class="fas fa-envelope icon-style"></i> Email</label>
-                            <input type="email" class="form-control" name="email" placeholder="Enter Email (Optional)">
-                        </div>
-                    </div>
-                    <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary rounded-pill px-4" id="btnSaveQuickPatient">
-                            <span class="spinner-border spinner-border-sm me-1" style="display:none;"></span> Save Patient
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quick Add Treatment Modal -->
-    <div class="modal fade" id="quickAddTreatmentModal" tabindex="-1" aria-labelledby="quickAddTreatmentModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="border-radius: 15px; overflow: hidden;">
-                <div class="modal-header" style="background-color: #CFECE0; color: #000;">
-                    <h5 class="modal-title font-weight-bold" id="quickAddTreatmentModalLabel">
-                        <i class="fas fa-pills mr-2"></i> Add Treatment
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="quickAddTreatmentForm">
-                    <div class="modal-body p-4">
-                        <div id="quickTreatmentAlert" class="alert alert-danger" style="display: none;"></div>
-                        <div class="form-group mb-3">
-                            <label class="font-weight-bold"><i class="fas fa-cogs icon-style"></i> Treatment Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="name" placeholder="Enter Treatment Name" required>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label class="font-weight-bold"><i class="fas fa-money-bill-wave icon-style"></i> Price <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control" name="price" placeholder="Enter Price" min="0" step="0.01" required>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label class="font-weight-bold"><i class="fas fa-user-md icon-style"></i> Doctor</label>
-                            <select class="form-control" name="doctor_id" id="quickTreatmentDoctorSelect">
-                                <option value="">Select Doctor (Optional)</option>
-                            </select>
-                        </div>
-                        <div class="form-group mb-2">
-                            <label class="font-weight-bold"><i class="fas fa-clipboard-list icon-style"></i> Description</label>
-                            <textarea class="form-control" name="description" rows="2" placeholder="Brief description (Optional)" style="border-radius: 10px;"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary rounded-pill px-4" id="btnSaveQuickTreatment">
-                            <span class="spinner-border spinner-border-sm me-1" style="display:none;"></span> Save Treatment
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quick Add Doctor Modal -->
-    <div class="modal fade" id="quickAddDoctorModal" tabindex="-1" aria-labelledby="quickAddDoctorModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="border-radius: 15px; overflow: hidden;">
-                <div class="modal-header" style="background-color: #CFECE0; color: #000;">
-                    <h5 class="modal-title font-weight-bold" id="quickAddDoctorModalLabel">
-                        <i class="fas fa-user-md mr-2"></i> Add Doctor
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="quickAddDoctorForm">
-                    <div class="modal-body p-4">
-                        <div id="quickDoctorAlert" class="alert alert-danger" style="display: none;"></div>
-                        <div class="form-group mb-3">
-                            <label class="font-weight-bold"><i class="fas fa-user icon-style"></i> Doctor Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="fullname" placeholder="Enter Full Name" required>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label class="font-weight-bold"><i class="fas fa-envelope icon-style"></i> Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control" name="email" placeholder="Enter Email" required>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label class="font-weight-bold"><i class="fas fa-phone icon-style"></i> Phone <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="phone" placeholder="Enter 10 Digit Phone" maxlength="10" required>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label class="font-weight-bold"><i class="fas fa-lock icon-style"></i> Password <span class="text-danger">*</span></label>
-                                    <input type="password" class="form-control" name="password" placeholder="Min 6 characters" minlength="6" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label class="font-weight-bold"><i class="fas fa-venus-mars icon-style"></i> Gender</label>
-                                    <select class="form-control" name="gender">
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary rounded-pill px-4" id="btnSaveQuickDoctor">
-                            <span class="spinner-border spinner-border-sm me-1" style="display:none;"></span> Save Doctor
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    @include('components.quick-add-modals')
 
 
 
@@ -578,6 +429,7 @@
 
                         if (selectedId) {
                             doctorDropdown.val(selectedId).trigger('change');
+                            quickDoctorDropdown.val(selectedId);
                         }
                     },
                     error: function(xhr) {
@@ -613,173 +465,22 @@
                 $('.doctorSelect').val(doctorId).trigger("change");
             });
 
-            // ---------------- Quick Add Form Submissions ---------------- //
-
-            // 1. Quick Add Patient Submit
-            $('#quickAddPatientForm').on('submit', function(e) {
-                e.preventDefault();
-                let $btn = $('#btnSaveQuickPatient');
-                let $alert = $('#quickPatientAlert');
-                $alert.hide().empty();
-
-                let formData = new FormData(this);
-                formData.append('branch_id', branchId);
-
-                $btn.prop('disabled', true).find('.spinner-border').show();
-
-                $.ajax({
-                    url: "{{ url('api/patient') }}",
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    headers: { "Authorization": "Bearer " + token },
-                    success: function(response) {
-                        $btn.prop('disabled', false).find('.spinner-border').hide();
-                        $('#quickAddPatientForm')[0].reset();
-                        let modalEl = document.getElementById('quickAddPatientModal');
-                        let modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-                        modal.hide();
-
-                        // Reload patients and auto-select new patient
-                        let newPatientId = response.patient?.id || response.data?.id;
-                        loadPatients(newPatientId);
+            // Initialize shared Quick Add Modals
+            if (typeof window.initQuickAddModals === 'function') {
+                window.initQuickAddModals({
+                    getToken: function() { return token; },
+                    getBranchId: function() { return branchId; },
+                    onPatientAdded: function(newId) {
+                        loadPatients(newId);
                     },
-                    error: function(xhr) {
-                        $btn.prop('disabled', false).find('.spinner-border').hide();
-                        let errorMsg = 'Failed to create patient.';
-                        if (xhr.status === 422 || xhr.status === 401) {
-                            let errors = xhr.responseJSON?.errors;
-                            if (errors) {
-                                errorMsg = '';
-                                $.each(errors, function(k, v) {
-                                    errorMsg += v[0] + '<br>';
-                                });
-                            } else if (xhr.responseJSON?.message) {
-                                errorMsg = xhr.responseJSON.message;
-                            }
-                        }
-                        $alert.html(errorMsg).show();
+                    onTreatmentAdded: function(newId) {
+                        loadTreatments(newId);
+                    },
+                    onDoctorAdded: function(newId) {
+                        loadDoctors(newId);
                     }
                 });
-            });
-
-            // 2. Quick Add Treatment Submit
-            $('#quickAddTreatmentForm').on('submit', function(e) {
-                e.preventDefault();
-                let $btn = $('#btnSaveQuickTreatment');
-                let $alert = $('#quickTreatmentAlert');
-                $alert.hide().empty();
-
-                let formData = new FormData(this);
-                formData.append('branch_id', branchId);
-                formData.append('gst_option', 'Without GST');
-
-                $btn.prop('disabled', true).find('.spinner-border').show();
-
-                $.ajax({
-                    url: "{{ url('api/treatments') }}",
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    headers: { "Authorization": "Bearer " + token },
-                    success: function(response) {
-                        $btn.prop('disabled', false).find('.spinner-border').hide();
-                        $('#quickAddTreatmentForm')[0].reset();
-                        let modalEl = document.getElementById('quickAddTreatmentModal');
-                        let modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-                        modal.hide();
-
-                        // Reload treatments and auto-select new treatment
-                        let newTreatmentId = response.treatment?.id || response.data?.id || response.id;
-                        loadTreatments(newTreatmentId);
-                    },
-                    error: function(xhr) {
-                        $btn.prop('disabled', false).find('.spinner-border').hide();
-                        let errorMsg = 'Failed to create treatment.';
-                        if (xhr.status === 422 || xhr.status === 401) {
-                            let errors = xhr.responseJSON?.errors;
-                            if (errors) {
-                                errorMsg = '';
-                                $.each(errors, function(k, v) {
-                                    errorMsg += v[0] + '<br>';
-                                });
-                            } else if (xhr.responseJSON?.message) {
-                                errorMsg = xhr.responseJSON.message;
-                            }
-                        }
-                        $alert.html(errorMsg).show();
-                    }
-                });
-            });
-
-            // 3. Quick Add Doctor Submit
-            $('#quickAddDoctorForm').on('submit', function(e) {
-                e.preventDefault();
-                let $btn = $('#btnSaveQuickDoctor');
-                let $alert = $('#quickDoctorAlert');
-                $alert.hide().empty();
-
-                let formData = new FormData(this);
-                formData.append('branch_id', branchId);
-                formData.append('role_id', 3); // Doctor Role ID is 3
-                formData.append('address', 'Clinic Address');
-                formData.append('city', 'Surat');
-                formData.append('state', 'Gujarat');
-
-                // Default basic doctor permissions
-                let defaultPermissions = [
-                    { module_id: 1, view: true, create: true, update: true, delete: false },
-                    { module_id: 6, view: true, create: true, update: true, delete: false },
-                    { module_id: 7, view: true, create: true, update: true, delete: false }
-                ];
-                formData.append('permissions', JSON.stringify(defaultPermissions));
-
-                $btn.prop('disabled', true).find('.spinner-border').show();
-
-                $.ajax({
-                    url: "{{ url('api/users') }}",
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    headers: { "Authorization": "Bearer " + token },
-                    success: function(response) {
-                        $btn.prop('disabled', false).find('.spinner-border').hide();
-                        if (response.status === false) {
-                            $alert.html(response.message || 'Error creating doctor.').show();
-                            return;
-                        }
-                        $('#quickAddDoctorForm')[0].reset();
-                        let modalEl = document.getElementById('quickAddDoctorModal');
-                        let modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-                        modal.hide();
-
-                        // Reload doctors and auto-select new doctor
-                        let newDoctorId = response.user?.id || response.data?.id;
-                        loadDoctors(newDoctorId);
-                    },
-                    error: function(xhr) {
-                        $btn.prop('disabled', false).find('.spinner-border').hide();
-                        let errorMsg = 'Failed to create doctor.';
-                        if (xhr.status === 422 || xhr.status === 401) {
-                            let errors = xhr.responseJSON?.errors;
-                            if (errors) {
-                                errorMsg = '';
-                                $.each(errors, function(k, v) {
-                                    errorMsg += v[0] + '<br>';
-                                });
-                            } else if (xhr.responseJSON?.message) {
-                                errorMsg = xhr.responseJSON.message;
-                            }
-                        } else if (xhr.responseJSON?.error) {
-                            errorMsg = xhr.responseJSON.error;
-                        }
-                        $alert.html(errorMsg).show();
-                    }
-                });
-            });
+            }
 
 
 

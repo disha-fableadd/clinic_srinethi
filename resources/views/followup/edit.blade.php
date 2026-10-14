@@ -1,4 +1,4 @@
-﻿@extends('layout.app')
+@extends('layout.app')
 
 <style>
     .followup-title {
@@ -79,27 +79,55 @@
                             </div>
                         </div>
                         @endif
+                        {{-- Row 1: Patient and Date (col-6 col-6) --}}
                         <div class="row">
+                            <div class="col-lg-6 col-md-6 col-12">
+                                 <div class="form-group">
+                                     <div class="d-flex align-items-center justify-content-between">
+                                         <label><i class="fas fa-user-injured icon-style"></i> Patient Name <span
+                                                 class="text-danger">*</span></label>
+                                         @if (app('hasPermission')(5, 'create'))
+                                             <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                                 data-bs-toggle="modal" data-bs-target="#quickAddPatientModal"
+                                                 data-toggle="modal" data-target="#quickAddPatientModal">
+                                                 <i class="fas fa-plus"></i> Add
+                                             </button>
+                                         @endif
+                                     </div>
+                                     <select class="form-control select2 patientDropdown" id="patient_id" name="patient_id"
+                                         required>
+                                         <option value="">Select Patient</option>
+                                     </select>
 
-                            <div class="col-lg-12">
+                                 </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-12">
                                 <div class="form-group">
-                                    <label><i class="fas fa-user-injured icon-style"></i> Patient Name <span
+                                    <label><i class="fas fa-clock icon-style"></i> Date <span
                                             class="text-danger">*</span></label>
-                                    <select class="form-control select2 patientDropdown" id="patient_id" name="patient_id"
+                                    <input type="date" class="form-control timepicker" id="date" name="date"
                                         required>
-                                        <option value="">Select Patient</option>
-                                    </select>
-
                                 </div>
                             </div>
                         </div>
 
+                        {{-- Row 2: Treatment and Doctor (col-6 col-6) --}}
                         <div class="row">
                             @if($currentProjectTypeId !== 3)
-                            <div class="col-lg-12">
+                            <div class="col-lg-6 col-md-6 col-12">
                                 <div class="form-group">
-                                    <label><i class="fas fa-stethoscope icon-style"></i> Treatment <span
-                                            class="text-danger">*</span></label>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <label><i class="fas fa-stethoscope icon-style"></i> Treatment <span
+                                                class="text-danger">*</span></label>
+                                        @if (app('hasPermission')(7, 'create'))
+                                            <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                                data-bs-toggle="modal" data-bs-target="#quickAddTreatmentModal"
+                                                data-toggle="modal" data-target="#quickAddTreatmentModal">
+                                                <i class="fas fa-plus"></i> Add
+                                            </button>
+                                        @endif
+                                    </div>
                                     <select class="form-control select2 treatmentDropdown" id="treatment_id"
                                         name="treatment_id" required>
                                         <option value="">Select Treatment</option>
@@ -108,28 +136,27 @@
                                 </div>
                             </div>
                             @endif
-                            <div class="col-lg-12">
+
+                            <div class="{{ $currentProjectTypeId !== 3 ? 'col-lg-6 col-md-6 col-12' : 'col-lg-12' }}">
                                 <div class="form-group">
-                                    <label><i class="fas fa-user-md icon-style"></i> Doctor <span
-                                            class="text-danger">*</span></label>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <label><i class="fas fa-user-md icon-style"></i> Doctor <span
+                                                class="text-danger">*</span></label>
+                                        @if (app('hasPermission')(3, 'create'))
+                                            <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                                data-bs-toggle="modal" data-bs-target="#quickAddDoctorModal"
+                                                data-toggle="modal" data-target="#quickAddDoctorModal">
+                                                <i class="fas fa-plus"></i> Add
+                                            </button>
+                                        @endif
+                                    </div>
                                     <select class="form-control select2 doctorSelect" id="doctorSelect" name="doctor_id"
-                                        id="doctorSelect" required>
+                                        required>
                                         <option value="">Select Doctor</option>
                                     </select>
 
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="form-group">
-                                    <label><i class="fas fa-clock icon-style"></i> Date <span
-                                            class="text-danger">*</span></label>
-                                    <input type="date" class="form-control timepicker" id="date" name="date"
-                                        required>
-                                </div>
-                            </div>
-
                         </div>
 
                         @if($currentProjectTypeId !== 3)
@@ -159,6 +186,8 @@
             </div>
         </div>
     </div>
+
+    @include('components.quick-add-modals')
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -228,129 +257,193 @@
 
             let branchId = localStorage.getItem("selectedBranchId");
 
+            // Reusable loader for Patients
+            function loadPatients(selectedId = null) {
+                $.ajax({
+                    url: "/api/patientss",
+                    type: "GET",
+                    data: {
+                        branch_id: branchId
+                    },
+                    dataType: "json",
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    success: function(response) {
+                        let patientDropdown = $('.patientDropdown');
+                        if (patientDropdown.length === 0) return;
 
+                        let currentVal = selectedId || patientDropdown.val();
+                        patientDropdown.empty().append('<option value="">Select Employee</option>');
 
-            $.ajax({
-                url: "/api/patientss",
-                type: "GET",
-                data: {
-                    branch_id: localStorage.getItem("selectedBranchId") // ✅ pass branch_id
-                },
-                dataType: "json",
-                success: function(response) {
-                    let patientDropdown = $('.patientDropdown');
+                        let patientsList = response.patients || [];
+                        $.each(patientsList, function(index, patient) {
+                            const capitalizedName = patient.fullname.charAt(0).toUpperCase() + patient.fullname.slice(1);
+                            patientDropdown.append(
+                                `<option value="${patient.id}" data-treatment-id="${patient.treatment_id || ''}">
+                                    ${capitalizedName}
+                                </option>`
+                            );
+                        });
 
-                    if (patientDropdown.length === 0) {
-                        console.error("Dropdown not found! Check your HTML.");
-                        return;
+                        patientDropdown.select2({
+                            placeholder: "Select Employee",
+                            allowClear: true,
+                            width: '100%'
+                        });
+
+                        patientDropdown.on('select2:open', function() {
+                            $('.select2-search__field').attr('placeholder', 'Search Employee');
+                        });
+
+                        if (currentVal) {
+                            patientDropdown.val(currentVal).trigger('change');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error("API Error:", xhr.status, xhr.responseText);
                     }
+                });
+            }
 
-                    patientDropdown.empty().append('<option value="">Select Employee</option>');
+            // Reusable loader for Treatments
+            function loadTreatments(selectedId = null) {
+                $.ajax({
+                    url: "/api/treatments",
+                    type: "GET",
+                    data: {
+                        branch_id: branchId
+                    },
+                    dataType: "json",
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    success: function(data) {
+                        let treatmentDropdown = $('select[name="treatment_id"]');
+                        if (treatmentDropdown.length === 0) return;
 
-                    let patientsList = response.patients || [];
+                        let currentVal = selectedId || treatmentDropdown.val();
+                        treatmentDropdown.empty().append('<option value="">Select Treatment</option>');
 
-                    if (patientsList.length === 0) {
-                        console.warn("No employees found for this branch.");
-                        return;
+                        let treatmentsList = data.treatments || [];
+                        $.each(treatmentsList, function(key, treatment) {
+                            const name = treatment.name.charAt(0).toUpperCase() + treatment.name.slice(1);
+                            treatmentDropdown.append(
+                                `<option value="${treatment.id}" data-doctor-id="${treatment.doctor_id || ''}">${name}</option>`
+                            );
+                        });
+
+                        treatmentDropdown.select2({
+                            placeholder: "Select Treatment",
+                            allowClear: true,
+                            width: '100%'
+                        });
+
+                        treatmentDropdown.on('select2:open', function() {
+                            $('.select2-search__field').attr('placeholder', 'Search Treatment');
+                        });
+
+                        if (currentVal) {
+                            treatmentDropdown.val(currentVal).trigger('change');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log("API Error:", xhr.status, xhr.responseText);
                     }
+                });
+            }
 
-                    $.each(patientsList, function(index, patient) {
-                        const capitalizedName = patient.fullname.charAt(0).toUpperCase() +
-                            patient.fullname.slice(1);
+            // Reusable loader for Doctors
+            function loadDoctors(selectedId = null) {
+                $.ajax({
+                    url: "/api/doctors",
+                    type: "GET",
+                    data: {
+                        branch_id: branchId
+                    },
+                    dataType: "json",
+                    headers: (typeof token !== 'undefined' && token) ? {
+                        "Authorization": "Bearer " + token
+                    } : {},
+                    success: function(response) {
+                        let doctorDropdown = $('.doctorSelect');
+                        if (doctorDropdown.length === 0) return;
 
-                        patientDropdown.append(
-                            `<option value="${patient.id}" data-treatment-id="${patient.treatment_id}">
-                    ${capitalizedName}
-                </option>`
-                        );
-                    });
+                        let currentVal = selectedId || doctorDropdown.val();
+                        doctorDropdown.empty().append('<option value="">Select Doctor</option>');
 
-                    // ✅ Initialize Select2
-                    patientDropdown.select2({
-                        placeholder: "Select Employee",
-                        allowClear: true,
-                        width: '100%'
-                    });
+                        let quickDoctorDropdown = $('#quickTreatmentDoctorSelect');
+                        quickDoctorDropdown.empty().append('<option value="">Select Doctor (Optional)</option>');
 
-                    // ✅ Search placeholder
-                    patientDropdown.on('select2:open', function() {
-                        $('.select2-search__field').attr('placeholder', 'Search Employee');
-                    });
-                },
-                error: function(xhr) {
-                    console.error("API Error:", xhr.status, xhr.responseText);
-                }
-            });
+                        let doctorsList = response.doctors || [];
+                        $.each(doctorsList, function(index, doctor) {
+                            const capitalizedName = doctor.fullname.charAt(0).toUpperCase() + doctor.fullname.slice(1);
+                            doctorDropdown.append(
+                                `<option value="${doctor.id}">${capitalizedName}</option>`
+                            );
+                            quickDoctorDropdown.append(
+                                `<option value="${doctor.id}">${capitalizedName}</option>`
+                            );
+                        });
 
+                        if (!doctorDropdown.hasClass('select2-hidden-accessible')) {
+                            doctorDropdown.select2({
+                                placeholder: "Select Doctor",
+                                allowClear: true,
+                                width: '100%'
+                            });
+                        }
+
+                        doctorDropdown.on('select2:open', function() {
+                            $('.select2-search__field').attr('placeholder', 'Search Doctor');
+                        });
+
+                        if (currentVal) {
+                            doctorDropdown.val(currentVal).trigger('change');
+                        }
+                        if (selectedId) {
+                            quickDoctorDropdown.val(selectedId);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error("API Error:", xhr.status, xhr.responseText);
+                    }
+                });
+            }
+
+            // Initial load of dropdowns
+            loadPatients();
+            loadTreatments();
+            loadDoctors();
+
+            // Initialize shared Quick Add Modals
+            if (typeof window.initQuickAddModals === 'function') {
+                window.initQuickAddModals({
+                    getToken: function() { return (typeof token !== 'undefined' && token) ? token : ''; },
+                    getBranchId: function() { return branchId; },
+                    onPatientAdded: function(newId) {
+                        loadPatients(newId);
+                    },
+                    onTreatmentAdded: function(newId) {
+                        loadTreatments(newId);
+                    },
+                    onDoctorAdded: function(newId) {
+                        loadDoctors(newId);
+                    }
+                });
+            }
 
             // Handle Patient Selection
             $('.patientDropdown').on("change", function() {
                 let selectedPatient = $(this).find("option:selected");
-                let treatmentId = selectedPatient.data("treatment-id"); // Get assigned treatment
+                let treatmentId = selectedPatient.data("treatment-id");
 
                 if (!treatmentId) {
-                    console.warn("No treatment assigned for this patient.");
-                    $('select[name="treatment_id"]').val("").trigger("change"); // Reset treatment dropdown
-                    $('.doctorSelect').val("").trigger("change"); // Reset doctor dropdown
                     return;
                 }
 
-                // Automatically select treatment
                 $('select[name="treatment_id"]').val(treatmentId).trigger("change");
             });
-
-          
-            $.ajax({
-                url: "/api/treatments",
-                type: "GET",
-                data: {
-                    branch_id: branchId // ✅ pass branch_id to API
-                },
-                dataType: "json",
-                success: function(data) {
-                    let treatmentDropdown = $('select[name="treatment_id"]');
-
-                    if (treatmentDropdown.length === 0) {
-                        console.log("Dropdown not found! Check your HTML.");
-                        return;
-                    }
-
-                    treatmentDropdown.empty();
-                    treatmentDropdown.append('<option value="">Select Treatment</option>');
-
-                    let treatmentsList = data.treatments || [];
-
-                    if (treatmentsList.length === 0) {
-                        console.warn("No treatments found for this branch.");
-                        return;
-                    }
-
-                    $.each(treatmentsList, function(key, treatment) {
-                        const capitalizedName = treatment.name.charAt(0).toUpperCase() +
-                            treatment.name.slice(1);
-
-                        treatmentDropdown.append(
-                            `<option value="${treatment.id}" data-doctor-id="${treatment.doctor_id}">${capitalizedName}</option>`
-                        );
-                    });
-
-                    // Initialize Select2 plugin
-                    treatmentDropdown.select2({
-                        placeholder: "Select Treatment",
-                        allowClear: true,
-                        width: '100%'
-                    });
-
-                    // Set search input placeholder after opening dropdown
-                    treatmentDropdown.on('select2:open', function() {
-                        $('.select2-search__field').attr('placeholder', 'Search Treatment');
-                    });
-                },
-                error: function(xhr) {
-                    console.log("API Error:", xhr.status, xhr.responseText);
-                }
-            });
-
 
             // Handle Treatment Selection
             $('select[name="treatment_id"]').on("change", function() {
@@ -358,65 +451,10 @@
                 let doctorId = selectedTreatment.data("doctor-id");
 
                 if (!doctorId) {
-                    console.warn("No doctor assigned for this treatment.");
-                    $('.doctorSelect').val("").trigger("change"); // Reset doctor dropdown
                     return;
                 }
 
-                // Automatically select the doctor
                 $('.doctorSelect').val(doctorId).trigger("change");
-            });
-
-            
-            $.ajax({
-                url: "/api/doctors",
-                type: "GET",
-                data: {
-                    branch_id: branchId // ✅ send branch_id to API
-                },
-                dataType: "json",
-                headers: {
-                    "Authorization": "Bearer " + token
-                },
-                success: function(response) {
-                    let doctorDropdown = $('.doctorSelect');
-
-                    if (doctorDropdown.length === 0) {
-                        console.error("Dropdown not found! Check your HTML class.");
-                        return;
-                    }
-
-                    doctorDropdown.empty().append('<option value="">Select Doctor</option>');
-
-                    let doctorsList = response.doctors || [];
-
-                    if (doctorsList.length === 0) {
-                        console.warn("No doctors found for this branch.");
-                        return;
-                    }
-
-                    $.each(doctorsList, function(index, doctor) {
-                        const capitalizedName = doctor.fullname.charAt(0).toUpperCase() + doctor
-                            .fullname.slice(1);
-
-                        doctorDropdown.append(
-                            `<option value="${doctor.id}">${capitalizedName}</option>`
-                        );
-                    });
-
-                    doctorDropdown.select2({
-                        placeholder: "Select Doctor",
-                        allowClear: true,
-                        width: '100%'
-                    });
-
-                    doctorDropdown.on('select2:open', function() {
-                        $('.select2-search__field').attr('placeholder', 'Search Doctor');
-                    });
-                },
-                error: function(xhr) {
-                    console.error("API Error:", xhr.status, xhr.responseText);
-                }
             });
 
 

@@ -1,4 +1,4 @@
-﻿@extends('layout.app')
+@extends('layout.app')
 
 <style>
     .select2-container--default .select2-selection--multiple .select2-selection__choice__display {
@@ -143,10 +143,11 @@
                                         <label class="mr-2"><i class="fas fa-medkit icon-style"></i> Doctor <span
                                                 class="text-danger">*</span></label>
                                         @if (app('hasPermission')(3, 'create'))
-                                            <a href="{{ route('user.create') }}" target="_blank"
-                                                class="btn btn-primary btn-sm">
-                                                <i class="fas fa-plus"></i> Add Doctor
-                                            </a>
+                                            <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                                data-bs-toggle="modal" data-bs-target="#quickAddDoctorModal"
+                                                data-toggle="modal" data-target="#quickAddDoctorModal">
+                                                <i class="fas fa-plus"></i> Add
+                                            </button>
                                         @endif
                                     </div>
                                     <select class="form-control select2 doctorSelect" name="doctor_id" id="doctorSelect"
@@ -212,6 +213,8 @@
         </div>
     </div>
 
+    @include('components.quick-add-modals')
+
     <!-- Include jQuery Validation Plugin -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -221,8 +224,6 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 
     {{-- <script src="{{ asset('admin/js/treatment-create.js') }}"></script> --}}
     <script src="{{ asset(env('IMAGE_PATH') . 'admin/assets/js/treatment-create.js') }}"></script>

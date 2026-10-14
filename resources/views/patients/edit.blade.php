@@ -279,10 +279,11 @@
                                         <div class="d-flex align-items-center justify-content-between">
                                             <label class="mr-2"><i class="fas fa-medkit icon-style"></i> Diagnosis </label>
                                             @if (app('hasPermission')(35, 'create'))
-                                                <a href="{{ route('diagnosis.create') }}" target="_blank"
-                                                    class="btn btn-primary btn-sm">
-                                                    <i class="fas fa-plus"></i> <span class="hdr-btn-text">Add</span>
-                                                </a>
+                                                <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                                    data-bs-toggle="modal" data-bs-target="#quickAddDiagnosisModal"
+                                                    data-toggle="modal" data-target="#quickAddDiagnosisModal">
+                                                    <i class="fas fa-plus"></i> Add
+                                                </button>
                                             @endif
                                         </div>
                                         <select class="form-control select2" name="diagnosis_id[]" id="diagnosisDropdown"
@@ -295,9 +296,14 @@
                                 <div class="col-12 col-md-6">
                                     <div class="form-group">
                                         <div class="d-flex align-items-center justify-content-between">
-                                            <label><i class="fas fa-notes-medical icon-style"></i> Symptoms</label>
+                                            <label class="mr-2"><i class="fas fa-notes-medical icon-style"></i> Symptoms</label>
+                                            <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                                data-bs-toggle="modal" data-bs-target="#quickAddSymptomModal"
+                                                data-toggle="modal" data-target="#quickAddSymptomModal">
+                                                <i class="fas fa-plus"></i> Add
+                                            </button>
                                         </div>
-                                        <select name="symptoms[]" class="form-control" id="symptomDropdown" multiple
+                                        <select name="symptoms[]" class="form-control select2" id="symptomDropdown" multiple
                                             style="min-height: 100px; max-height: 200px; overflow-y: auto;"></select>
                                         <small class="text-muted">You can select multiple symptoms</small>
                                     </div>
@@ -498,7 +504,8 @@
                 </div>
             </div>
         </div>
-    </div>
+    @include('components.quick-add-modals')
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -535,7 +542,7 @@
             });
         });
 
-        function loadSymptoms(symptomIds) {
+        window.loadSymptoms = function(symptomIds, newId) {
             let branchId = localStorage.getItem('selectedBranchId');
             $.ajax({
                 url: "{{ route('symptoms.list') }}",
@@ -546,14 +553,26 @@
                 success: function(data) {
                     let symptomsList = Array.isArray(data) ? data : (data.symptoms || []);
                     let symptomDropdown = $('#symptomDropdown');
-                    symptomDropdown.empty().append('<option value="">Select Symptom</option>');
+                    let currentVals = symptomDropdown.val() || [];
+                    if (!Array.isArray(currentVals)) currentVals = [currentVals];
+                    currentVals = currentVals.map(String);
+
+                    if (Array.isArray(symptomIds)) {
+                        currentVals = [...new Set([...currentVals, ...symptomIds.map(String)])];
+                    }
+                    if (newId && !currentVals.includes(String(newId))) {
+                        currentVals.push(String(newId));
+                    }
+
+                    symptomDropdown.empty();
                     $.each(symptomsList, function(index, symptom) {
                         const name = symptom.name.charAt(0).toUpperCase() + symptom.name.slice(1);
                         symptomDropdown.append(`<option value="${symptom.id}">${name}</option>`);
                     });
-                    if (symptomIds && symptomIds.length > 0) {
-                        symptomDropdown.val(symptomIds).trigger('change');
+                    if (currentVals.length > 0) {
+                        symptomDropdown.val(currentVals);
                     }
+                    symptomDropdown.trigger('change');
                 },
                 error: function(xhr) {
                     console.error("Failed to load symptoms:", xhr.status, xhr.responseText);
@@ -805,7 +824,7 @@
                 }
             });
 
-            function loadDiagnoses(selectedIds = []) {
+            function loadDiagnoses(selectedIds = [], newId = null) {
                 const branchId = localStorage.getItem('selectedBranchId');
                 $.ajax({
                     url: "/api/diagnoses",
@@ -815,18 +834,43 @@
                     },
                     success: function(response) {
                         const diagnosisDropdown = $('#diagnosisDropdown');
+                        let currentVals = diagnosisDropdown.val() || [];
+                        if (!Array.isArray(currentVals)) currentVals = [currentVals];
+                        currentVals = currentVals.map(String);
+
+                        if (Array.isArray(selectedIds)) {
+                            currentVals = [...new Set([...currentVals, ...selectedIds.map(String)])];
+                        }
+                        if (newId && !currentVals.includes(String(newId))) {
+                            currentVals.push(String(newId));
+                        }
+
                         diagnosisDropdown.empty();
                         (response.diagnoses || []).forEach(diagnosis => {
-                            const selected = selectedIds.map(String).includes(String(diagnosis
-                                .id)) ? 'selected' : '';
                             diagnosisDropdown.append(
-                                `<option value="${diagnosis.id}" ${selected}>${diagnosis.name}</option>`
+                                `<option value="${diagnosis.id}">${diagnosis.name}</option>`
                             );
                         });
+                        if (currentVals.length > 0) {
+                            diagnosisDropdown.val(currentVals);
+                        }
                         diagnosisDropdown.trigger('change');
                     },
                     error: function(xhr) {
                         console.error("Failed to load diagnoses:", xhr);
+                    }
+                });
+            }
+
+            if (typeof window.initQuickAddModals === 'function') {
+                window.initQuickAddModals({
+                    getToken: function() { return localStorage.getItem("token") || @json(session('access_token')); },
+                    getBranchId: function() { return localStorage.getItem('selectedBranchId'); },
+                    onDiagnosisAdded: function(newId) {
+                        loadDiagnoses([], newId);
+                    },
+                    onSymptomAdded: function(newId) {
+                        loadSymptoms(null, newId);
                     }
                 });
             }

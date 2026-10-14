@@ -309,10 +309,11 @@
                                                     class="text-danger">*</span>
                                             </label>
                                             @if (app('hasPermission')(7, 'create'))
-                                                <a href="{{ route('diagnosis.create') }}" target="_blank"
-                                                    class="btn btn-primary btn-sm">
-                                                    <i class="fas fa-plus"></i> <span class="hdr-btn-text">Add</span>
-                                                </a>
+                                                <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                                    data-bs-toggle="modal" data-bs-target="#quickAddDiagnosisModal"
+                                                    data-toggle="modal" data-target="#quickAddDiagnosisModal">
+                                                    <i class="fas fa-plus"></i> Add
+                                                </button>
                                             @endif
                                         </div>
                                         <select class="form-control select2" name="diagnosis_id[]" id="diagnosisDropdown"
@@ -325,13 +326,12 @@
                                 <div class="col-12 col-md-6">
                                     <div class="form-group">
                                         <div class="d-flex align-items-center justify-content-between">
-                                            <label><i class="fas fa-notes-medical icon-style"></i> Symptoms</label>
-                                            <div class="m-b-2 eye-btn">
-                                                <a href="#" class="btn btn-primary btn-rounded btn-hdr" data-bs-toggle="modal"
-                                                    data-bs-target="#addSymptomModal" style="padding:4px 8px !important;">
-                                                    <i class="fa fa-plus m-r-2 icon3"></i> <span class="hdr-btn-text">Add</span>
-                                                </a>
-                                            </div>
+                                            <label class="mr-2"><i class="fas fa-notes-medical icon-style"></i> Symptoms</label>
+                                            <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                                data-bs-toggle="modal" data-bs-target="#quickAddSymptomModal"
+                                                data-toggle="modal" data-target="#quickAddSymptomModal">
+                                                <i class="fas fa-plus"></i> Add
+                                            </button>
                                         </div>
                                         <select name="symptoms[]" class="form-control select2" id="symptomDropdown"
                                             multiple style="min-height: 100px; max-height: 200px; overflow-y: auto;">
@@ -643,50 +643,12 @@
 
 
 
-    <div class="modal fade" id="addSymptomModal" tabindex="-1" aria-labelledby="addSymptomModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <form id="symptomForm">
-                @csrf
-                <div class="modal-content">
-                    <!-- hidden input for branch -->
-                    <input type="hidden" name="branch_id" id="branch_id">
-
-                    <div class="modal-header" style="background-color: #CFECE0; color:black">
-                        <h5 class="modal-title" id="addSymptomModalLabel">Add Symptom</h5>
-                        <button type="button" class="btn-close custom-close" data-bs-dismiss="modal"
-                            aria-label="Close"><i class="fas fa-times"></i></button>
-                    </div>
-
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="symptomName" class="form-label">Symptom Name</label>
-                            <input type="text" class="form-control" id="symptomName" name="name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="symptomDetails" class="form-label">Details</label>
-                            <textarea class="form-control" id="symptomDetails" name="details" rows="3" style="border-radius:10px"></textarea>
-                        </div>
-
-                        <div id="globalSuccess" class="alert alert-success mt-4" style="display:none;"></div>
-                        <div id="globalError" class="alert alert-danger mt-4" style="display:none;"></div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Save Symptom</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-
+    @include('components.quick-add-modals')
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- Select2 JS -->
@@ -756,30 +718,36 @@
             });
 
             // ✅ Load Symptoms Function (branch wise)
-            function loadSymptoms() {
+            window.loadSymptoms = function(selectedId) {
                 let branchId = localStorage.getItem('selectedBranchId');
 
-                $.ajax({
+                return $.ajax({
                     url: "{{ route('symptoms.list') }}",
                     type: "GET",
                     data: {
                         branch_id: branchId
                     },
                     success: function(data) {
-                        // console.log("API Response:", data);
-
                         let symptomsList = Array.isArray(data) ? data : (data.symptoms || []);
-
                         let symptomDropdown = $('#symptomDropdown');
-                        symptomDropdown.empty().append('<option value="">Select Symptom</option>');
+                        let currentVals = symptomDropdown.val() || [];
+                        if (!Array.isArray(currentVals)) currentVals = [currentVals];
+                        currentVals = currentVals.map(String);
+
+                        if (selectedId && !currentVals.includes(String(selectedId))) {
+                            currentVals.push(String(selectedId));
+                        }
+
+                        symptomDropdown.empty();
 
                         $.each(symptomsList, function(index, symptom) {
-                            const name = symptom.name.charAt(0).toUpperCase() + symptom.name
-                                .slice(1);
-                            symptomDropdown.append(
-                                `<option value="${symptom.id}">${name}</option>`);
+                            const name = symptom.name.charAt(0).toUpperCase() + symptom.name.slice(1);
+                            symptomDropdown.append(`<option value="${symptom.id}">${name}</option>`);
                         });
 
+                        if (currentVals.length > 0) {
+                            symptomDropdown.val(currentVals);
+                        }
                         symptomDropdown.trigger('change');
                     },
                     error: function(xhr) {
@@ -1673,24 +1641,26 @@
 
 
 
-            function fetchDiagnoses() {
+            function fetchDiagnoses(selectedId) {
                 let token = localStorage.getItem("token");
                 let branchId = localStorage.getItem('selectedBranchId');
 
                 let diagnosisDropdown = $('#diagnosisDropdown');
 
-                diagnosisDropdown.select2({
-                    placeholder: "Select Diagnoses",
-                    allowClear: true,
-                    width: '100%'
-                });
+                if (!diagnosisDropdown.hasClass('select2-hidden-accessible')) {
+                    diagnosisDropdown.select2({
+                        placeholder: "Select Diagnoses",
+                        allowClear: true,
+                        width: '100%'
+                    });
 
-                // Set search placeholder
-                diagnosisDropdown.on('select2:open', function() {
-                    $('.select2-search__field').attr('placeholder', 'Search diagnoses');
-                });
+                    // Set search placeholder
+                    diagnosisDropdown.on('select2:open', function() {
+                        $('.select2-search__field').attr('placeholder', 'Search diagnoses');
+                    });
+                }
 
-                $.ajax({
+                return $.ajax({
                     url: "/api/diagnoses",
                     type: "GET",
                     data: {
@@ -1700,6 +1670,14 @@
                         "Authorization": "Bearer " + token
                     },
                     success: function(response) {
+                        let currentVals = diagnosisDropdown.val() || [];
+                        if (!Array.isArray(currentVals)) currentVals = [currentVals];
+                        currentVals = currentVals.map(String);
+
+                        if (selectedId && !currentVals.includes(String(selectedId))) {
+                            currentVals.push(String(selectedId));
+                        }
+
                         diagnosisDropdown.empty();
 
                         if (response.diagnoses && response.diagnoses.length > 0) {
@@ -1712,6 +1690,9 @@
                             });
                         }
 
+                        if (currentVals.length > 0) {
+                            diagnosisDropdown.val(currentVals);
+                        }
                         diagnosisDropdown.trigger('change');
                     },
                     error: function(xhr) {
@@ -1720,10 +1701,21 @@
                 });
             }
 
-
-
             $(document).ready(function() {
                 fetchDiagnoses();
+
+                if (typeof window.initQuickAddModals === 'function') {
+                    window.initQuickAddModals({
+                        getToken: function() { return localStorage.getItem("token") || @json(session('access_token')); },
+                        getBranchId: function() { return localStorage.getItem('selectedBranchId'); },
+                        onDiagnosisAdded: function(newId) {
+                            fetchDiagnoses(newId);
+                        },
+                        onSymptomAdded: function(newId) {
+                            loadSymptoms(newId);
+                        }
+                    });
+                }
             });
 
 

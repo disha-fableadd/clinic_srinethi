@@ -1255,6 +1255,8 @@
                                             <span class="font-bold">Update Symptoms</span>
                                         </a>
                                     </li>
+                                    {{-- Hidden Generate Payment Link per requirement --}}
+                                    {{--
                                     @if ($razorpayEnabled)
                                         <hr>
                                         <li>
@@ -1266,6 +1268,7 @@
                                             </a>
                                         </li>
                                     @endif
+                                    --}}
 
                                 </ul>
                             </div>
@@ -1284,10 +1287,13 @@
                                     <a class="nav-link" id="appointments-tab" data-toggle="tab" href="#appointments"
                                         role="tab">Appointments History</a>
                                 </li>
+                                {{-- Hidden Payment History tab per requirement --}}
+                                {{--
                                 <li class="nav-item">
                                     <a class="nav-link" id="payments-tab" data-toggle="tab" href="#payments"
                                         role="tab">Payment History</a>
                                 </li>
+                                --}}
                                 <li class="nav-item">
                                     <a class="nav-link" id="treatment-tab" data-toggle="tab" href="#treatment-record"
                                         role="tab">Treatment History</a>
@@ -1346,6 +1352,7 @@
                                     </div>
                                 </div>
 
+                                {{--
                                 <!-- Payment History Tab -->
                                 <div class="tab-pane fade" id="payments" role="tabpanel">
                                     <div class="table-responsive-wrapper">
@@ -1371,6 +1378,7 @@
                                         No payment history available.
                                     </div>
                                 </div>
+                                --}}
 
                                 <!-- Report History Tab -->
                                 <div class="tab-pane fade" id="reports" role="tabpanel">

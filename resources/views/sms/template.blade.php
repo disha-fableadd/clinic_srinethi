@@ -188,6 +188,8 @@
                                     <i class="fas fa-key px-2" style="font-size:20px"></i> SMTP Credentials
                                 </a>
                             </li>
+                            {{-- Hidden Firebase and Razorpay tabs per requirement --}}
+                            {{--
                             <li class="nav-item">
                                 <a class="nav-link" id="firebase-credentials-tab" data-toggle="tab"
                                     href="#firebase-credentials" role="tab" aria-controls="firebase-credentials"
@@ -203,6 +205,7 @@
                                     Razorpay Credentials
                                 </a>
                             </li>
+                            --}}
 
                         </ul>
 
@@ -493,6 +496,7 @@
 
 
 
+                                {{--
                                 <div class="tab-pane fade" id="firebase-credentials" role="tabpanel"
                                     aria-labelledby="firebase-credentials-tab">
                                     <div class="row mt-3">
@@ -549,10 +553,12 @@
                                         </div>
                                     </div>
                                 </div>
+                                --}}
 
 
                                 {{-- razorpay Credentials Tab --}}
 
+                                {{--
                                 <div class="tab-pane fade" id="razorpay-credentials" role="tabpanel"
                                     aria-labelledby="razorpay-credentials-tab">
 
@@ -613,6 +619,7 @@
                                     </div>
 
                                 </div>
+                                --}}
 
 
 

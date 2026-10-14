@@ -1,4 +1,4 @@
-﻿@extends('layout.app')
+@extends('layout.app')
 
 <style>
     /* Make the multiple select field expand nicely */
@@ -122,8 +122,17 @@
                         <div class="row">
                             <div class="col-6">
                                 <div class="form-group">
-                                    <label><i class="fas fa-user icon-style"></i> Patient <span
-                                            class="text-danger">*</span></label>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <label class="mr-2"><i class="fas fa-user icon-style"></i> Patient <span
+                                                class="text-danger">*</span></label>
+                                        @if (app('hasPermission')(5, 'create'))
+                                            <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                                data-bs-toggle="modal" data-bs-target="#quickAddPatientModal"
+                                                data-toggle="modal" data-target="#quickAddPatientModal">
+                                                <i class="fas fa-plus"></i> Add
+                                            </button>
+                                        @endif
+                                    </div>
                                     <select class="form-control select2" name="patient_id" id="patientDropdown" required>
                                         <option value="">Select Patient</option>
                                     </select>
@@ -131,11 +140,19 @@
                             </div>
 
                             {{-- Treatment --}}
-
                             <div class="col-6">
                                 <div class="form-group">
-                                    <label><i class="fas fa-medkit icon-style"></i> Treatment <span
-                                            class="text-danger">*</span></label>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <label class="mr-2"><i class="fas fa-medkit icon-style"></i> Treatment <span
+                                                class="text-danger">*</span></label>
+                                        @if (app('hasPermission')(7, 'create'))
+                                            <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                                data-bs-toggle="modal" data-bs-target="#quickAddTreatmentModal"
+                                                data-toggle="modal" data-target="#quickAddTreatmentModal">
+                                                <i class="fas fa-plus"></i> Add
+                                            </button>
+                                        @endif
+                                    </div>
                                     <select class="form-control select2" name="treatment_id" id="treatmentDropdown"
                                         required>
                                         <option value="">Select Treatment</option>
@@ -144,12 +161,20 @@
                             </div>
                         </div>
                         <div class="row">
-
                             <div class="col-12">
                                 {{-- Machine --}}
                                 <div class="form-group">
-                                    <label><i class="fa fa-cogs icon-style"></i> Machine <span
-                                            class="text-danger">*</span></label>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <label class="mr-2"><i class="fa fa-cogs icon-style"></i> Machine <span
+                                                class="text-danger">*</span></label>
+                                        @if (app('hasPermission')(7, 'create'))
+                                            <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                                data-bs-toggle="modal" data-bs-target="#quickAddMachineModal"
+                                                data-toggle="modal" data-target="#quickAddMachineModal">
+                                                <i class="fas fa-plus"></i> Add
+                                            </button>
+                                        @endif
+                                    </div>
                                     <select class="form-control select2" name="machine_id[]" id="machineDropdown"
                                         style="min-height: 100px; max-height: 200px; overflow-y: auto;" required multiple>
                                         <option value="">Select Machine</option>
@@ -189,6 +214,8 @@
             </div>
         </div>
     </div>
+
+    @include('components.quick-add-modals')
 
     {{-- Scripts --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
