@@ -25,13 +25,14 @@
         }
 
         .invoice-wrapper {
-            width: auto;
-            min-height: 0;
-            margin: 12mm;
+            width: 190mm;
+            height: 277mm;
+            margin: 10mm auto 0;
             padding: 12px 14px;
             background-color: #fff;
-            border: 1px solid black;
+            border: 1.5px solid #222;
             box-sizing: border-box;
+            overflow: hidden;
         }
 
         .header-table {
@@ -204,10 +205,41 @@
             color: #666;
             line-height: 1.5;
         }
+
+        .declaration-signatory {
+            width: 100%;
+            margin-top: 14px;
+            page-break-inside: avoid;
+            border: 1px solid #d0e4dc;
+            border-collapse: collapse;
+            background-color: #f7faf8;
+        }
+
+        .declaration-signatory td {
+            width: 50%;
+            padding: 7px 10px;
+            vertical-align: top;
+        }
+
+        .declaration-cell {
+            border-right: 1px solid #d0e4dc;
+        }
+
+        .signatory-cell {
+            height: 64px;
+            text-align: right;
+            vertical-align: bottom !important;
+        }
     </style>
 </head>
 
 <body>
+    @php
+        $displayVal = function($val) {
+            $trimmed = trim((string)($val ?? ''));
+            return ($trimmed === '' || $trimmed === '-' || $trimmed === '--') ? 'N/A' : $val;
+        };
+    @endphp
 
     <div class="invoice-wrapper">
 
@@ -232,7 +264,7 @@
                         </div>
                     @endif
                     <div class="clinic-sub">
-                        PHONE: {{ $clinic_phone ?? '--' }} | EMAIL: {{ $clinic_email ?? 'clinic@example.com' }}
+                        PHONE: {{ $displayVal($clinic_phone ?? '') }} | EMAIL: {{ $displayVal($clinic_email ?? '') }}
                     </div>
                 </td>
             </tr>
@@ -251,17 +283,17 @@
                         <tr>
                             <td class="info-label">Name</td>
                             <td class="info-sep">:</td>
-                            <td class="info-val"><strong>{{ $patient->fullname ? ucfirst($patient->fullname) : '--' }}</strong></td>
+                            <td class="info-val"><strong>{{ $displayVal($patient->fullname ? ucfirst($patient->fullname) : '') }}</strong></td>
                         </tr>
                         <tr>
                             <td class="info-label">Phone</td>
                             <td class="info-sep">:</td>
-                            <td class="info-val">{{ $patient->phone ? ucfirst($patient->phone) : '--' }}</td>
+                            <td class="info-val">{{ $displayVal($patient->phone ?? '') }}</td>
                         </tr>
                         <tr>
                             <td class="info-label">Address</td>
                             <td class="info-sep">:</td>
-                            <td class="info-val">{{ $patient->address ? ucfirst($patient->address) : '--' }}</td>
+                            <td class="info-val">{{ $displayVal($patient->address ? ucfirst($patient->address) : '') }}</td>
                         </tr>
                     </table>
                 </td>
@@ -273,22 +305,22 @@
                         <tr>
                             <td class="info-label">Invoice #</td>
                             <td class="info-sep">:</td>
-                            <td class="info-val"><strong>{{ $invoice_no }}</strong></td>
+                            <td class="info-val"><strong>{{ $displayVal($invoice_no ?? '') }}</strong></td>
                         </tr>
                         <tr>
                             <td class="info-label">Date</td>
                             <td class="info-sep">:</td>
-                            <td class="info-val">{{ $date }}</td>
+                            <td class="info-val">{{ $displayVal($date ?? '') }}</td>
                         </tr>
                         <tr>
                             <td class="info-label">Payment Mode</td>
                             <td class="info-sep">:</td>
-                            <td class="info-val">{{ ucfirst($payment_type ?? 'N/A') }}</td>
+                            <td class="info-val">{{ $displayVal(!empty($payment_type) ? ucfirst($payment_type) : '') }}</td>
                         </tr>
                         <tr>
                             <td class="info-label">Payment Status</td>
                             <td class="info-sep">:</td>
-                            <td class="info-val">{{ ucfirst($payment_status ?? 'Pending') }}</td>
+                            <td class="info-val">{{ $displayVal(!empty($payment_status) ? ucfirst($payment_status) : '') }}</td>
                         </tr>
                     </table>
                 </td>
@@ -359,14 +391,14 @@
                             $gstAmt = is_array($productGst) ? array_sum(array_map(fn($t) => floatval($t['tax_amount'] ?? 0), $productGst)) : 0;
                         @endphp
                         <tr>
-                            <td>{{ $service['name'] ?? '--' }}</td>
+                            <td>{{ $displayVal($service['name'] ?? '') }}</td>
                             <td class="text-center">{{ $service['quantity'] ?? 0 }}</td>
                             <td class="text-right">{{ number_format($service['price'] ?? 0, 2) }}</td>
                             <td class="text-right">{{ number_format($service['total'] ?? 0, 2) }}</td>
                             @if($has_gst)
-                                <td class="text-center">{{ $gstOpt }}</td>
-                                <td class="text-center">{{ $gstOpt === 'With GST' ? number_format($gstRates, 2) : '--' }}</td>
-                                <td class="text-right">{{ $gstOpt === 'With GST' ? number_format($gstAmt, 2) : '--' }}</td>
+                                <td class="text-center">{{ $displayVal($gstOpt) }}</td>
+                                <td class="text-center">{{ $gstOpt === 'With GST' ? number_format($gstRates, 2) : 'N/A' }}</td>
+                                <td class="text-right">{{ $gstOpt === 'With GST' ? number_format($gstAmt, 2) : 'N/A' }}</td>
                             @endif
                         </tr>
                     @endforeach
@@ -455,6 +487,28 @@
                 </tr>
             </tfoot>
         </table>
+
+        @if(($declaration_status ?? 'off') === 'on')
+            <!-- Declaration and Authorized Signatory -->
+            <table class="declaration-signatory">
+                <tr>
+                    <td class="declaration-cell">
+                        @if(!empty($declaration))
+                            <div style="font-size: 10.5px; font-weight: bold; color: #0c4b33; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">
+                                Declaration:
+                            </div>
+                            <div style="font-size: 10px; color: #444; line-height: 1.35;">
+                                {!! nl2br(e($declaration)) !!}
+                            </div>
+                        @endif
+                    </td>
+                    <td class="signatory-cell">
+                        <div style="font-size: 10px; color: #0c4b33; margin-bottom: 18px;">For, Fablead Developer</div>
+                        <div style="font-size: 10px; color: #0c4b33;">Authorized Signatory</div>
+                    </td>
+                </tr>
+            </table>
+        @endif
 
         <!-- Footer Note -->
         <div class="footer-note">

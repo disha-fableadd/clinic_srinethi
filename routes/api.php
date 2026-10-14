@@ -120,6 +120,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //razorpay
     Route::post('/save-razorpay-settings', [SettingController::class, 'saveRazorpaySettings']);
     Route::get('/get-razorpay-settings', [SettingController::class, 'getRazorpaySettings']);
+    Route::post('/save-declaration-setting', [SettingController::class, 'saveDeclarationSetting']);
     Route::post('/save-project-type', [SettingController::class, 'saveProjectType']);
     Route::post('/razorpay/generate-payment-link', [SettingController::class, 'generateLink']);
     Route::post('/treatment_booking/generate-payment-link-treatment', [SettingController::class, 'generateLinkTreatmentBooking']);
