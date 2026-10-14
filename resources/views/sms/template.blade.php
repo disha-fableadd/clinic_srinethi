@@ -351,13 +351,14 @@
                                     <i class="fas fa-credit-card"></i> Razorpay Credentials
                                 </a>
                             </li>
+                              --}}
                             <li class="nav-item">
                                 <a class="nav-link" id="declaration-tab" data-toggle="tab" href="#declaration-settings"
                                     role="tab" aria-controls="declaration-settings" aria-selected="false">
                                     <i class="fas fa-file-alt"></i> Declaration
                                 </a>
                             </li>
-                            --}}
+                          
 
                         </ul>
 
