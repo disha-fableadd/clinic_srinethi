@@ -137,14 +137,7 @@
                         <input type="number" class="form-control" name="price" placeholder="Enter Price" min="0" step="0.01" required>
                     </div>
                     <div class="form-group mb-3">
-                        <div class="d-flex align-items-center justify-content-between mb-1">
-                            <label class="font-weight-bold mb-0"><i class="fas fa-user-md icon-style"></i> Doctor</label>
-                            @if (app('hasPermission')(3, 'create'))
-                                <button type="button" class="btn quick-modal-add-sm-btn" id="btnOpenQuickDoctorFromTreatment">
-                                    <i class="fas fa-plus"></i> Add
-                                </button>
-                            @endif
-                        </div>
+                        <label class="font-weight-bold mb-1"><i class="fas fa-user-md icon-style"></i> Doctor</label>
                         <select class="form-control" name="doctor_id" id="quickTreatmentDoctorSelect">
                             <option value="">Select Doctor (Optional)</option>
                         </select>
@@ -379,27 +372,7 @@
             } catch(e) {}
         }
 
-        // Track if Quick Add Doctor was launched from inside Treatment Modal
-        let doctorOpenedFromTreatment = false;
 
-        $('#btnOpenQuickDoctorFromTreatment').off('click').on('click', function(e) {
-            e.preventDefault();
-            doctorOpenedFromTreatment = true;
-            closeModal('#quickAddTreatmentModal');
-            setTimeout(function() {
-                showModal('#quickAddDoctorModal');
-            }, 300);
-        });
-
-        // If user closes or cancels doctor modal without saving, return to treatment modal if opened from it
-        $('#quickAddDoctorModal').off('hidden.bs.modal').on('hidden.bs.modal', function() {
-            if (doctorOpenedFromTreatment) {
-                doctorOpenedFromTreatment = false;
-                setTimeout(function() {
-                    showModal('#quickAddTreatmentModal');
-                }, 150);
-            }
-        });
 
         // Enforce digits-only on all phone fields across quick-add modals
         $(document).on('input', '#quickAddPatientModal input[name="phone"], #quickAddDoctorModal input[name="phone"]', function() {
