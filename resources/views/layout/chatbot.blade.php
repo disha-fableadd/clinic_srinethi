@@ -352,8 +352,7 @@ $(document).ready(function() {
                 <button class="chatbot-menu-btn" onclick="handleMenu('appointment', 'Appointment')">Appointment</button>
                 <button class="chatbot-menu-btn" onclick="handleMenu('followup', 'Followups')">Followups</button>
                 <button class="chatbot-menu-btn" onclick="handleMenu('treatment', 'Treatment')">Treatment</button>
-                <button class="chatbot-menu-btn" onclick="handleMenu('payment', 'Payment')">Payment</button>
-                <button class="chatbot-menu-btn full-width" onclick="handleMenu('patient', 'Patient')">Patient</button>
+                <button class="chatbot-menu-btn" onclick="handleMenu('patient', 'Patient')">Patient</button>
             </div>
         `);
     }

@@ -44,32 +44,71 @@ $(document).ready(function () {
         return [String(value)];
     }
 
-    function loadPatients() {
+    function loadPatients(selectedId) {
         return authorizedGet("/api/patientss", { branch_id: branchId }).then(function (res) {
-            const dropdown = $("#patientDropdown").empty().append('<option value="">Select Patient</option>');
+            const dropdown = $("#patientDropdown");
+            const currentVal = selectedId || dropdown.val();
+            dropdown.empty().append('<option value="">Select Patient</option>');
             (res.patients || []).forEach(function (patient) {
                 dropdown.append(`<option value="${patient.id}">${patient.fullname}</option>`);
             });
+            if (currentVal) {
+                dropdown.val(String(currentVal)).trigger("change");
+            }
         });
     }
 
-    function loadTreatments() {
+    function loadTreatments(selectedId) {
         return authorizedGet("/api/treatments", { branch_id: branchId }).then(function (res) {
-            const dropdown = $("#treatmentDropdown").empty().append('<option value="">Select Treatment</option>');
+            const dropdown = $("#treatmentDropdown");
+            const currentVal = selectedId || dropdown.val();
+            dropdown.empty().append('<option value="">Select Treatment</option>');
             const treatments = Array.isArray(res) ? res : (res.treatments || []);
 
             treatments.forEach(function (treatment) {
                 dropdown.append(`<option value="${treatment.id}">${treatment.name}</option>`);
             });
+            if (currentVal) {
+                dropdown.val(String(currentVal)).trigger("change");
+            }
         });
     }
 
-    function loadMachines() {
+    function loadMachines(selectedId) {
         return authorizedGet("/api/machines", { branch_id: branchId }).then(function (res) {
-            const dropdown = $("#machineDropdown").empty();
+            const dropdown = $("#machineDropdown");
+            let currentVals = dropdown.val() || [];
+            if (!Array.isArray(currentVals)) {
+                currentVals = [currentVals];
+            }
+            currentVals = currentVals.map(String);
+
+            if (selectedId && !currentVals.includes(String(selectedId))) {
+                currentVals.push(String(selectedId));
+            }
+
+            dropdown.empty();
             (res || []).forEach(function (machine) {
                 dropdown.append(`<option value="${machine.id}">${machine.name}</option>`);
             });
+
+            if (currentVals.length > 0) {
+                dropdown.val(currentVals).trigger("change");
+            }
+        });
+    }
+
+    if (typeof window.initQuickAddModals === 'function') {
+        window.initQuickAddModals({
+            onPatientAdded: function(newId) {
+                loadPatients(newId);
+            },
+            onTreatmentAdded: function(newId) {
+                loadTreatments(newId);
+            },
+            onMachineAdded: function(newId) {
+                loadMachines(newId);
+            }
         });
     }
 

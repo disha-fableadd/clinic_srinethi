@@ -122,46 +122,66 @@ $(document).ready(function () {
     ---------------------------------------------------- */
     let branchId = localStorage.getItem('selectedBranchId');
 
-    $.ajax({
-        url: "/api/treatments",
-        type: "GET",
-        data: { branch_id: branchId },
-        xhrFields: { withCredentials: true },
-        success: function (data) {
-            let dropdown = $('select[name="treatment_id"]');
+    function loadTreatments(selectedId) {
+        return $.ajax({
+            url: "/api/treatments",
+            type: "GET",
+            data: { branch_id: branchId },
+            xhrFields: { withCredentials: true },
+            success: function (data) {
+                let dropdown = $('select[name="treatment_id"]');
+                let currentVal = selectedId || dropdown.val();
 
-            dropdown.empty().append('<option value="">Select Treatment</option>');
+                dropdown.empty().append('<option value="">Select Treatment</option>');
 
-            $.each(data.treatments || [], function (key, t) {
-                dropdown.append(`
-                    <option value="${t.id}" 
-                        data-doctor-id="${t.doctor_id}" 
-                        data-price="${t.price}">
-                        ${t.name.charAt(0).toUpperCase() + t.name.slice(1)}
-                    </option>
-                `);
-            });
+                let treatments = Array.isArray(data) ? data : (data.treatments || []);
+                $.each(treatments, function (key, t) {
+                    dropdown.append(`
+                        <option value="${t.id}" 
+                            data-doctor-id="${t.doctor_id}" 
+                            data-price="${t.price}">
+                            ${t.name.charAt(0).toUpperCase() + t.name.slice(1)}
+                        </option>
+                    `);
+                });
 
-            dropdown.select2({
-                placeholder: "Select Treatment",
-                allowClear: true,
-                width: '100%'
-            });
-        }
-    });
+                dropdown.select2({
+                    placeholder: "Select Treatment",
+                    allowClear: true,
+                    width: '100%'
+                });
+
+                if (currentVal) {
+                    dropdown.val(String(currentVal)).trigger('change');
+                }
+            }
+        });
+    }
+
+    loadTreatments();
 
 
     /* ----------------------------------------------------
        8️⃣  LOAD MACHINES + ADD NEW MACHINE
     ---------------------------------------------------- */
-    function loadMachines() {
-        $.ajax({
+    function loadMachines(selectedId) {
+        return $.ajax({
             url: "/api/machines",
             type: "GET",
             data: { branch_id: branchId },
             xhrFields: { withCredentials: true },
             success: function (data) {
                 let dropdown = $('#machineDropdown');
+                let currentVals = dropdown.val() || [];
+                if (!Array.isArray(currentVals)) {
+                    currentVals = [currentVals];
+                }
+                currentVals = currentVals.map(String);
+
+                if (selectedId && !currentVals.includes(String(selectedId))) {
+                    currentVals.push(String(selectedId));
+                }
+
                 dropdown.empty().append('<option value="">Select Machines</option>');
 
                 $.each(data, function (index, m) {
@@ -177,59 +197,66 @@ $(document).ready(function () {
                     allowClear: true,
                     width: '100%'
                 });
+
+                if (currentVals.length > 0) {
+                    dropdown.val(currentVals).trigger('change');
+                }
             }
         });
     }
 
     loadMachines();
 
-    $('#machineForm').on('submit', function (e) {
-        e.preventDefault();
-
-        $.ajax({
-            url: "/machines",
-            method: "POST",
-            data: {
-                name: $('#machineName').val(),
-                description: $('#machinedescription').val(),
-                price: $('#price').val(),
-                branch_id: branchId,
-                _token: $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function (res) {
-                $('#machineSuccess').text(res.message).fadeIn();
-                setTimeout(() => {
-                    $('#addMachineModal').modal('hide');
-                    $('#machineForm')[0].reset();
-                    loadMachines();
-                }, 1200);
-            }
-        });
-    });
-
 
     /* ----------------------------------------------------
        9️⃣  LOAD PATIENTS
     ---------------------------------------------------- */
-    $.ajax({
-        url: "/api/patientss",
-        type: "GET",
-        data: { branch_id: branchId },
-        success: function (res) {
-            let dropdown = $('#patientDropdown');
-            dropdown.empty().append('<option value="">Select Patient</option>');
+    function loadPatients(selectedId) {
+        return $.ajax({
+            url: "/api/patientss",
+            type: "GET",
+            data: { branch_id: branchId },
+            success: function (res) {
+                let dropdown = $('#patientDropdown');
+                let currentVal = selectedId || dropdown.val();
 
-            $.each(res.patients || [], function (i, p) {
-                dropdown.append(`<option value="${p.id}">${p.fullname}</option>`);
-            });
+                dropdown.empty().append('<option value="">Select Patient</option>');
 
-            dropdown.select2({
-                placeholder: "Select Patient",
-                allowClear: true,
-                width: '100%'
-            });
-        }
-    });
+                $.each(res.patients || [], function (i, p) {
+                    dropdown.append(`<option value="${p.id}">${p.fullname}</option>`);
+                });
+
+                dropdown.select2({
+                    placeholder: "Select Patient",
+                    allowClear: true,
+                    width: '100%'
+                });
+
+                if (currentVal) {
+                    dropdown.val(String(currentVal)).trigger('change');
+                }
+            }
+        });
+    }
+
+    loadPatients();
+
+    /* ----------------------------------------------------
+       Quick Add Modals Integration
+    ---------------------------------------------------- */
+    if (typeof window.initQuickAddModals === 'function') {
+        window.initQuickAddModals({
+            onPatientAdded: function(newId) {
+                loadPatients(newId);
+            },
+            onTreatmentAdded: function(newId) {
+                loadTreatments(newId);
+            },
+            onMachineAdded: function(newId) {
+                loadMachines(newId);
+            }
+        });
+    }
 
 
     /* ----------------------------------------------------

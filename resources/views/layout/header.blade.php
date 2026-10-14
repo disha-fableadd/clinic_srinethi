@@ -175,20 +175,37 @@
 
 
 
-    .regular-logo {
-        display: block;
-        width: auto;
-        max-width: 150px;
-        max-height: 48px;
-        object-fit: contain;
+    .header .header-left {
+        display: flex !important;
+        align-items: center !important;
+        height: 65px !important;
+        padding: 0 15px !important;
     }
 
+    .header .logo,
+    .header .logo1 {
+        display: flex !important;
+        align-items: center !important;
+        height: 100% !important;
+        max-width: 100% !important;
+    }
 
+    .regular-logo {
+        display: block !important;
+        width: auto !important;
+        max-width: 175px !important;
+        max-height: 48px !important;
+        height: auto !important;
+        object-fit: contain !important;
+    }
 
     .mini-logo {
-
-        display: none;
-
+        display: none !important;
+        width: auto !important;
+        max-width: 42px !important;
+        max-height: 42px !important;
+        height: auto !important;
+        object-fit: contain !important;
     }
 
 
@@ -485,9 +502,9 @@
         left: auto !important;
         top: auto !important;
         order: 3 !important;
-        flex: 0 1 220px !important;
-        max-width: 220px !important;
-        min-width: 140px !important;
+        flex: 0 1 320px !important;
+        max-width: 360px !important;
+        min-width: 240px !important;
         margin: 0 15px 0 10px !important;
         display: flex !important;
         align-items: center !important;
@@ -495,23 +512,81 @@
 
     .header .sidebar-search-container {
         width: 100% !important;
-        max-width: 220px !important;
+        max-width: 360px !important;
     }
 
     .header #sidebar-search {
         width: 100% !important;
-        height: 38px !important;
-        border-radius: 20px !important;
+        height: 42px !important;
+        border-radius: 25px !important;
         background-color: #f5f7f9 !important;
         border: 1px solid #e2e8f0 !important;
-        padding: 6px 15px !important;
-        font-size: 13px !important;
+        padding: 8px 18px !important;
+        font-size: 14px !important;
     }
 
-    @media (max-width: 1400px) {
+    .header-datetime-badge {
+        background: transparent !important;
+        background-color: transparent !important;
+        color: #000000 !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 10px !important;
+        font-size: 14px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+        letter-spacing: 0.2px;
+    }
+    .header-datetime-badge i {
+        color: #000000 !important;
+        font-size: 14px;
+    }
+    .header-datetime-divider {
+        color: #718096 !important;
+        font-weight: 400;
+        margin: 0 8px;
+    }
+    @media (max-width: 991px) {
+        .header-datetime-badge {
+            font-size: 12px !important;
+            padding: 0 6px !important;
+        }
+        .header-datetime-badge i {
+            font-size: 12px !important;
+        }
+    }
+    @media (max-width: 767px) {
+        .header-datetime-item {
+            display: flex !important;
+        }
+        .header-datetime-badge {
+            font-size: 11px !important;
+            padding: 0 4px !important;
+        }
+        .header-datetime-badge i {
+            display: none !important;
+        }
+        .header-datetime-divider {
+            margin: 0 4px;
+        }
         .header .wrap,
         .mini-sidebar .header .wrap {
             display: none !important;
+        }
+    }
+    @media (max-width: 480px) {
+        /* On very narrow phones, show compact date & time to prevent any header overflow */
+        .header-datetime-badge #headerLiveDate {
+            display: inline-block;
+            max-width: 110px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .header-datetime-badge {
+            font-size: 10px !important;
         }
     }
 
@@ -1121,16 +1196,14 @@
                 $clinicName = Setting::where('key', 'clinic_name')->value('value') ?? 'Clinic';
             @endphp
 
-            <img src="{{ asset(env('IMAGE_PATH') . $clinicLogo) }}" class="regular-logo" alt="{{ $clinicName }}"
-                style="height:auto;width:100%">
+            <img src="{{ asset(env('IMAGE_PATH') . $clinicLogo) }}" class="regular-logo" alt="{{ $clinicName }}">
             {{-- <span class="clinic_name" style="font-size:15px !important">{{ $clinicName }}</span> --}}
 
         </a>
 
         <a href="{{ route('dashboard') }}" class="logo1">
 
-            <img src="{{ asset(env('IMAGE_PATH') . $clinicLogo) }}" alt="Mini Logo" class="mini-logo"
-                style="height:auto;width:70%;">
+            <img src="{{ asset(env('IMAGE_PATH') . $clinicLogo) }}" alt="Mini Logo" class="mini-logo">
 
 
         </a>
@@ -1159,18 +1232,19 @@
 
 
     <ul class="nav user-menu float-right d-flex align-items-center h-100">
-        @auth
-        <li class="nav-item me-2 d-flex align-items-center header-plan-item">
-            <a href="{{ route('plans.myplan') }}" class="header-current-plan"
-                title="{{ $headerPlanName }} - {{ $headerPlanExpiry ? 'Expires: ' . $headerPlanExpiry : 'View your plan' }}">
-                <span class="header-current-plan-icon"><i class="fas fa-crown"></i></span>
-                <span class="header-current-plan-copy">
-                    <strong class="header-plan-title">{{ $headerPlanName }}</strong>
-                    <small class="header-plan-expiry">{{ $headerPlanExpiry ? 'Expires: ' . $headerPlanExpiry : 'View plan' }}</small>
-                </span>
-            </a>
+        {{-- Header DateTime Widget --}}
+        <li class="nav-item header-datetime-item d-flex align-items-center">
+            <div class="header-datetime-badge d-flex align-items-center">
+                <i class="far fa-calendar-alt mr-2"></i>
+                <span id="headerLiveDate" class="font-weight-600 mr-2"></span>
+                <span class="header-datetime-divider mr-2">|</span>
+                <i class="far fa-clock mr-1"></i>
+                <span id="headerLiveTime" class="font-weight-600"></span>
+            </div>
         </li>
-        @endauth
+
+        {{-- Hidden right-side buttons per request --}}
+        {{--
         @auth
             @if (auth()->user()->role->name === 'Admin')
                 <li class="nav-item dropdown has-arrow">
@@ -1198,37 +1272,11 @@
                 </li>
             @endif
         @endauth
-        <li class="nav-item dropdown has-arrow">
-            <a href="#" class="btn custom-btn dropdown-toggle d-flex align-items-center" data-toggle="dropdown" data-display="static">
+        <li class="nav-item">
+            <span class="btn custom-btn d-flex align-items-center" style="cursor: default;">
                 <i class="fas fa-layer-group"></i>
                 <span id="selectedProjectTypeLabel">{{ $currentProjectType->name ?? 'Hospital HMS' }}</span>
-            </a>
-
-            <div class="dropdown-menu project-type-menu shadow border-0 rounded-lg p-2">
-
-                @foreach ($projectTypes as $projectType)
-                    <a href="javascript:void(0);"
-                        class="dropdown-item rounded p-2 mb-2 {{ $currentProjectTypeId === $projectType->id ? 'active' : '' }}"
-                        data-project-type-id="{{ $projectType->id }}"
-                        data-project-type-name="{{ $projectType->name }}">
-                        <div class="d-flex align-items-center">
-                            <div class="mr-3">
-                                <i class="fas {{ $projectType->icon ?? 'fa-hospital' }} fa-lg text-primary"></i>
-                            </div>
-
-                            <div>
-                                <h6 class="mb-0 font-weight-bold" style="font-size: 14px;">
-                                    {{ $projectType->name }}
-                                </h6>
-                                <small class="text-muted d-block" style="font-size: 11px;">
-                                    {{ $projectType->code === 'hospital' ? 'Complete Hospital Management' : ($projectType->code === 'dental' ? 'Dental Clinic Management' : 'Physiotherapy Management') }}
-                                </small>
-                            </div>
-                        </div>
-                    </a>
-                @endforeach
-
-            </div>
+            </span>
         </li>
 
         @if (Setting::getValue('razorpay_status') === 'on')
@@ -1238,27 +1286,10 @@
                 </button>
             </li>
         @endif
+        --}}
 
-        @if (app('hasPermission')(30, 'create'))
-            <li class="nav-item header-register-btn appointments-item">
-                <a href="{{ route('daily_data.create') }}" class="btn custom-btn appointments">
-                    <i class="fa-solid fa-plus me-1 mr-1"></i> Daily Register
-                </a>
-            </li>
-        @endif
 
-        {{-- <li class="nav-item dropdown has-arrow">
-
-            @if (app('hasPermission')(6, 'create') && optional(auth()->user()?->role)->name !== 'Patient')
-                <a href="{{ route('appointment.create') }}" style="padding-right:10px">
-
-                    <button class="btn custom-btn appointments"><i class="fa-solid fa-plus"></i> <span class="hdr-btn-text">Create</span>
-                        Appointment</button>
-
-                </a>
-            @endif
-
-        </li> --}}
+        
 
 
         <li class="nav-item dropdown has-arrow">
@@ -1382,14 +1413,7 @@
                 @endif
 
 
-                {{-- Branch link --}}
-                @if ($role == 'Admin')
-                    <a class="dropdown-item py-2 d-flex align-items-center {{ request()->routeIs('branch.index') ? 'active' : '' }}"
-                        href="{{ route('branch.index') }}" style="font-size: 16px;">
-                        <i class="fa-solid fa-building mr-2"></i>
-                        My Branches
-                    </a>
-                @endif
+              
 
                 @if (auth()->user()->role->name === 'Admin')
                     <a class="dropdown-item py-2 d-flex align-items-center {{ request()->routeIs('sms.template') ? 'active' : '' }}"
@@ -1966,166 +1990,108 @@
 
 
     $(document).ready(function() {
-        // List of sidebar modules with parameters
-        var modules = [{
+        // List of sidebar modules with parameters (matching active sidebar navigation)
+        var modules = [
+            {
                 name: "Dashboard",
-                url: "/dashboard"
+                url: "{{ route('dashboard') }}"
             },
             {
-                name: "User",
-                url: "/user"
+                name: "Staffs",
+                url: "{{ route('user.index') }}"
             },
             {
-                name: "Medicines",
-                url: "/medicine"
+                name: "All Staffs",
+                url: "{{ route('user.index') }}"
+            },
+            {
+                name: "Add Staff",
+                url: "{{ route('user.create') }}"
             },
             {
                 name: "Patients",
-                url: "/patients"
+                url: "{{ route('patients.index') }}"
+            },
+            {
+                name: "All Patients",
+                url: "{{ route('patients.index') }}"
+            },
+            {
+                name: "Add Patient",
+                url: "{{ route('patients.create') }}"
+            },
+            {
+                name: "All Diagnosis",
+                url: "{{ route('diagnosis.index') }}"
+            },
+            {
+                name: "All Reference Doctor",
+                url: "{{ route('referaldoctor.index') }}"
+            },
+            {
+                name: "All Symptoms",
+                url: "{{ route('symptoms.index') }}"
             },
             {
                 name: "Appointments",
-                url: "/appointment"
+                url: "{{ route('appointment.index') }}"
+            },
+            {
+                name: "All Appointments",
+                url: "{{ route('appointment.index') }}"
+            },
+            {
+                name: "Add Appointment",
+                url: "{{ route('appointment.create') }}"
+            },
+            {
+                name: "Followup",
+                url: "{{ route('followup.index') }}"
+            },
+            {
+                name: "All Followup",
+                url: "{{ route('followup.index') }}"
+            },
+            {
+                name: "Add Followup",
+                url: "{{ route('followup.create') }}"
             },
             {
                 name: "Treatments",
-                url: "/treatment"
+                url: "{{ route('treatment.index') }}"
             },
             {
-                name: "Services",
-                url: "/service"
+                name: "All Treatments",
+                url: "{{ route('treatment.index') }}"
             },
             {
-                name: "Calender",
-                url: "/calender"
-            },
-            {
-                name: "Discharge",
-                url: "/discharge"
-            },
-            {
-                name: "Inventory",
-                url: "/inventory"
-            },
-            {
-                name: "Supplier",
-                url: "/supplier"
-            },
-            {
-                name: "Medical Report",
-                url: "/report"
-            },
-            {
-                name: "Chart",
-                url: "/chart"
-            },
-            {
-                name: "Role",
-                url: "/role"
-            },
-            {
-                name: "Pathology",
-                url: "/pathology"
-            },
-            {
-                name: "Pathology Reports",
-                url: "/pathology_reports"
-            },
-            {
-                name: "Ipd Admit",
-                url: "/ipd_admit"
-            },
-            {
-                name: "Opd Visits",
-                url: "/opdvisit"
-            },
-            {
-                name: "OT ",
-                url: "/ot-procedures-all"
-            },
-            {
-                name: "Radiology Tests",
-                url: "/radiology-tests"
-            },
-            {
-                name: "Radiology Reports",
-                url: "/radiology-reports"
-            },
-
-
-            {
-                name: "Therapy",
-                url: "/therapies"
-            },
-            {
-                name: "Assign Therapies",
-                url: "/assigned-therapies"
-            },
-            {
-                name: "Assessment",
-                url: "/assessment"
-            },
-            {
-                name: "HomeAdvice",
-                url: "/homeadvice"
-            },
-            {
-                name: "Daily Data",
-                url: "/daily-data"
-            },
-            {
-                name: "Treatment Booking",
-                url: "/treatment_booking"
-            },
-            {
-                name: "SOAP",
-                url: "/soap"
-            },
-            {
-                name: "Expense",
-                url: "/expenses"
-            },
-            {
-                name: "Code",
-                url: "/codemaster"
-            },
-            {
-                name: "Diagnosis",
-                url: "/diagnosis/create"
-            },
-            {
-                name: "Machine",
-                url: "/machine"
-            },
-            {
-                name: "Symptoms",
-                url: "/symptoms"
-            },
-            {
-                name: "Patient Medicine",
-                url: "/patientmedicine"
+                name: "Add Treatment",
+                url: "{{ route('treatment.create') }}"
             },
             {
                 name: "Invoice",
-                url: "/invoice"
+                url: "{{ route('invoice.index') }}"
             },
             {
-                name: "Referral  Doctor",
-                url: "/referaldoctor"
+                name: "Report",
+                url: "{{ route('chart') }}"
             },
             {
-                name: "Diagnostic service",
-                url: "/service"
+                name: "Tax Rate",
+                url: "{{ route('taxrate.index') }}"
             },
-
-
-
-
-
-
-
-
-
+            {
+                name: "Settings",
+                url: "{{ route('sms.template') }}"
+            },
+            {
+                name: "Knowledge Base",
+                url: "{{ route('knowledge.index') }}"
+            },
+            {
+                name: "My Profile",
+                url: "{{ route('profile') }}"
+            }
         ];
 
         // Function to display the search results
@@ -2172,5 +2138,28 @@
                 $(".search-results").addClass('d-none');
             }
         });
+
+        // Live Header Date, Day and Time Widget
+        function updateLiveHeaderClock() {
+            var now = new Date();
+            var optionsDate = { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' };
+            var dateStr = now.toLocaleDateString('en-US', optionsDate); // e.g. "Wed, 14 Oct, 2026"
+
+            var hours = now.getHours();
+            var minutes = now.getMinutes();
+            var seconds = now.getSeconds();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // 0 should be 12
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            var timeStr = hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+
+            $('#headerLiveDate').text(dateStr);
+            $('#headerLiveTime').text(timeStr);
+        }
+
+        updateLiveHeaderClock();
+        setInterval(updateLiveHeaderClock, 1000);
     });
 </script>

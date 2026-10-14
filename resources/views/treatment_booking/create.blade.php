@@ -1,4 +1,4 @@
-﻿@extends('layout.app')
+@extends('layout.app')
 
 <style>
     /* Make the multiple select field expand nicely */
@@ -130,14 +130,17 @@
                         <div class="row">
                             <div class="col-md-6 col-12 ">
                                 <div class="form-group">
-                                    <label><i class="fas fa-user icon-style"></i> Patient <span
-                                            class="text-danger">*</span></label>
-                                    @if (app('hasPermission')(5, 'create'))
-                                        <a href="{{ route('patients.create') }}" target="_blank"
-                                            class="btn btn-primary btn-sm float-right">
-                                            <i class="fas fa-plus"></i> <span class="hdr-btn-text">Add</span>
-                                        </a>
-                                    @endif
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <label class="mr-2"><i class="fas fa-user icon-style"></i> Patient <span
+                                                class="text-danger">*</span></label>
+                                        @if (app('hasPermission')(5, 'create'))
+                                            <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                                data-bs-toggle="modal" data-bs-target="#quickAddPatientModal"
+                                                data-toggle="modal" data-target="#quickAddPatientModal">
+                                                <i class="fas fa-plus"></i> Add
+                                            </button>
+                                        @endif
+                                    </div>
                                     <select class="form-control select2" name="patient_id" id="patientDropdown" required>
                                         <option value="">Select Patient</option>
                                     </select>
@@ -145,18 +148,19 @@
                             </div>
 
                             {{-- Treatment --}}
-
-
                             <div class="col-md-6 col-12 ">
                                 <div class="form-group">
-                                    <label><i class="fas fa-medkit icon-style"></i> Treatment <span
-                                            class="text-danger">*</span></label>
-                                    @if (app('hasPermission')(7, 'create'))
-                                        <a href="{{ route('treatment.create') }}" target="_blank"
-                                            class="btn btn-primary btn-sm float-right">
-                                            <i class="fas fa-plus"></i> <span class="hdr-btn-text">Add</span>
-                                        </a>
-                                    @endif
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <label class="mr-2"><i class="fas fa-medkit icon-style"></i> Treatment <span
+                                                class="text-danger">*</span></label>
+                                        @if (app('hasPermission')(7, 'create'))
+                                            <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                                data-bs-toggle="modal" data-bs-target="#quickAddTreatmentModal"
+                                                data-toggle="modal" data-target="#quickAddTreatmentModal">
+                                                <i class="fas fa-plus"></i> Add
+                                            </button>
+                                        @endif
+                                    </div>
                                     <select class="form-control select2" name="treatment_id" id="treatmentDropdown"
                                         required>
                                         <option value="">Select Treatment</option>
@@ -168,28 +172,27 @@
                         <div class="row">
                         <div class="col-12">
                             <div class="form-group">
-                                <label><i class="fa fa-cogs icon-style"></i> Machine </label>
-                                @if (app('hasPermission')(7, 'create'))
-                                    <button type="button" class="btn btn-primary btn-sm float-right" data-bs-toggle="modal"
-                                        data-bs-target="#addMachineModal">
-                                        <i class="fas fa-plus"></i> <span class="hdr-btn-text">Add</span>
-                                    </button>
-                                @endif
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <label class="mr-2"><i class="fa fa-cogs icon-style"></i> Machine </label>
+                                    @if (app('hasPermission')(7, 'create'))
+                                        <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                            data-bs-toggle="modal" data-bs-target="#quickAddMachineModal"
+                                            data-toggle="modal" data-target="#quickAddMachineModal">
+                                            <i class="fas fa-plus"></i> Add
+                                        </button>
+                                    @endif
+                                </div>
                                 <select id="machineDropdown" name="machine_id[]" class="form-control select2" multiple
                                     style="min-height: 100px; max-height: 200px; overflow-y: auto;">
                                     <option value="">Select Machines</option>
                                 </select>
 
-
                             </div>
                         </div>
                         </div>
 
-            
-
                 {{-- Date --}}
                 <div class="row">
-
 
                     <div class="col-6">
 
@@ -222,12 +225,10 @@
                 {{-- Remain amount --}}
                 <div class="row">
 
-
                     <div class="col-6">
 
-
                         <div class="form-group">
-                            <label>₹ Payment <span
+                            <label><i class="fas fa-money-bill-wave icon-style"></i> Payment <span
                                     class="text-danger">*</span></label>
                             <input type="number" step="0.01" name="amount" id="amount" class="form-control"
                                 placeholder="Enter total payment" required>
@@ -235,7 +236,6 @@
                     </div>
                     {{-- Payment Mode --}}
                     <div class="col-6">
-
 
                         <div class="form-group">
                             <label><i class="fas fa-money-bill icon-style"></i> Payment Mode <span
@@ -254,7 +254,6 @@
 
                     <div class="col-4">
 
-
                         <div class="form-group d-none" id="paid_amount_type">
                             <label><i class="fas fa-hand-holding-usd icon-style"></i> Paid Type <span
                                     class="text-danger">*</span></label>
@@ -267,7 +266,7 @@
                     </div>
                     {{-- Cash Amount --}}
                     <div class="form-group d-none col-4" id="cash_amount_div">
-                        <label>₹ Cash Amount <span
+                        <label><i class="fas fa-money-bill-wave icon-style"></i> Cash Amount <span
                                 class="text-danger">*</span></label>
                         <input type="number" step="0.01" name="cash" id="cash_amount" class="form-control"
                             placeholder="Enter cash amount">
@@ -286,7 +285,6 @@
                     {{-- Amount Paid --}}
                     <div class="col-4">
 
-
                         <div class="form-group d-none" id="paid_amount_div">
                             <label><i class="fas fa-coins icon-style"></i> Amount Paid <span
                                     class="text-danger">*</span></label>
@@ -296,7 +294,6 @@
                     </div>
                     {{-- Pending Amount --}}
                     <div class="col-4">
-
 
                         <div class="form-group d-none" id="remain_amount_div">
                             <label><i class="fas fa-hourglass-half icon-style"></i> Pending Amount</label>
@@ -317,44 +314,7 @@
     </div>
     </div>
 
-
-
-    <!-- Add Machine Modal -->
-    <div class="modal fade" id="addMachineModal" tabindex="-1" aria-labelledby="addMachineModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <form id="machineForm">
-                @csrf
-                <div class="modal-content">
-                    <div class="modal-header" style="background-color: #CFECE0; color:black">
-                        <h5 class="modal-title" id="addMachineModalLabel">Add Machine</h5>
-                        <button type="button" class="btn-close custom-close" data-bs-dismiss="modal" aria-label="Close">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="machineName" class="form-label">Title</label>
-                            <input type="text" class="form-control" id="machineName" name="name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="machinedescription" class="form-label">Description</label>
-                            <textarea class="form-control" id="machinedescription" name="description" rows="3"
-                                style="border-radius:10px"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="machineName" class="form-label">Price</label>
-                            <input type="number" class="form-control" id="price" name="price" required>
-                        </div>
-                        <div id="machineSuccess" class="alert alert-success" style="display:none;"></div>
-                        <div id="machineError" class="alert alert-danger" style="display:none;"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Save Machine</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
+    @include('components.quick-add-modals')
 
     {{-- Scripts --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -363,9 +323,5 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset(env('IMAGE_PATH').'admin/assets/js/treatment-booking-create.js') }}"></script>
-
-
-           
 @endsection

@@ -168,43 +168,66 @@ $(document).ready(function() {
 
     let branchId = localStorage.getItem('selectedBranchId');
 
-    $.ajax({
-        url: "/api/doctors",
-        type: "GET",
-        data: {
-            branch_id: branchId
-        }, // branch filter
-        dataType: "json",
-        headers: {
-            "Authorization": "Bearer " + token
-        },
-        success: function(response) {
-            let doctorDropdown = $('.doctorSelect');
-            doctorDropdown.empty().append('<option value="">Select Doctor</option>');
+    function loadDoctors(selectedId = null) {
+        $.ajax({
+            url: "/api/doctors",
+            type: "GET",
+            data: {
+                branch_id: branchId
+            },
+            dataType: "json",
+            headers: (typeof token !== 'undefined' && token) ? {
+                "Authorization": "Bearer " + token
+            } : {},
+            success: function(response) {
+                let doctorDropdown = $('.doctorSelect');
+                if (doctorDropdown.length === 0) return;
 
-            let doctorsList = response.doctors || [];
-            $.each(doctorsList, function(index, doctor) {
-                const capitalizedName = doctor.fullname.charAt(0).toUpperCase() + doctor
-                    .fullname.slice(1);
-                doctorDropdown.append(
-                    `<option value="${doctor.id}">${capitalizedName}</option>`);
-            });
+                let currentVal = selectedId || doctorDropdown.val();
+                doctorDropdown.empty().append('<option value="">Select Doctor</option>');
 
-            if (!doctorDropdown.hasClass('select2-hidden-accessible')) {
-                doctorDropdown.select2({
-                    placeholder: "Select Doctor",
-                    allowClear: true,
-                    width: '100%'
+                let doctorsList = response.doctors || [];
+                $.each(doctorsList, function(index, doctor) {
+                    const capitalizedName = doctor.fullname.charAt(0).toUpperCase() + doctor.fullname.slice(1);
+                    doctorDropdown.append(
+                        `<option value="${doctor.id}">${capitalizedName}</option>`
+                    );
                 });
-            }
 
-            doctorDropdown.on('select2:open', function() {
-                $('.select2-search__field').attr('placeholder', 'Search Doctor');
-            });
-        },
-        error: function(xhr) {
-            console.error("API Error:", xhr.status, xhr.responseText);
-        }
-    });
+                if (!doctorDropdown.hasClass('select2-hidden-accessible')) {
+                    doctorDropdown.select2({
+                        placeholder: "Select Doctor",
+                        allowClear: true,
+                        width: '100%'
+                    });
+                }
+
+                doctorDropdown.on('select2:open', function() {
+                    $('.select2-search__field').attr('placeholder', 'Search Doctor');
+                });
+
+                if (currentVal) {
+                    doctorDropdown.val(currentVal).trigger('change');
+                }
+            },
+            error: function(xhr) {
+                console.error("API Error:", xhr.status, xhr.responseText);
+            }
+        });
+    }
+
+    // Initial load
+    loadDoctors();
+
+    // Hook shared Quick Add Modals
+    if (typeof window.initQuickAddModals === 'function') {
+        window.initQuickAddModals({
+            getToken: function() { return (typeof token !== 'undefined' && token) ? token : ''; },
+            getBranchId: function() { return branchId; },
+            onDoctorAdded: function(newId) {
+                loadDoctors(newId);
+            }
+        });
+    }
 
 });

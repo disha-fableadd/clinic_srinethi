@@ -193,15 +193,7 @@
                                 </li>
                             @endif
 
-                            @if (app('hasPermission')(35, 'create'))
-                                <li
-                                    class="menu-link1 {{ request()->routeIs('diagnosis.create') ? 'active' : '' }} mt-1">
-                                    <a href="{{ route('diagnosis.create') }}">
-                                        <i class="fa fa-notes-medical icons"></i>
-                                        <span style="padding-left: 5px;">Add Diagnosis</span>
-                                    </a>
-                                </li>
-                            @endif
+                            
 
                             @if (app('hasPermission')(36, 'view'))
                                 <li class="menu-link {{ request()->routeIs('referaldoctor.index') ? 'active' : '' }}">
@@ -209,6 +201,15 @@
                                     <a href="{{ route('referaldoctor.index') }}">
                                         <i class="fa-solid fa-user-doctor"></i>
                                         <span> All Reference Doctor</span></a>
+                                </li>
+                            @endif
+
+                             @if (app('hasPermission')(5, 'view'))
+                                <li class="menu-link {{ request()->routeIs('symptoms.index') ? 'active' : '' }}">
+
+                                    <a href="{{ route('symptoms.index') }}"> <i class="fa fa-medkit "></i> <span> All
+                                            Symptoms</span></a>
+
                                 </li>
                             @endif
                         </ul>
@@ -371,35 +372,13 @@
 
 
 
-                            {{-- Treatment Booking --}}
-                            @if (app('hasPermission')(31, 'view'))
-                                <li
-                                    class="menu-link1 {{ request()->routeIs('treatment_booking.index') ? 'active' : '' }} mt-1">
-                                    <a href="{{ route('treatment_booking.index') }}">
-                                        <i class="fa fa-file-medical icons"></i>
-                                        <span style="padding-left: 5px;">All Booking</span>
-                                    </a>
-                                </li>
-                            @endif
+                            
 
-                            @if (app('hasPermission')(31, 'create'))
-                                <li
-                                    class="menu-link1 {{ request()->routeIs('treatment_booking.create') ? 'active' : '' }} mt-1">
-                                    <a href="{{ route('treatment_booking.create') }}">
-                                        <i class="fa fa-plus-circle icons"></i>
-                                        <span style="padding-left: 5px;">Add Booking</span>
-                                    </a>
-                                </li>
-                            @endif
+                           
 
-                            @if (app('hasPermission')(7, 'view'))
-                                <li class="menu-link {{ request()->routeIs('symptoms.index') ? 'active' : '' }}">
-
-                                    <a href="{{ route('symptoms.index') }}"> <i class="fa fa-medkit "></i> <span> All
-                                            Symptoms</span></a>
-
-                                </li>
-                            @endif
+                             
+                   
+              
                         </ul>
                     </li>
                 @endif
@@ -410,19 +389,7 @@
 
              
 
-                @if (app('hasPermission')(9, 'view'))
-
-                    @if (app('hasPermission')(9, 'create'))
-                        <li class="menu-link {{ request()->routeIs('calender.index') ? 'active' : '' }}">
-
-                            <a href="{{ route('calender.index') }}"><i
-                                    class="fa fa-calendar"></i><span>Calendar</span></a>
-
-                        </li>
-                    @endif
-
-                @endif
-
+               
               
 
 
