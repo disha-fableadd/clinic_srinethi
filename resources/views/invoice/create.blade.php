@@ -1,4 +1,4 @@
-﻿@extends('layout.app')
+@extends('layout.app')
 <style>
     @media screen and (max-width: 767px) {
         .page-title {
@@ -54,12 +54,12 @@
                                 <label>Type <span class="text-danger">*</span></label>
                                 <select name="invoice_type" class="form-control select2" id="invoiceType" required>
                                     <option value="">Select Type</option>
-                                    <option value="service">Service</option>
+                                    {{-- <option value="service">Service</option> --}}
                                     <option value="treatment" selected>Treatment</option>
-                                    <option value="medicine">Medicine</option>
+                                    {{-- <option value="medicine">Medicine</option> --}}
                                     <option value="appointment">Appointment</option>
-                                    <option value="therapy">Therapy</option>
-                                    <option value="discharge">Discharge</option>
+                                    {{-- <option value="therapy">Therapy</option> --}}
+                                    {{-- <option value="discharge">Discharge</option> --}}
                                 </select>
                             </div>
                             

@@ -1,24 +1,171 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
     <title>Invoice</title>
     <style>
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            /* Reduced margin to fit within the PDF page */
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            color: #222;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+            line-height: 1.4;
         }
 
+        .invoice-wrapper {
+            width: auto;
+            min-height: 0;
+            margin: 12mm;
+            padding: 12px 14px;
+            background-color: #fff;
+            border: 1px solid black;
+            box-sizing: border-box;
+        }
 
-        .header {
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .clinic-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1a4d36;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .clinic-sub {
+            font-size: 11px;
+            color: #444;
+            line-height: 1.35;
+        }
+
+        .header-divider {
+            border: none;
+            border-top: 1.5px solid #222;
+            margin: 12px 0 14px 0;
+        }
+
+        .details-container {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #d0e4dc;
+            background-color: #f7faf8;
+        }
+
+        .details-box {
+            padding: 9px 12px;
+            vertical-align: top;
+        }
+
+        .details-box-left {
+            width: 52%;
+            border-right: 1px solid #d0e4dc;
+        }
+
+        .details-box-right {
+            width: 48%;
+        }
+
+        .section-heading {
+            font-size: 12px;
+            font-weight: bold;
+            color: #0c4b33;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            padding-bottom: 3px;
+            border-bottom: 1px dashed #c4ddd1;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .info-table td {
+            padding: 2px 0;
+            vertical-align: top;
+        }
+
+        .info-label {
+            width: 95px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .info-sep {
+            width: 12px;
+            color: #555;
+            text-align: center;
+        }
+
+        .info-val {
+            color: #222;
+        }
+
+        .section-banner {
             background-color: #cfece0;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+            color: #0c4b33;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            padding: 6px 10px;
+            letter-spacing: 1px;
+            margin-top: 14px;
+            text-transform: uppercase;
+            border: 1px solid #b8dfd0;
         }
 
+        .invoice-box {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+            font-size: 12px;
+        }
 
+        .invoice-box th {
+            background-color: #cfece0;
+            color: #0c4b33;
+            font-weight: bold;
+            text-align: left;
+            padding: 7px 10px;
+            border: 1px solid #b8dfd0;
+            font-size: 11.5px;
+            letter-spacing: 0.3px;
+        }
+
+        .invoice-box td {
+            padding: 7px 10px;
+            border: 1px solid #d5e5dd;
+            color: #333;
+            font-size: 12px;
+        }
+
+        .invoice-box tbody tr:nth-child(even) {
+            background-color: #fbfdfc;
+        }
+
+        .invoice-box tfoot td {
+            padding: 6px 10px;
+            border: 1px solid #d5e5dd;
+            font-size: 12px;
+        }
 
         .text-right {
             text-align: right;
@@ -28,397 +175,294 @@
             text-align: center;
         }
 
-        .clinic-logo {
-            max-width: 40px;
-            /* Reduced size */
-            max-height: 40px;
-            /* Reduced size */
+        .text-left {
+            text-align: left;
         }
 
-        .clinic-details {
-            font-size: 12px;
-            /* Reduced font size */
-            padding-left: 8px;
-            /* Reduced padding */
+        .grand-total-label {
+            background-color: #cfece0 !important;
+            color: #0c4b33 !important;
+            font-size: 12.5px;
+            font-weight: bold;
+            border: 1px solid #b8dfd0 !important;
         }
 
-        h2,
-        h3 {
-            margin-bottom: 3px;
-            /* Reduced margin */
+        .grand-total-amount {
+            background-color: #f7faf8 !important;
+            color: #0c4b33 !important;
+            font-size: 13.5px;
+            font-weight: bold;
+            border: 1px solid #b8dfd0 !important;
         }
 
-        p {
-            margin: 1px 0;
-            /* Reduced margin */
-        }
-
-        .imgname {
-            display: flex;
-            align-items: center;
-        }
-
-        .footer {
-            position: fixed;
-            bottom: 0;
-            width: 90%;
-            background-color: #cfece0;
-            padding: 10px 20px;
-            /* Reduced padding */
-            font-size: 12px;
-            /* Reduced font size */
-            color: #000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 5px;
-        }
-
-        .footer-left {
-            line-height: 1.2;
-            text-align: center;
-            /* Reduced line height */
-
-        }
-
-        .footer-left strong {
-            font-size: 14px;
-            /* Reduced font size */
-            color: #0c4b33;
-        }
-
-        .footer-logo img {
-            max-height: 40px;
-            /* Reduced size */
-            max-width: 60px;
-            /* Reduced size */
-        }
-
-        .left {
-            padding-left: 40px;
-            /* Reduced padding */
-        }
-
-        .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
+        .footer-note {
             margin-top: 20px;
-        }
-
-        .footer-right {
+            padding-top: 10px;
+            border-top: 1px dashed #c0d8cd;
             text-align: center;
-        }
-
-
-        .imgname {
-            display: flex;
-            align-items: center;
-        }
-
-        .clinic-logo {
-            width: 50px;
-            height: 50px;
-        }
-
-        .details {
-            display: flex;
-            flex-direction: column;
-            padding-left: 10px;
-        }
-
-        .details strong {
-            font-size: 18px;
-        }
-
-        .invoice-box {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 14px;
-            font-family: Arial, sans-serif;
-        }
-
-        .invoice-box thead tr {
-            background-color: #f2f2f2;
-            text-align: left;
-        }
-
-        .invoice-box th,
-        .invoice-box td {
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-        }
-
-        .invoice-box th {
-            background-color: #f4f4f4;
-            font-weight: bold;
-        }
-
-        /* .invoice-box tbody tr:nth-of-type(even) {
-            background-color: #f9f9f9;
-        } */
-
-        .invoice-box tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        .invoice-box tfoot tr {
-            background-color: #f4f4f4;
-            font-weight: bold;
-        }
-
-        .invoice-box tfoot td {
-            text-align: right;
-        }
-
-        .invoice-box .text-right {
-            text-align: left;
-        }
-
-        .invoice-box .text-center {
-            text-align: center;
-        }
-
-        .invoice-box strong {
-            color: #333;
+            font-size: 11px;
+            color: #666;
+            line-height: 1.5;
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Header -->
-    <div class="header">
-        <table style="width: 100%;">
-            <tr>
-                <td style="width: 70%; vertical-align: middle;">
-                    <div style="display: flex; align-items: center;">
-                        <img src="{{ $clinic_logo ?? 'clinic logo' }}" alt="Clinic Logo"
-                            style="width:180px; height:100px; margin-right:12px;">
-                        <div style="line-height: 1.4; font-size: 13px;">
-                            <strong style="font-size: 18px;">{{ $clinic_name ?? 'Clinic Name' }}</strong><br>
-                            {{ $clinic_phone ?? '--' }} || {{ $clinic_email ?? 'clinic@example.com' }}
-                        </div>
-                    </div>
-                </td>
-                <td style="width: 30%; text-align: right; vertical-align: middle;">
-                    <div style="line-height: 1.6; font-size: 13px;">
-                        <strong style="font-size: 20px; text-transform: uppercase;">INVOICE</strong><br>
-                        <strong>Invoice #:</strong> {{ $invoice_no }}<br>
-                        <strong>Date:</strong> {{ $date }}
-                    </div>
-                </td>
+    <div class="invoice-wrapper">
 
+        <!-- Header -->
+        <table class="header-table">
+            <tr>
+                <td style="width: 45%; vertical-align: middle;">
+                    @if(!empty($clinic_logo))
+                        <img src="{{ $clinic_logo }}" alt="Clinic Logo" style="max-height: 60px; max-width: 190px;">
+                    @else
+                        <div class="clinic-title">{{ $clinic_name ?? 'Clinic Name' }}</div>
+                    @endif
+                </td>
+                <td style="width: 55%; text-align: right; vertical-align: middle;">
+                    <div class="clinic-title">{{ $clinic_name ?? 'Clinic Name' }}</div>
+                    @php
+                        $addressParts = array_filter([$clinic_address ?? '', $clinic_city ?? '', $clinic_state ?? '']);
+                    @endphp
+                    @if(!empty($addressParts))
+                        <div class="clinic-sub">
+                            {{ implode(', ', $addressParts) }}
+                        </div>
+                    @endif
+                    <div class="clinic-sub">
+                        PHONE: {{ $clinic_phone ?? '--' }} | EMAIL: {{ $clinic_email ?? 'clinic@example.com' }}
+                    </div>
+                </td>
             </tr>
         </table>
-    </div>
 
-    <!-- Patient and Clinic Info -->
+        <!-- Divider Line -->
+        <hr class="header-divider">
 
-    <!-- <div
-        style="display: flex; justify-content: space-between; gap: 20px; border-bottom: 1px solid #537a6a; padding: 20px 0;">
-        
-        <div style="width: 48%; padding-right: 20px;">
-            <h4 style="margin-bottom: 10px; font-weight: 600;">Patient Details</h4>
-            <p><span style="font-weight: 600;">Name:</span> {{ $patient->fullname ?? '--' }}</p>
-            <p><span style="font-weight: 600;">Phone:</span> {{ $patient->phone ?? '--' }}</p>
-            <p><span style="font-weight: 600;">Address:</span> {{ $patient->address ?? '--' }}</p>
-        </div>
-
-
-    </div> -->
-    <div
-        style="display: flex; justify-content: space-between; gap: 20px; border-bottom: 1px solid #537a6a; padding: 20px 0;">
-        <div style="width: 48%; padding-right: 20px;">
-            <h4 style="margin-bottom: 10px; font-weight: 600;">Patient Details</h4>
-            <p><span style="font-weight: 600;">Name:</span>
-                {{ $patient->fullname ? ucfirst($patient->fullname) : '--' }}</p>
-            <p><span style="font-weight: 600;">Phone:</span> {{ $patient->phone ? ucfirst($patient->phone) : '--' }}</p>
-            <p><span style="font-weight: 600;">Address:</span>
-                {{ $patient->address ? ucfirst($patient->address) : '--' }}</p>
-        </div>
-    </div>
-
-
-    <!-- Item Section Title -->
-    <h3>
-        @if($invoice_type === 'medicine')
-            Medicines:
-        @elseif($invoice_type === 'treatment')
-            Treatments:
-        @elseif($invoice_type === 'service')
-            Services:
-        @elseif($invoice_type === 'appointment')
-            Appointment:
-        @elseif($invoice_type === 'therapy')
-            Therapy:
-        @elseif($invoice_type === 'discharge')
-            Discharge:
-        @else
-            Items:
-        @endif
-    </h3>
-
-    @php
-        $has_gst = !empty($services) && collect($services)->contains(fn($s) => ($s['gst_option'] ?? '') === 'With GST' && !empty($s['product_gst']));
-    @endphp
-
-    <!-- Invoice Table -->
-    <table class="invoice-box">
-        <thead>
+        <!-- Patient and Invoice Details -->
+        <table class="details-container">
             <tr>
-                <th>
-                    @if($invoice_type === 'medicine')
-                        Medicine Name
-                    @elseif($invoice_type === 'treatment')
-                        Treatment Name
-                    @elseif($invoice_type === 'service')
-                        Service Name
-                    @elseif($invoice_type === 'appointment')
-                        Appointment
-                    @elseif($invoice_type === 'therapy')
-                        Therapy
-                    @elseif($invoice_type === 'discharge')
-                        Discharge
-                    @else
-                        Item Name
-                    @endif
-                </th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Total</th>
-                @if($has_gst)
-                    <th>GST Option</th>
-                    <th>GST (%)</th>
-                    <th>GST Amount</th>
-                @endif
+                <!-- Patient Details -->
+                <td class="details-box details-box-left">
+                    <div class="section-heading">PATIENT DETAILS:</div>
+                    <table class="info-table">
+                        <tr>
+                            <td class="info-label">Name</td>
+                            <td class="info-sep">:</td>
+                            <td class="info-val"><strong>{{ $patient->fullname ? ucfirst($patient->fullname) : '--' }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="info-label">Phone</td>
+                            <td class="info-sep">:</td>
+                            <td class="info-val">{{ $patient->phone ? ucfirst($patient->phone) : '--' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="info-label">Address</td>
+                            <td class="info-sep">:</td>
+                            <td class="info-val">{{ $patient->address ? ucfirst($patient->address) : '--' }}</td>
+                        </tr>
+                    </table>
+                </td>
+
+                <!-- Invoice Details -->
+                <td class="details-box details-box-right">
+                    <div class="section-heading">INVOICE DETAILS:</div>
+                    <table class="info-table">
+                        <tr>
+                            <td class="info-label">Invoice #</td>
+                            <td class="info-sep">:</td>
+                            <td class="info-val"><strong>{{ $invoice_no }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="info-label">Date</td>
+                            <td class="info-sep">:</td>
+                            <td class="info-val">{{ $date }}</td>
+                        </tr>
+                        <tr>
+                            <td class="info-label">Payment Mode</td>
+                            <td class="info-sep">:</td>
+                            <td class="info-val">{{ ucfirst($payment_type ?? 'N/A') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="info-label">Payment Status</td>
+                            <td class="info-sep">:</td>
+                            <td class="info-val">{{ ucfirst($payment_status ?? 'Pending') }}</td>
+                        </tr>
+                    </table>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @if(!empty($services) && count($services) > 0)
-                @foreach($services as $service)
-                    @php
-                        $gstOpt = $service['gst_option'] ?? 'Without GST';
-                        $productGst = $service['product_gst'] ?? null;
-                        $gstRates = is_array($productGst) ? array_sum(array_map(fn($t) => floatval($t['tax_rate'] ?? 0), $productGst)) : 0;
-                        $gstAmt = is_array($productGst) ? array_sum(array_map(fn($t) => floatval($t['tax_amount'] ?? 0), $productGst)) : 0;
-                    @endphp
-                    <tr>
-                        <td>{{ $service['name'] ?? '--' }}</td>
-                        <td>{{ $service['quantity'] ?? 0 }}</td>
-                        <td>{{ number_format($service['price'] ?? 0, 2) }}</td>
-                        <td>{{ number_format($service['total'] ?? 0, 2) }}</td>
-                        @if($has_gst)
-                            <td>{{ $gstOpt }}</td>
-                            <td>{{ $gstOpt === 'With GST' ? number_format($gstRates, 2) : '--' }}</td>
-                            <td>{{ $gstOpt === 'With GST' ? number_format($gstAmt, 2) : '--' }}</td>
-                        @endif
-                    </tr>
-                @endforeach
+        </table>
+
+        <!-- Item Section Title Banner -->
+        <div class="section-banner">
+            @if($invoice_type === 'medicine')
+                Medicines
+            @elseif($invoice_type === 'treatment')
+                Treatments
+            @elseif($invoice_type === 'service')
+                Services
+            @elseif($invoice_type === 'appointment')
+                Appointment
+            @elseif($invoice_type === 'therapy')
+                Therapy
+            @elseif($invoice_type === 'discharge')
+                Discharge
             @else
-                <tr>
-                    <td colspan="{{ $has_gst ? 7 : 4 }}" class="text-center">No items found.</td>
-                </tr>
+                Items
             @endif
-        </tbody>
+        </div>
 
-        <tfoot>
-            @php
-                $discount = $discount ?? 0;
-                $tax = $tax ?? 0;
-                $discount_type = $discount_type ?? 'fixed_amount';
-                $tax_type = $tax_type ?? '%';
+        @php
+            $has_gst = !empty($services) && collect($services)->contains(fn($s) => ($s['gst_option'] ?? '') === 'With GST' && !empty($s['product_gst']));
+        @endphp
 
-                $subtotal = collect($services)->sum(function ($item) {
-                    return floatval($item['total'] ?? 0);
-                });
+        <!-- Invoice Table -->
+        <table class="invoice-box">
+            <thead>
+                <tr>
+                    <th>
+                        @if($invoice_type === 'medicine')
+                            Medicine Name
+                        @elseif($invoice_type === 'treatment')
+                            Treatment Name
+                        @elseif($invoice_type === 'service')
+                            Service Name
+                        @elseif($invoice_type === 'appointment')
+                            Appointment
+                        @elseif($invoice_type === 'therapy')
+                            Therapy
+                        @elseif($invoice_type === 'discharge')
+                            Discharge
+                        @else
+                            Item Name
+                        @endif
+                    </th>
+                    <th class="text-center" style="width: 12%;">Quantity</th>
+                    <th class="text-right" style="width: 18%;">Unit Price</th>
+                    <th class="text-right" style="width: 18%;">Total</th>
+                    @if($has_gst)
+                        <th class="text-center" style="width: 14%;">GST Option</th>
+                        <th class="text-center" style="width: 12%;">GST (%)</th>
+                        <th class="text-right" style="width: 14%;">GST Amount</th>
+                    @endif
+                </tr>
+            </thead>
+            <tbody>
+                @if(!empty($services) && count($services) > 0)
+                    @foreach($services as $service)
+                        @php
+                            $gstOpt = $service['gst_option'] ?? 'Without GST';
+                            $productGst = $service['product_gst'] ?? null;
+                            $gstRates = is_array($productGst) ? array_sum(array_map(fn($t) => floatval($t['tax_rate'] ?? 0), $productGst)) : 0;
+                            $gstAmt = is_array($productGst) ? array_sum(array_map(fn($t) => floatval($t['tax_amount'] ?? 0), $productGst)) : 0;
+                        @endphp
+                        <tr>
+                            <td>{{ $service['name'] ?? '--' }}</td>
+                            <td class="text-center">{{ $service['quantity'] ?? 0 }}</td>
+                            <td class="text-right">{{ number_format($service['price'] ?? 0, 2) }}</td>
+                            <td class="text-right">{{ number_format($service['total'] ?? 0, 2) }}</td>
+                            @if($has_gst)
+                                <td class="text-center">{{ $gstOpt }}</td>
+                                <td class="text-center">{{ $gstOpt === 'With GST' ? number_format($gstRates, 2) : '--' }}</td>
+                                <td class="text-right">{{ $gstOpt === 'With GST' ? number_format($gstAmt, 2) : '--' }}</td>
+                            @endif
+                        </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td colspan="{{ $has_gst ? 7 : 4 }}" class="text-center">No items found.</td>
+                    </tr>
+                @endif
+            </tbody>
 
-                $total_gst_amount = 0;
-                if (!empty($services)) {
-                    foreach ($services as $item) {
-                        if (($item['gst_option'] ?? '') === 'With GST' && !empty($item['product_gst']) && is_array($item['product_gst'])) {
-                            $total_gst_amount += array_sum(array_map(fn($t) => floatval($t['tax_amount'] ?? 0), $item['product_gst']));
+            <tfoot>
+                @php
+                    $discount = $discount ?? 0;
+                    $tax = $tax ?? 0;
+                    $discount_type = $discount_type ?? 'fixed_amount';
+                    $tax_type = $tax_type ?? '%';
+
+                    $subtotal = collect($services)->sum(function ($item) {
+                        return floatval($item['total'] ?? 0);
+                    });
+
+                    $total_gst_amount = 0;
+                    if (!empty($services)) {
+                        foreach ($services as $item) {
+                            if (($item['gst_option'] ?? '') === 'With GST' && !empty($item['product_gst']) && is_array($item['product_gst'])) {
+                                $total_gst_amount += array_sum(array_map(fn($t) => floatval($t['tax_amount'] ?? 0), $item['product_gst']));
+                            }
                         }
                     }
-                }
 
-                $base_for_tax = $subtotal + $total_gst_amount;
-                $tax_amount = ($base_for_tax * $tax) / 100;
-                $discount_amount = $discount_type === 'percentage'
-                    ? (($base_for_tax + $tax_amount) * $discount) / 100
-                    : $discount;
+                    $base_for_tax = $subtotal + $total_gst_amount;
+                    $tax_amount = ($base_for_tax * $tax) / 100;
+                    $discount_amount = $discount_type === 'percentage'
+                        ? (($base_for_tax + $tax_amount) * $discount) / 100
+                        : $discount;
 
-                $total_with_tax = $base_for_tax + $tax_amount - $discount_amount;
-                $colspan_foot = $has_gst ? 6 : 3;
-            @endphp
+                    $total_with_tax = $base_for_tax + $tax_amount - $discount_amount;
+                    $colspan_foot = $has_gst ? 6 : 3;
+                @endphp
 
-            <tr>
-                <td colspan="{{ $colspan_foot }}" class="text-right"><strong>Subtotal:</strong></td>
-                <td>Rs. {{ number_format($subtotal, 2) }}</td>
-            </tr>
-            @if($total_gst_amount > 0)
-            <tr>
-                <td colspan="{{ $colspan_foot }}" class="text-right"><strong>GST Amount:</strong></td>
-                <td>Rs. {{ number_format($total_gst_amount, 2) }}</td>
-            </tr>
-            @endif
-            @if(($tax_amount ?? 0) > 0)
                 <tr>
-                    <td colspan="{{ $colspan_foot }}" class="text-right">
-                        <strong>
-                            {{ ucfirst($tax_name ?? 'Tax') }}
-                            ({{ $tax ?? 0 }}{{ $tax_type == 'percentage' ? '%' : ' Rs' }}):
-                        </strong>
-                    </td>
-                    <td>Rs. {{ number_format($tax_amount, 2) }}</td>
+                    <td colspan="{{ $colspan_foot }}" class="text-right"><strong>Subtotal:</strong></td>
+                    <td class="text-right">Rs. {{ number_format($subtotal, 2) }}</td>
                 </tr>
-            @endif
 
-            @if(($discount_amount ?? 0) > 0)
+                @if($total_gst_amount > 0)
                 <tr>
-                    <td colspan="{{ $colspan_foot }}" class="text-right">
-                        <strong>
-                            Discount
-                            @if(($discount_type ?? '') === 'percentage')
-                                ({{ $discount ?? 0 }}%)
-                            @endif:
-                        </strong>
-                    </td>
-                    <td>Rs. {{ number_format($discount_amount, 2) }}</td>
+                    <td colspan="{{ $colspan_foot }}" class="text-right"><strong>GST Amount:</strong></td>
+                    <td class="text-right">Rs. {{ number_format($total_gst_amount, 2) }}</td>
                 </tr>
-            @endif
+                @endif
 
+                @if(($tax_amount ?? 0) > 0)
+                    <tr>
+                        <td colspan="{{ $colspan_foot }}" class="text-right">
+                            <strong>
+                                {{ ucfirst($tax_name ?? 'Tax') }}
+                                ({{ $tax ?? 0 }}{{ $tax_type == 'percentage' ? '%' : ' Rs' }}):
+                            </strong>
+                        </td>
+                        <td class="text-right">Rs. {{ number_format($tax_amount, 2) }}</td>
+                    </tr>
+                @endif
 
+                @if(($discount_amount ?? 0) > 0)
+                    <tr>
+                        <td colspan="{{ $colspan_foot }}" class="text-right">
+                            <strong>
+                                Discount
+                                @if(($discount_type ?? '') === 'percentage')
+                                    ({{ $discount ?? 0 }}%)
+                                @endif:
+                            </strong>
+                        </td>
+                        <td class="text-right">Rs. {{ number_format($discount_amount, 2) }}</td>
+                    </tr>
+                @endif
 
-            <tr>
-                <td colspan="{{ $colspan_foot }}" class="text-right"><strong>Grand Total (incl. tax):</strong></td>
-                <td><strong>Rs. {{ number_format($total_with_tax ?? 0, 2) }}</strong></td>
-            </tr>
+                <tr>
+                    <td colspan="{{ $colspan_foot }}" class="text-right grand-total-label">
+                        <strong>Grand Total (incl. tax):</strong>
+                    </td>
+                    <td class="text-right grand-total-amount">
+                        <strong>Rs. {{ number_format($total_with_tax ?? 0, 2) }}</strong>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
 
-            <tr>
-                <td colspan="{{ $colspan_foot }}" class="text-right"><strong>Payment Mode:</strong></td>
-                <td>{{ ucfirst($payment_type ?? 'N/A') }}</td>
-            </tr>
-
-            <tr>
-                <td colspan="{{ $colspan_foot }}" class="text-right"><strong>Payment Status:</strong></td>
-                <td>{{ ucfirst($payment_status ?? 'pending') }}</td>
-            </tr>
-
-        </tfoot>
-
-    </table>
-
-    <!-- Footer -->
-    <div class="container footer">
-
-
-        <div class="footer-right" width="50%">
-            For more information or any issues or concerns,<br>
-            email us at <strong>{{ $clinic_email ?? 'clinic@example.com' }} </strong>or contact
+        <!-- Footer Note -->
+        <div class="footer-note">
+            For more information or any issues or concerns, email us at
+            <strong>{{ $clinic_email ?? 'clinic@example.com' }}</strong> or contact
             <strong>{{ $clinic_phone ?? '9876543210' }}</strong>
         </div>
+
     </div>
 
 </body>
