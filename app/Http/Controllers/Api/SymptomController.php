@@ -46,16 +46,20 @@ class SymptomController extends Controller
 
     public function store(Request $request)
     {
+        if (!$request->filled('branch_id')) {
+            $request->merge(['branch_id' => 1]);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'details' => 'nullable|string',
-            // 'branch_id' => 'required|exists:branches,id',
+            'branch_id' => 'nullable|exists:branches,id',
         ]);
 
         $symptom = Symptom::create([
             'name' => $request->name,
             'details' => $request->details,
-            'branch_id' => $request->branch_id,
+            'branch_id' => $request->branch_id ?? 1,
         ]);
 
         return response()->json([

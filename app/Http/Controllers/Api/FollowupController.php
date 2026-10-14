@@ -499,6 +499,10 @@ class FollowupController extends Controller
 
         $loggedInUserId = auth()->id();
 
+        if (!$request->filled('branch_id')) {
+            $request->merge(['branch_id' => 1]);
+        }
+
         try {
             $validatedData = $request->validate([
                 'patient_id'     => 'required|exists:patients,id',
@@ -507,7 +511,7 @@ class FollowupController extends Controller
                 'date'           => 'required|date',
                 'followup_update' => 'nullable|string',
                 'followup_type'  => 'nullable|string',
-                'branch_id'      => 'required|exists:branches,id', // ✅ validate branch_id
+                'branch_id'      => 'nullable|exists:branches,id', // ✅ validate branch_id (defaults to 1)
             ]);
 
             $patient = Patients::find($request->patient_id);

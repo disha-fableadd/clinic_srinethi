@@ -20,6 +20,11 @@ class WhatsAppService
     }
     public function sendTemplateMessage($to, $templateName = "hello_world", $lang = "en_US")
     {
+        if (empty($this->apiUrl) || empty($this->phoneNumberId) || empty($this->token)) {
+            \Log::warning("⚠️ WhatsApp API credentials not configured in settings. Skipping template message.");
+            return null;
+        }
+
         $url = "{$this->apiUrl}/{$this->phoneNumberId}/messages";
 
         $payload = [
@@ -32,47 +37,24 @@ class WhatsAppService
             ]
         ];
 
-        $response = Http::withToken($this->token)
-            ->post($url, $payload);
+        try {
+            $response = Http::timeout(5)->withToken($this->token)
+                ->post($url, $payload);
 
-        return $response->json();
+            return $response->json();
+        } catch (\Throwable $e) {
+            \Log::error("❌ WhatsApp sendTemplateMessage error: " . $e->getMessage());
+            return null;
+        }
     }
-
-   
-
-    public function sendWelcomeTemplate($to, $fullname, $clinicName, $email, $signature)
-    {
-        $url = "{$this->apiUrl}/{$this->phoneNumberId}/messages";
-
-        $payload = [
-            "messaging_product" => "whatsapp",
-            "to" => $to,
-            "type" => "template",
-            "template" => [
-                "name" => "welcome_clinic", 
-                "language" => ["code" => "en_US"],
-                "components" => [
-                    [
-                        "type" => "body",
-                        "parameters" => [
-                            ["type" => "text", "text" => $fullname],    // {{1}} -> Patient name
-                            ["type" => "text", "text" => $clinicName],  // {{2}} -> Clinic name
-                            ["type" => "text", "text" => $email],       // {{3}} -> Email
-                            ["type" => "text", "text" => $signature],   // {{4}} -> Signature/Doctor
-                        ]
-                    ]
-                ]
-            ]
-        ];
-
-        $response = Http::withToken($this->token)->post($url, $payload);
-
-        return $response->json();
-    }
-
 
     public function sendTextMessage($to, $message)
     {
+        if (empty($this->apiUrl) || empty($this->phoneNumberId) || empty($this->token)) {
+            \Log::warning("⚠️ WhatsApp API credentials not configured in settings. Skipping text message.");
+            return null;
+        }
+
         $url = "{$this->apiUrl}/{$this->phoneNumberId}/messages";
 
         $payload = [
@@ -85,9 +67,14 @@ class WhatsAppService
             ]
         ];
 
-        $response = Http::withToken($this->token)
-            ->post($url, $payload);
+        try {
+            $response = Http::timeout(5)->withToken($this->token)
+                ->post($url, $payload);
 
-        return $response->json();
+            return $response->json();
+        } catch (\Throwable $e) {
+            \Log::error("❌ WhatsApp sendTextMessage error: " . $e->getMessage());
+            return null;
+        }
     }
 }

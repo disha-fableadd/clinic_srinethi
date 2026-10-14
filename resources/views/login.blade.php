@@ -112,24 +112,10 @@
             <form action="" method="POST" id="login-form">
                 @csrf
                 <div class="account-logo">
-
-                    <!-- <img src="{{ asset(Auth::user()->creator->clinic_logo ?? 'admin/assets/img/cliniclogo.png') }}"
-                            class="regular-logo" alt="{{ Auth::user()->creator->clinic_name ?? 'Clinic' }}"
-                            style="height:auto;width:50px;height:50px">
-                            <span style="font-size:20px;color:black">{{ Auth::user()->creator->clinic_name ?? 'Clinic' }}</span> -->
-
-                    @php
-                    use App\Models\Setting;
-
-                    $clinicLogo = Setting::where('key', 'clinic_logo')->value('value') ?? env('IMAGE_PATH') .
-                    'admin/assets/img/cliniclogo.png';
-                    $clinicName = Setting::where('key', 'clinic_name')->value('value') ?? 'Clinic';
-                    @endphp
-
-                    <img src="{{ asset(env('IMAGE_PATH') . $clinicLogo) }}" class="regular-logo" alt="{{ $clinicName }}"
-                        style="height:auto !important;width:200px;"> 
-
-
+                    <img src="{{ asset(env('IMAGE_PATH') . 'admin/assets/img/logo/1788163883_Fablead_HMS_4K.webp') }}" 
+                        class="regular-logo" 
+                        alt="Fablead HMS"
+                        style="height: auto !important; width: 200px; max-width: 100%; object-fit: contain;"> 
                 </div>
                 <div class="form-group">
                     <label>Email</label>
@@ -150,9 +136,7 @@
         <div class="text-danger">{{ $message }}</div>
     @enderror
 </div>
-                <div class="form-group text-center">
-                    <a href="{{ url('/forgot-password') }}" class="text-muted">Forgot Password?</a>
-                </div>
+                
 
 
 
@@ -308,7 +292,7 @@ $('#togglePassword').click(function () {
 <footer class="text-center my-3">
     <p>
         Copyright &copy; <span id="year"></span> -
-        <a href="https://fableadtechnolabs.com/" target="_blank" style="text-decoration: none; color: black;">
+        <a href="https://www.fableadtechnolabs.com/" target="_blank" style="text-decoration: none; color: black;">
             <b>Fablead Developers Technolab</b>
         </a>
     </p>

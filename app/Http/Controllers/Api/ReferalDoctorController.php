@@ -131,6 +131,10 @@ class ReferalDoctorController extends Controller
     // POST /api/referal_doctors
     public function store(Request $request)
     {
+        if (!$request->filled('branch_id')) {
+            $request->merge(['branch_id' => 1]);
+        }
+
         $request->validate([
             'doctor_name' => 'required|string|max:255',
             'specialist' => 'nullable|string|max:255',
@@ -144,7 +148,7 @@ class ReferalDoctorController extends Controller
             'specialist' => $request->specialist,
             'email' => $request->email,
             'phone_number' => $request->phone_number,
-            'branch_id' => $request->branch_id,
+            'branch_id' => $request->branch_id ?? 1,
         ]);
 
         return response()->json([
