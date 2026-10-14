@@ -1,4 +1,4 @@
-﻿@extends('layout.app')
+@extends('layout.app')
 <style>
     .container {
         width: 60%;
@@ -750,8 +750,8 @@
 
                     // **Show SweetAlert loader**
                     Swal.fire({
-                        title: 'Creating User...',
-                        text: 'Please wait while we create the user, send email, and SMS.',
+                        title: 'Please wait...',
+                        text: 'Creating staff member, please wait.',
                         allowOutsideClick: false,
                         didOpen: () => {
                             Swal.showLoading();
