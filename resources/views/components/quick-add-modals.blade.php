@@ -339,7 +339,8 @@
             return @json(session('access_token')) || localStorage.getItem('authToken');
         };
         const getBranchId = options.getBranchId || function() {
-            return localStorage.getItem('selectedBranchId');
+            let b = localStorage.getItem('selectedBranchId');
+            return (b && b !== 'null' && b !== 'undefined' && b !== '') ? b : '1';
         };
 
         const onPatientAdded = options.onPatientAdded || function(id) {};

@@ -156,6 +156,9 @@ class TreatmentController extends Controller
     {
         $loggedInUserId = auth()->id();
 
+        if (!$request->filled('branch_id')) {
+            $request->merge(['branch_id' => 1]);
+        }
 
         $validator = Validator::make($request->all(), [
             'doctor_id' => 'nullable|exists:user,id',
@@ -173,6 +176,7 @@ class TreatmentController extends Controller
 
         $treatmentData = $request->except(['product_gst']);
         $treatmentData['user_id'] = $loggedInUserId;
+        $treatmentData['branch_id'] = $request->branch_id ?? 1;
 
         // GST Calculation
         $gstDetails = [];

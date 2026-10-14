@@ -238,7 +238,7 @@ console.log('notificationId', notificationId, updateUrl, redirectUrl)
         if ($('.content').length) {
             $('.content').append(`
                 <div class="footer-copyright text-center" style="padding: 15px 10px; margin-top: 20px; font-size: 13.5px; color: #6c757d; clear: both;">
-                    Copyright &copy; 2026 - <strong style="color: #4a5568;">Fablead Developers Technolab</strong>
+                    Copyright &copy; 2026 - <a href="https://www.fableadtechnolabs.com/" target="_blank" style="text-decoration: none; color: #2e2e2e;"><strong style="font-weight: 700;">Fablead Developers Technolab</strong></a>
                 </div>
             `);
         }

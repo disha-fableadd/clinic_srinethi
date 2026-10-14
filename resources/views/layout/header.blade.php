@@ -526,13 +526,13 @@
     }
 
     .header-datetime-badge {
-        background: transparent !important;
-        background-color: transparent !important;
-        color: #000000 !important;
-        border: none !important;
-        box-shadow: none !important;
-        padding: 0 10px !important;
-        font-size: 14px;
+        background-color: #cfece0 !important;
+        color: #1e3a2b !important;
+        border: 1px solid #b7e3cf !important;
+        border-radius: 20px !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+        padding: 6px 14px !important;
+        font-size: 13.5px;
         font-weight: 600;
         display: inline-flex;
         align-items: center;
@@ -540,18 +540,18 @@
         letter-spacing: 0.2px;
     }
     .header-datetime-badge i {
-        color: #000000 !important;
-        font-size: 14px;
+        color: #165b39 !important;
+        font-size: 13.5px;
     }
     .header-datetime-divider {
-        color: #718096 !important;
-        font-weight: 400;
+        color: #7bb89e !important;
+        font-weight: 500;
         margin: 0 8px;
     }
     @media (max-width: 991px) {
         .header-datetime-badge {
             font-size: 12px !important;
-            padding: 0 6px !important;
+            padding: 4px 10px !important;
         }
         .header-datetime-badge i {
             font-size: 12px !important;
@@ -1672,30 +1672,32 @@
     });
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Get branch info from backend session
-        let branchId = "{{ session('branch_id') }}";
-        let branchName = "{{ session('branch_name') }}";
+        // Get branch info from backend session, defaulting to 1
+        let branchId = "{{ session('branch_id', 1) }}" || "1";
+        let branchName = "{{ session('branch_name', 'Main Branch') }}" || "Main Branch";
 
-        if (branchId && branchName) {
-            // Store in localStorage
-            localStorage.setItem('selectedBranchId', branchId);
-            localStorage.setItem('selectedBranchName', branchName);
-
-            // Update UI button
-            let selectedBranchBtn = document.getElementById('selectedBranch');
-            if (selectedBranchBtn) {
-                selectedBranchBtn.innerText = branchName;
-            }
-
-            // Update hidden input (for forms)
-            let hiddenInput = document.getElementById('branch_id');
-            if (hiddenInput) {
-                hiddenInput.value = branchId;
-            }
-
-            // Load data for the branch
-            // loadBranchData(branchId);
+        // Check localStorage - if missing, null, or undefined, default to '1'
+        let currentStoredBranch = localStorage.getItem('selectedBranchId');
+        if (!currentStoredBranch || currentStoredBranch === 'null' || currentStoredBranch === 'undefined' || currentStoredBranch === '') {
+            localStorage.setItem('selectedBranchId', branchId || '1');
+            localStorage.setItem('selectedBranchName', branchName || 'Main Branch');
+        } else {
+            branchId = currentStoredBranch;
         }
+
+        // Update UI button if present
+        let selectedBranchBtn = document.getElementById('selectedBranch');
+        if (selectedBranchBtn) {
+            selectedBranchBtn.innerText = localStorage.getItem('selectedBranchName') || branchName;
+        }
+
+        // Update hidden inputs across forms
+        let hiddenInputs = document.querySelectorAll('input[name="branch_id"], #branch_id');
+        hiddenInputs.forEach(function(input) {
+            if (!input.value || input.value === 'null' || input.value === 'undefined') {
+                input.value = branchId;
+            }
+        });
     });
 
     // Function to switch branch (if admin wants to select another branch)

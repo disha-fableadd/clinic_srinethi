@@ -1047,11 +1047,15 @@ class SettingController extends Controller
     public function generateInvoice(Request $request)
     {
         try {
+            if (!$request->filled('branch_id')) {
+                $request->merge(['branch_id' => 1]);
+            }
+
             // Step 1: Validate Input
             $validatorRules = [
                 'invoice_type' => 'required|in:treatment,service,medicine,followup,appointment,therapy,discharge',
                 'patient_id' => 'required|exists:patients,id',
-                'branch_id' => 'required|exists:branches,id', // ✅ ADD THIS
+                'branch_id' => 'nullable|exists:branches,id', // ✅ Defaulted to 1
                 'items' => 'required|array|min:1',
                 // service invoice uses ids like pathology_1 / radiology_1; others are integers
                 'items.*.type_service' => 'required',
@@ -1253,6 +1257,10 @@ class SettingController extends Controller
     public function generateAppointmentInvoice(Request $request)
     {
         try {
+            if (!$request->filled('branch_id')) {
+                $request->merge(['branch_id' => 1]);
+            }
+
             $validator = Validator::make($request->all(), [
                 'appointment_id' => 'required|exists:appointments,id',
                 // 'patient_name' => 'required|string',
@@ -1260,7 +1268,7 @@ class SettingController extends Controller
                 'date' => 'required|date',
                 'price' => 'required|numeric|min:0',
                 'instruction' => 'nullable|string',
-                'branch_id' => 'required|exists:branches,id', // ✅ ADD THIS
+                'branch_id' => 'nullable|exists:branches,id', // ✅ Defaulted to 1
             ]);
 
             if ($validator->fails()) {

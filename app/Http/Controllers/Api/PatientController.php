@@ -753,6 +753,10 @@ class PatientController extends Controller
     {
         $loggedInUserId = auth()->id();
 
+        if (!$request->filled('branch_id')) {
+            $request->merge(['branch_id' => 1]);
+        }
+
         $validator = Validator::make($request->all(), [
             'email' => 'nullable|email|unique:patients,email',
             'password' => 'nullable|string',
@@ -765,7 +769,7 @@ class PatientController extends Controller
             // 'diagnosis_id' => 'required|exists:diagnosis,id',
             'diagnosis_id' => 'nullable|array',
             'diagnosis_id.*' => 'nullable|integer|exists:diagnosis,id',
-            'branch_id' => 'required|exists:branches,id', // ✅ add branch validation
+            'branch_id' => 'nullable|exists:branches,id', // ✅ branch validation (defaults to 1)
 
             'speech_note' => 'nullable|array',
             'speech_note.*' => 'nullable|string',

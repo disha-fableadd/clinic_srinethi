@@ -834,6 +834,10 @@ class UserController extends Controller
             $currentProjectTypeId = (int) \App\Models\Setting::getValue('project_type_id', 1);
             $roleValidation = $currentProjectTypeId === 3 ? 'nullable|int|max:255' : 'required|int|max:255';
 
+            if (!$request->filled('branch_id')) {
+                $request->merge(['branch_id' => 1]);
+            }
+
             // Validate main user data including branch_id
             $userValidator = Validator::make($request->all(), [
                 'role_id' => $roleValidation,
@@ -841,7 +845,7 @@ class UserController extends Controller
                 'email' => 'required|email|unique:user,email',
                 'phone' => 'nullable|string|max:15',
                 'password' => 'required|string',
-                'branch_id' => 'required|exists:branches,id', // branch validation
+                'branch_id' => 'nullable|exists:branches,id', // branch validation (defaults to 1)
             ]);
 
             if ($userValidator->fails()) {
@@ -933,28 +937,38 @@ class UserController extends Controller
                 $adminName = DB::table('user')->where('role_id', 2)->value('fullname');
 
                 // WhatsApp welcome message
-                $whatsapp = new WhatsAppService();
-                $whatsapp->sendWelcomeTemplate(
-                    $phone,
-                    $user->fullname,
-                    $clinicName,
-                    $user->email,
-                    $adminName
-                );
+                try {
+                    $whatsapp = new WhatsAppService();
+                    if (!empty($user->phone)) {
+                        $whatsapp->sendWelcomeTemplate(
+                            $phone,
+                            $user->fullname,
+                            $clinicName,
+                            $user->email,
+                            $adminName
+                        );
+                    }
+                } catch (\Throwable $we) {
+                    Log::error("❌ WhatsApp notification failed: " . $we->getMessage());
+                }
 
                 // SMS welcome message
-                $smsMessage = "Welcome onboard, {$user->fullname}! 🎉\n"
-                    . "Your account at {$clinicName} is created.\n"
-                    . "Email: {$user->email}\n"
-                    . "Password: {$request->password}\n"
-                    . "Admin: {$adminName}";
+                try {
+                    $smsMessage = "Welcome onboard, {$user->fullname}! 🎉\n"
+                        . "Your account at {$clinicName} is created.\n"
+                        . "Email: {$user->email}\n"
+                        . "Password: {$request->password}\n"
+                        . "Admin: {$adminName}";
 
-                $smsService = new SmsService();
-                $smsResponse = $smsService->send_sms($user->phone, $smsMessage);
-                if ($smsResponse) {
-                    Log::info("✅ SMS sent successfully to {$user->phone}");
-                } else {
-                    Log::error("❌ Failed to send SMS to {$user->phone}");
+                    $smsService = new SmsService();
+                    $smsResponse = $smsService->send_sms($user->phone, $smsMessage);
+                    if ($smsResponse) {
+                        Log::info("✅ SMS sent successfully to {$user->phone}");
+                    } else {
+                        Log::error("❌ Failed to send SMS to {$user->phone}");
+                    }
+                } catch (\Throwable $se) {
+                    Log::error("❌ SMS notification failed: " . $se->getMessage());
                 }
             }
 

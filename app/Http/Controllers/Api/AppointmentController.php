@@ -654,6 +654,10 @@ class AppointmentController extends Controller
         $currentProjectTypeId = (int) \App\Models\Setting::getValue('project_type_id', 1);
         $statusValidation = $currentProjectTypeId === 3 ? 'nullable|string' : 'required|string';
 
+        if (!$request->filled('branch_id')) {
+            $request->merge(['branch_id' => 1]);
+        }
+
         $request->validate([
             'patient_id' => 'required|exists:patients,id',
             'doctor_id' => 'required|exists:user,id',
@@ -664,7 +668,7 @@ class AppointmentController extends Controller
             'appoint_type' => 'nullable|string',
             'clinic_location' => 'nullable|string',
             'followup_update' => 'nullable|string',
-            'branch_id' => 'required|exists:branches,id',
+            'branch_id' => 'nullable|exists:branches,id',
         ]);
 
         try {

@@ -63,16 +63,20 @@ class DiagnosisController extends Controller
 
     public function store(Request $request)
     {
+        if (!$request->filled('branch_id')) {
+            $request->merge(['branch_id' => 1]);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             // 'description' => 'nullable|string',
-            'branch_id' => 'required|integer|exists:branches,id', // ✅ add branch validation
+            'branch_id' => 'nullable|integer|exists:branches,id', // ✅ branch validation (defaults to 1)
         ]);
 
         $diagnosis = Diagnosis::create([
             'name' => $request->name,
             'description' => $request->description,
-            'branch_id' => $request->branch_id, // ✅ save branch
+            'branch_id' => $request->branch_id ?? 1, // ✅ save branch
         ]);
 
         return response()->json([
