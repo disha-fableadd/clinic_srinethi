@@ -423,13 +423,42 @@ class SettingController extends Controller
     {
         $razorpayKey = Setting::where('key', 'razorpay_key')->value('value');
         $razorpaySecret = Setting::where('key', 'razorpay_secret')->value('value');
+        $declaration = Setting::where('key', 'invoice_declaration')->value('value');
+        $declarationStatus = Setting::where('key', 'invoice_declaration_status')->value('value') ?? 'off';
 
         return response()->json([
             'success' => true,
             'data' => [
                 'razorpay_key' => $razorpayKey,
+                'declaration' => $declaration,
+                'declaration_status' => $declarationStatus,
                 'razorpay_secret' => $razorpaySecret, // 👈 REAL VALUE
             ],
+        ]);
+    }
+
+    public function saveDeclarationSetting(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'declaration' => ['nullable', 'string', 'max:5000'],
+            'status' => ['nullable', 'string', 'in:on,off'],
+        ]);
+
+        Setting::updateOrCreate(
+            ['key' => 'invoice_declaration'],
+            ['value' => $validated['declaration'] ?? '']
+        );
+
+        $statusValue = ($request->input('status') === 'on' || $request->input('status') === '1' || $request->boolean('status')) ? 'on' : 'off';
+        Setting::updateOrCreate(
+            ['key' => 'invoice_declaration_status'],
+            ['value' => $statusValue]
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Declaration saved successfully.',
+            'status' => $statusValue,
         ]);
     }
 
@@ -921,6 +950,8 @@ class SettingController extends Controller
                 'grand_total' => $grandTotal,
                 'payment_type' => $invoice->payment_type ?? 'N/A',
                 'payment_status' => $invoice->payment_status ?? 'N/A',
+                'declaration' => Setting::where('key', 'invoice_declaration')->value('value') ?? '',
+                'declaration_status' => Setting::where('key', 'invoice_declaration_status')->value('value') ?? 'off',
             ];
             // dd($invoiceData);
 
@@ -1154,6 +1185,8 @@ class SettingController extends Controller
                 'tax_name' => $settings['tax_name'] ?? '',
                 'payment_type' => $request->payment_type,
                 'payment_status' => $request->payment_status,
+                'declaration' => Setting::where('key', 'invoice_declaration')->value('value') ?? '',
+                'declaration_status' => Setting::where('key', 'invoice_declaration_status')->value('value') ?? 'off',
             ];
 
             // Step 7: Generate PDF
@@ -1332,6 +1365,8 @@ class SettingController extends Controller
                 'discount' => $invoiceData['discount']['value'],
                 'payment_type' => $invoiceData['payment']['type'],
                 'payment_status' => $invoiceData['payment']['status'],
+                'declaration' => Setting::where('key', 'invoice_declaration')->value('value') ?? '',
+                'declaration_status' => Setting::where('key', 'invoice_declaration_status')->value('value') ?? 'off',
             ]);
             // dd($pdf);
             // dd($invoiceData['payment']['status']);

@@ -144,6 +144,157 @@
         background-color: rgb(207 236 224) !important;
         color: black !important;
     }
+
+    /* Single Line Nav Tabs */
+    #smsTabs {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        white-space: nowrap !important;
+        border-bottom: 2px solid #edf2f7 !important;
+        padding: 0 15px !important;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+    }
+    #smsTabs::-webkit-scrollbar {
+        height: 4px;
+    }
+    #smsTabs::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+    #smsTabs .nav-item {
+        flex: 0 0 auto !important;
+    }
+    #smsTabs .nav-link {
+        font-size: 13.5px !important;
+        padding: 10px 14px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        border-radius: 8px 8px 0 0 !important;
+        font-weight: 500 !important;
+        color: #4a5568 !important;
+        transition: all 0.2s ease-in-out;
+    }
+    #smsTabs .nav-link i {
+        font-size: 16px !important;
+        margin-right: 6px !important;
+        padding: 0 !important;
+    }
+    #smsTabs .nav-link:hover {
+        color: #f89884 !important;
+        border-color: #f89884 #f89884 #edf2f7 !important;
+    }
+    #smsTabs .nav-link.active {
+        font-weight: 600 !important;
+        color: #f89884 !important;
+        border-color: #dee2e6 #dee2e6 #fff !important;
+        background-color: #fff !important;
+    }
+
+    /* Modern Declaration Card & Form Styles */
+    .declaration-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 24px 28px;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    }
+    .declaration-toggle-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 16px 20px;
+        transition: all 0.2s ease;
+    }
+    .declaration-toggle-box:hover {
+        background: #f1f5f9;
+    }
+    .toggle-icon-wrap {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #edf2f7;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        color: #718096;
+    }
+    .custom-switch-wrap {
+        display: inline-flex;
+        align-items: center;
+    }
+    .switch-ui {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 26px;
+        margin-bottom: 0;
+    }
+    .switch-ui input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider-ui {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #cbd5e1;
+        transition: 0.3s;
+        border-radius: 34px;
+    }
+    .slider-ui:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    .switch-ui input:checked + .slider-ui {
+        background-color: #28a745;
+    }
+    .switch-ui input:checked + .slider-ui:before {
+        transform: translateX(24px);
+    }
+    .declaration-textarea {
+        border-radius: 8px !important;
+        border: 1.5px solid #d0d7de !important;
+        padding: 12px 14px !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .declaration-textarea:focus {
+        border-color: #f89884 !important;
+        box-shadow: 0 0 0 3px rgba(248, 152, 132, 0.25) !important;
+    }
+    .btn-save-declaration {
+        background-color: #f89884 !important;
+        border-color: #f89884 !important;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        border-radius: 30px !important;
+        padding: 9px 32px !important;
+        font-size: 14px !important;
+        transition: all 0.2s ease;
+    }
+    .btn-save-declaration:hover {
+        background-color: #f7826a !important;
+        border-color: #f7826a !important;
+        box-shadow: 0 4px 12px rgba(248, 152, 132, 0.35) !important;
+        color: #ffffff !important;
+    }
 </style>
 
 @section('content')
@@ -164,28 +315,24 @@
 
                         </div>
 
-                        <ul class="nav nav-tabs mt-5 mb-3" id="smsTabs" role="tablist" style="padding: 0 20px;">
+                        <ul class="nav nav-tabs mt-4 mb-3" id="smsTabs" role="tablist">
 
                             <li class="nav-item">
                                 <a class="nav-link active" id="credentials-tab" data-toggle="tab" href="#credentials"
-                                    role="tab" aria-controls="credentials" aria-selected="false"
-                                    style="text-decoration:none;color:black !important;">
-                                    <i class="fas fa-cogs px-2" style="font-size:20px;"></i> SMS Credentials
+                                    role="tab" aria-controls="credentials" aria-selected="true">
+                                    <i class="fas fa-cogs"></i> SMS Credentials
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="whatsapp-tab" data-toggle="tab" href="#whatsapp" role="tab"
-                                    aria-controls="whatsapp" aria-selected="false"
-                                    style="text-decoration:none;color:black !important;">
-                                    <i class="fab fa-whatsapp px-2" style="font-size:20px;color:black;"></i>WhatsApp
-                                    Credentials
+                                    aria-controls="whatsapp" aria-selected="false">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp Credentials
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="smtp-credentials-tab" data-toggle="tab" href="#smtp-credentials"
-                                    role="tab" aria-controls="smtp-credentials" aria-selected="false"
-                                    style="text-decoration:none;color:black !important;">
-                                    <i class="fas fa-key px-2" style="font-size:20px"></i> SMTP Credentials
+                                    role="tab" aria-controls="smtp-credentials" aria-selected="false">
+                                    <i class="fas fa-key"></i> SMTP Credentials
                                 </a>
                             </li>
                             {{-- Hidden Firebase and Razorpay tabs per requirement --}}
@@ -193,16 +340,21 @@
                             <li class="nav-item">
                                 <a class="nav-link" id="firebase-credentials-tab" data-toggle="tab"
                                     href="#firebase-credentials" role="tab" aria-controls="firebase-credentials"
-                                    aria-selected="false" style="text-decoration:none;color:black !important;">
-                                    <i class="fas fa-fire px-2" style="font-size:20px;"></i> Firebase Credentials
+                                    aria-selected="false">
+                                    <i class="fas fa-fire"></i> Firebase Credentials
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="razorpay-credentials-tab" data-toggle="tab"
                                     href="#razorpay-credentials" role="tab" aria-controls="razorpay-credentials"
-                                    aria-selected="false" style="text-decoration:none;color:black !important;">
-                                    <i class="fas fa-credit-card px-2" style="font-size:20px;"></i>
-                                    Razorpay Credentials
+                                    aria-selected="false">
+                                    <i class="fas fa-credit-card"></i> Razorpay Credentials
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="declaration-tab" data-toggle="tab" href="#declaration-settings"
+                                    role="tab" aria-controls="declaration-settings" aria-selected="false">
+                                    <i class="fas fa-file-alt"></i> Declaration
                                 </a>
                             </li>
                             --}}
@@ -620,6 +772,88 @@
 
                                 </div>
                                 --}}
+
+                                <div class="tab-pane fade" id="declaration-settings" role="tabpanel"
+                                    aria-labelledby="declaration-tab">
+                                    <div class="row justify-content-center mt-3">
+                                        <div class="col-lg-10 col-md-12">
+                                            <div class="declaration-card">
+                                                <!-- Header -->
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <div>
+                                                        <h4 class="mb-1 font-weight-bold text-dark">
+                                                            <i class="fas fa-file-signature mr-2" style="color: #f89884;"></i>
+                                                            Invoice Declaration
+                                                        </h4>
+                                                        <p class="text-muted mb-0 small">
+                                                            Configure legal terms, conditions, or declaration printed on invoice PDFs.
+                                                        </p>
+                                                    </div>
+                                                    <span id="declarationStatusBadge" class="badge badge-pill badge-secondary px-3 py-2 font-weight-bold" style="font-size: 12px; letter-spacing: 0.5px;">
+                                                        OFF
+                                                    </span>
+                                                </div>
+
+                                                <hr class="my-3">
+
+                                                <form id="declarationForm">
+                                                    <!-- ON / OFF Toggle Switch Box -->
+                                                    <div class="declaration-toggle-box d-flex justify-content-between align-items-center mb-4">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="toggle-icon-wrap mr-3">
+                                                                <i class="fas fa-power-off"></i>
+                                                            </div>
+                                                            <div>
+                                                                <label for="declarationStatus" class="font-weight-bold mb-0 text-dark" style="cursor: pointer; font-size: 14.5px;">
+                                                                    Enable Declaration on Invoices
+                                                                </label>
+                                                                <div class="text-muted small">
+                                                                    Turn this switch ON to display the declaration on generated invoices.
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="custom-switch-wrap">
+                                                            <label class="switch-ui mb-0">
+                                                                <input type="checkbox" id="declarationStatus" name="status" value="on">
+                                                                <span class="slider-ui round-ui"></span>
+                                                            </label>
+                                                            <span id="declarationSwitchLabel" class="ml-2 font-weight-bold text-muted small" style="min-width: 28px;">OFF</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Textarea -->
+                                                    <div class="form-group mb-4">
+                                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                                            <label for="declaration" class="font-weight-bold text-dark mb-0">
+                                                                Declaration Text <span class="text-danger">*</span>
+                                                            </label>
+                                                            <small class="text-muted" id="charCount">0 / 5000 characters</small>
+                                                        </div>
+                                                        <textarea class="form-control declaration-textarea" id="declaration" name="declaration"
+                                                            rows="6" maxlength="5000"
+                                                            placeholder="Enter the declaration text (e.g. We declare that this invoice shows the actual price of the goods/services described and that all particulars are true and correct.)."></textarea>
+                                                        <small class="form-text text-muted mt-2">
+                                                            <i class="fas fa-info-circle mr-1 text-info"></i> When enabled, this text will appear in the invoice PDF footer box.
+                                                        </small>
+                                                    </div>
+
+                                                    <!-- Submit Button -->
+                                                    <div class="text-center mt-4">
+                                                        <button type="submit" class="btn btn-save-declaration" id="saveDeclarationBtn">
+                                                            <i class="fas fa-save mr-1"></i> Save Declaration
+                                                        </button>
+                                                    </div>
+                                                </form>
+
+                                                <div id="declarationSuccessMessage" class="alert alert-success mt-4 shadow-sm"
+                                                    style="display:none; border-radius: 8px;"></div>
+                                                <div id="declarationErrorMessage" class="alert alert-danger mt-4 shadow-sm"
+                                                    style="display:none; border-radius: 8px;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
 
 
@@ -1290,6 +1524,61 @@
             });
         });
 
+        function updateDeclarationCharCount() {
+            let len = $('#declaration').val() ? $('#declaration').val().length : 0;
+            $('#charCount').text(len + ' / 5000 characters');
+        }
+
+        $('#declaration').on('input', updateDeclarationCharCount);
+
+        function updateDeclarationStatusUI(isOn) {
+            if (isOn) {
+                $('#declarationStatus').prop('checked', true);
+                $('#declarationSwitchLabel').text('ON').removeClass('text-muted').addClass('text-success');
+                $('#declarationStatusBadge').text('ON').removeClass('badge-secondary').addClass('badge-success');
+            } else {
+                $('#declarationStatus').prop('checked', false);
+                $('#declarationSwitchLabel').text('OFF').removeClass('text-success').addClass('text-muted');
+                $('#declarationStatusBadge').text('OFF').removeClass('badge-success').addClass('badge-secondary');
+            }
+        }
+
+        $('#declarationStatus').on('change', function () {
+            updateDeclarationStatusUI($(this).is(':checked'));
+        });
+
+        $('#declarationForm').on('submit', function (e) {
+            e.preventDefault();
+
+            let status = $('#declarationStatus').is(':checked') ? 'on' : 'off';
+            let declaration = $('#declaration').val();
+
+            $('#saveDeclarationBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Saving...');
+
+            $.ajax({
+                url: '/api/save-declaration-setting',
+                type: 'POST',
+                data: {
+                    declaration: declaration,
+                    status: status
+                },
+                success: function (response) {
+                    $('#saveDeclarationBtn').prop('disabled', false).html('<i class="fas fa-save mr-1"></i> Save Declaration');
+                    $('#declarationSuccessMessage').html('<i class="fas fa-check-circle mr-1"></i> ' + (response.message || 'Declaration saved successfully.')).show();
+                    $('#declarationErrorMessage').hide();
+                    setTimeout(function() {
+                        $('#declarationSuccessMessage').fadeOut();
+                    }, 4000);
+                },
+                error: function (xhr) {
+                    $('#saveDeclarationBtn').prop('disabled', false).html('<i class="fas fa-save mr-1"></i> Save Declaration');
+                    let msg = xhr.responseJSON?.message || 'Failed to save declaration.';
+                    $('#declarationErrorMessage').html('<i class="fas fa-exclamation-circle mr-1"></i> ' + msg).show();
+                    $('#declarationSuccessMessage').hide();
+                }
+            });
+        });
+
         $(document).ready(function () {
             $.ajax({
                 url: '/api/get-razorpay-settings',
@@ -1305,6 +1594,9 @@
                         $('#razorpayConnectionText').text('Not Connected')
                           .addClass('text-danger');
                     }
+                    $('#declaration').val(response.data?.declaration || '');
+                    updateDeclarationStatusUI(response.data?.declaration_status === 'on');
+                    updateDeclarationCharCount();
                 },
                 error: function () {
                     $('#razorpayConnectionText').text('Not Connected');
