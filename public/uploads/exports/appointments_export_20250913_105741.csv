@@ -1,0 +1,4 @@
+ID,"Patient Name","Doctor Name",Treatment,"Appointment Type",Status,Date,Duration,"Clinic Location","Follow-up Update","Created At"
+1,"Aditya Verma",admin,"Postural Training",in-person,follow-up,2025-09-20,18:21:00,"main st","gfbgf fghfgh gfj gfjgjg  jhgd jhgd","2025-09-12 17:21:48"
+2,riya,admin,"Postural Training",in-person,upcoming,2025-09-13,05:12:00,"Care Physiotherapy & Fitness Centre,Vesu Canal Road",fhxfhfgh,"2025-09-10 20:40:55"
+3,"Priya Iyer",admin,"Postural Training",virtual,confirmed,2025-09-10,05:11:00,pune,dhghdhb,"2025-09-10 20:40:25"

@@ -1,0 +1,42 @@
+.discharge-title {
+    padding-left: 232px !important;
+}
+
+.discharge-btn {
+    padding-right: 173px !important;
+    text-align: center;
+}
+
+/* .page-title {
+    text-align: -webkit-center !important;
+} */
+
+@media screen and (max-width: 767px) {
+    .page-title {
+        font-size: 19px !important;
+        padding-left: 10px !important;
+        text-align: left !important;
+    }
+}
+
+.top-padding {
+    padding-top: 15px;
+}
+
+#assign-therapyform {
+    width: 60%;
+    padding-bottom: 60px;
+}
+
+#assigntherapysuccessMessage {
+    display: none;
+}
+
+#assigntherapyerrorMessage {
+    display: none;
+}
+
+.btn-primary[type="submit"] {
+    padding: 8px 50px;
+    border-radius: 50px;
+}

@@ -1,0 +1,58 @@
+    .diagnosis-title {
+        padding-left: 232px !important;
+    }
+
+    .diagnosis-btn {
+        padding-right: 173px !important;
+        text-align: center;
+    }
+
+    h4.page-title.diagnosis-title {
+        margin-left: 28px;
+    }
+
+    .content .row {
+        padding-top: 15px;
+    }
+
+    .form-container {
+        width: 60% !important;
+        padding-bottom: 60px !important;
+    }
+
+    #diagnosisSuccessMessage {
+        display: none;
+    }
+
+    #diagnosisErrorMessage {
+        display: none;
+    }
+
+    .btn-primary {
+        padding: 8px 50px;
+        border-radius: 50px;
+    }
+
+    @media screen and (max-width: 767px) {
+        .page-title {
+            font-size: 19px !important;
+            padding-left: 10px !important;
+            text-align: left !important;
+        }
+    }
+      @media screen and (max-width:767px) {
+        .diagnosis-title {
+            padding-left: 15px !important;
+            text-align: left !important;
+        }
+
+        .diagnosis-btn {
+            padding-right: 15px !important;
+            text-align: right !important;
+        }
+
+        .page-title {
+            font-size: 20px;
+        }
+
+    }

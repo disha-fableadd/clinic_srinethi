@@ -1,0 +1,71 @@
+        .diagnosis-card {
+            max-width: 1300px;
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .diagnosis-header {
+            color: black;
+            background-color: #87ceb0 !important;
+            padding: 16px 20px;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+
+        .diagnosis-body {
+            padding: 20px;
+        }
+
+        .diagnosis-field {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #c8e6c9 !important;
+        }
+
+        .diagnosis-field:last-child {
+            border-bottom: none;
+        }
+
+        .diagnosis-field i {
+            width: 25px;
+            color: #87ceb0 !important;
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+
+        .diagnosis-label {
+            font-weight: 500;
+            min-width: 130px;
+        }
+
+        .diagnosis-value {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .action-buttons {
+            text-align: right;
+            padding: 20px;
+            background-color: white;
+        }
+
+        .action-buttons .btn {
+            margin-left: 8px;
+            min-width: 80px;
+        }
+
+        .card-footer {
+            background-color: #87ceb0 !important;
+        }
+
+        .card-footer h3 {
+            float: left;
+        }
+
+        .d-flex {
+            justify-content: end;
+        }

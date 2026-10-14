@@ -1,0 +1,39 @@
+.category-title {
+    padding-left: 140px !important;
+    text-align: center !important;
+}
+
+.category-button {
+    padding-right: 15px !important;
+    text-align: center !important;
+}
+
+.row-padding-top {
+    padding-top: 15px !important;
+}
+
+.category-form {
+    width: 60% !important;
+    padding-bottom: 60px !important;
+}
+
+.description-textarea {
+    border-radius: 10px !important;
+}
+
+@media screen and (max-width:767px) {
+    .category-title {
+        padding-left: 15px !important;
+        text-align: left !important;
+    }
+
+    .category-button {
+        padding-right: 15px !important;
+        text-align: right !important;
+    }
+
+    .page-title {
+        font-size: 19px !important;
+    }
+
+}

@@ -1,0 +1,7 @@
+ID,"Patient Name","Treatment Name",Plan,"Remaining Amount",Status,"Payment Date","Last Payment Amount","Created At"
+1,,"Anjolie Schneider",daily,0.00,Paid,2025-08-20,246.00,"2025-08-20 16:33:04"
+2,,"Anjolie Schneider",monthly,46.00,Pending,2025-08-20,246.00,"2025-08-20 16:32:45"
+3,,"Ella Ortiz",weekly,300.00,Pending,2025-08-13,800.00,"2025-08-13 18:17:47"
+4,,"Hayley Mcgowan",weekly,500.00,Pending,2025-08-12,2500.00,"2025-08-11 17:58:37"
+5,,"Hayley Mcgowan",monthly,0.00,Paid,2025-08-11,2800.00,"2025-08-11 17:49:50"
+6,,"Hayley Mcgowan",daily,500.00,Pending,2025-08-12,7000.00,"2025-08-11 17:45:34"

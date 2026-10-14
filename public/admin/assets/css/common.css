@@ -1,0 +1,26 @@
+/* Common Styles for the Project */
+
+/* SweetAlert Button Styles */
+.swal-confirm-btn {
+    color: rgb(58, 58, 58) !important;
+}
+
+.swal-cancel-btn {
+    color: white !important;
+}
+
+/* Icon Styles */
+.icon-style1 {
+    background-color: white;
+    color: rgb(157 195 179);
+    padding: 5px;
+    font-size: 20px !important;
+    border-radius: 50%;
+}
+
+.icon-style2 {
+    color: white;
+    padding: 5px;
+    font-size: 20px !important;
+    border-radius: 50%;
+}

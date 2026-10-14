@@ -1,0 +1,208 @@
+.form-control.is-invalid,
+.was-validated .form-control:invalid {
+    border: 1px solid #cfece0 !important;
+}
+
+.icon-style {
+    margin-right: 5px;
+    color: #007bff;
+}
+
+#convert_text {
+    height: 120px;
+    resize: none;
+}
+
+#click_to_convert {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.custom-close {
+    background-color: #f5b6a5 !important;
+    opacity: 1;
+    border: 1px solid #f5b6a5;
+    border-radius: 5px;
+    padding: 3px 6px;
+}
+
+.select2-container--default .select2-selection--multiple {
+    box-shadow: none;
+    font-size: 14px;
+    min-height: 40px !important;
+    border-radius: 50px !important;
+    padding: 0.469rem 0.75rem;
+    border-color: rgb(207, 236, 224) !important;
+}
+
+.select2-container--default .select2-selection--multiple {
+    padding: 4px 8px;
+    text-align: left;
+    min-height: 38px;
+    height: auto !important;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Allow selected items to wrap to next line */
+/* .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px;
+
+} */
+
+/* Optional: add scrollbar if too many items */
+.select2-container--default .select2-selection--multiple {
+    max-height: 200px;
+    /* limit max height */
+    overflow-y: auto;
+    /* scroll if exceed max height */
+}
+
+
+.select2-selection__rendered {
+    text-align: left !important;
+}
+
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: rgb(207, 236, 224) !important;
+    color: black !important;
+    border-radius: 20px !important;
+    border: none;
+    font-size: 14px;
+    font-weight: normal !important;
+    text-align: center;
+    max-width: fit-content;
+}
+
+
+.image-preview-container {
+    position: relative;
+    display: inline-block;
+}
+
+.preview-img {
+    height: 30px;
+    width: auto;
+    border-radius: 8px;
+    margin-right: 5px;
+    margin-left: 7px;
+}
+
+.remove-btn {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    line-height: 18px;
+    text-align: center;
+}
+
+.patient-title {
+    padding-left: 70px !important;
+    text-align: center !important;
+}
+
+.patient-button {
+    padding-right: 60px !important;
+    text-align: center !important;
+}
+
+.custom-close {
+    background-color: #f5b6a5 !important;
+    opacity: 1;
+    border: 1px solid #f5b6a5;
+    border-radius: 5px;
+    padding: 3px 6px;
+}
+
+.addtreat {
+    margin-bottom: 8px;
+}
+.form-container {
+    width: 60% !important;
+    padding-bottom: 60px !important;
+}
+
+
+
+@media screen and (max-width:768px) {
+    .patient-title {
+        padding-left: 15px !important;
+        text-align: left !important;
+    }
+
+    .patient-button {
+        padding-right: 15px !important;
+        text-align: right !important;
+    }
+
+}
+
+@media screen and (max-width:767px) {
+    .patient-title {
+        padding-left: 15px !important;
+        text-align: left !important;
+    }
+
+    .patient-button {
+        padding-right: 15px !important;
+        text-align: right !important;
+    }
+
+    #multiStepForm {
+        width: 100% !important;
+        height: 65rem;
+    }
+
+    .patient-form {
+        height: auto !important;
+    }
+
+    /* new */
+
+    a.btn.btn-primary.btn-sm,
+    a.btn.btn-primary.btn-rounded.addsymp {
+        font-size: 10px;
+        padding: 4px 7px;
+    }
+
+
+
+    .d-flex.align-items-center.justify-content-between.symplabel {
+        font-size: 11px;
+    }
+
+    .form-group.symimg {
+        font-size: 11px;
+    }
+}
+
+/* referel button */
+@media (min-width: 360px) and (max-width: 740px) {
+
+    a.btn.btn-primary.btn-sm,
+    a.btn.btn-primary.btn-rounded.addsymp {
+        display: flex;
+        align-items: center;
+    }
+
+}
+
+@media (min-width: 344px) and (max-width: 882px) {}

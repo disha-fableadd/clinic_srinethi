@@ -1,0 +1,185 @@
+/* Remove default colgroup display */
+colgroup {
+    display: none;
+}
+
+/* Details Row */
+.details-row {
+    background-color: #f8f9fa;
+    display: none;
+}
+
+button.btn.btn-link.expand-btn {
+    background: #f89884;
+    color: white;
+    padding: 7px;
+    border-radius: 9px;
+}
+
+.details-content {
+    padding: 10px;
+    border-left: 3px solid #f89884;
+    margin-left: 10px;
+}
+
+.expand-btn {
+    border: none;
+    background: none;
+    color: #f89884;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#statusFilter {
+    width: 300px;
+    display: flex;
+    justify-content: end;
+}
+
+.swal-confirm-btn {
+    color: rgb(58, 58, 58) !important;
+}
+
+.swal-cancel-btn {
+    color: white !important;
+}
+
+.patient-cell {
+    display: flex;
+    align-items: center;
+}
+
+.patient-cell img {
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.rounded-circle {
+    border-radius: 50% !important;
+}
+
+i.fa.fa-download.m-r-5.download-appointment,
+i.fa.fa-check.m-r-5.complete-appointment {
+    padding: 8px;
+    background-color: #f89884;
+    color: white;
+    border-radius: 10px;
+}
+
+.custom-badge {
+    border-radius: 11px;
+    display: inline-block;
+    font-size: 13px;
+    min-width: 95px;
+    padding: 3px 10px;
+    text-align: center;
+    color: #fff;
+}
+
+.badge-completed {
+    background-color: #4CAF50;
+}
+
+.badge-follow-up {
+    background-color: #FFC107;
+    color: black;
+}
+
+.badge-confirmed {
+    background-color: #607D8B;
+}
+
+.badge-upcoming {
+    background-color: #1992f5;
+}
+
+.badge-cancelled {
+    background-color: #F44336;
+}
+
+/* ----------- RESPONSIVE ----------- */
+
+@media (min-width: 768px) {
+    .d-table-cell.d-md-none {
+        display: none !important;
+    }
+
+    .details-row {
+        display: none !important;
+    }
+}
+
+@media screen and (max-width:767px) {
+    .page-title {
+        font-size: 16px !important;
+        margin-top: 8px !important;
+        padding-top: 0 !important;
+    }
+
+    #statusFilter {
+        width: 200px;
+        display: flex;
+        justify-content: end;
+    }
+}
+
+@media screen and (max-width:380px) {
+    .page-title {
+        font-size: 15px !important;
+    }
+
+    .card .card-header .card-title {
+        font-size: 14px !important;
+        margin-top: 4px !important;
+    }
+}
+
+/* ---------- MOVED INLINE STYLES ---------- */
+
+.content-height {
+    height: 100vh;
+}
+
+.row-top-padding {
+    padding-top: 15px;
+}
+
+.header-orange {
+    background-color: #f89884;
+}
+
+.btn-light-bg {
+    background-color: #fed9cf;
+}
+
+.thead-orange {
+    background-color: #F89884;
+}
+
+.modal-header-green {
+    background-color: #cfece0 !important;
+}
+
+.btn-rounded {
+    background-color: #fed9cf !important;
+}
+
+.card-header {
+    background-color: #f89884 !important;
+}
+.btn-outline-success:hover {
+        color: black !important;
+        background-color: #cfece0 !important;
+        border-color: #cfece0 !important;
+    }
+
+    .btn-outline-success {
+        color: black !important;
+
+        border-color: #cfece0 !important;
+    }
+
+    .swal-confirm-btn {
+        color: #000 !important;
+        /* BLACK text */
+    }

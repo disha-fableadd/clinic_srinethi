@@ -1,0 +1,66 @@
+name: Build with Docker and Deploy to cPanel via FTP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        run: |
+          docker build -t my-app .
+
+      - name: Extract Build Files from Docker
+        run: |
+          docker create --name temp_container my-app
+          docker cp temp_container:/var/www/html ./build_output
+          docker rm temp_container
+
+      - name: Clean unwanted folders from build_output
+        run: |
+          rm -rf ./build_output/vendor
+          rm -rf ./build_output/node_modules
+          rm -rf ./build_output/storage
+          rm -rf ./build_output/public/uploads
+          rm -rf ./build_output/public/storage
+          rm -rf ./build_output/.git
+         
+          rm -f ./build_output/.gitignore
+          rm -f ./build_output/.gitattributes
+
+
+      - name: Debug secrets
+        run: |
+          echo "Host: ${{ secrets.FTP_HOST }}"
+          echo "Username: ${{ secrets.FTP_USERNAME }}"
+          echo "Password is set: ${{ secrets.FTP_PASSWORD != '' }}"
+
+      - name: Deploy to cPanel via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: '72.60.216.54'
+          username: 'u573967329.srinethiftp'
+          password: '!2FbG^Z?Vu6'
+          server-dir: ./
+          local-dir: ./build_output/
+          protocol: ftp
+          port: 21
+          exclude: |
+            **/.git*
+            **/.env
+            **/vendor/**
+            **/node_modules/**
+            **/storage/**
+            **/public/uploads/**
+            **/public/storage/**
+           

@@ -1,0 +1,57 @@
+.treatment-title {
+    padding-left: 95px !important;
+    text-align: center !important;
+}
+
+.treatment-button {
+    padding-right: 65px !important;
+    text-align: center !important;
+}
+
+button.btn.btn-primary.btn-sm.addRow {
+    margin-bottom: 40px;
+}
+
+a.btn.btn-primary.btn-rounded {
+    margin-left: 267px;
+}
+
+h4.page-title.treatment-title {
+    margin-left: 21px;
+}
+
+@media screen and (max-width: 767px) {
+    .treatment-title {
+        padding-left: 0px !important;
+        text-align: left !important;
+    }
+
+    .page-title {
+        font-size: 19px !important;
+    }
+
+    .treatment-button {
+        padding-right: 15px !important;
+        text-align: right !important;
+    }
+
+    .add-btn-container {
+        text-align: right;
+    }
+
+    button.btn.btn-primary.btn-sm.addRow {
+        display: flex;
+        margin-top: 10px;
+        margin-bottom: 4px;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-container {
+        width: 100% !important;
+    }
+
+    .add-btn-container {
+        text-align: center;
+    }
+}

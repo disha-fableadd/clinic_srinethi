@@ -1,0 +1,58 @@
+@media screen and (max-width:767px) {
+    .page-title {
+        font-size: 20px !important;
+    }
+}
+
+.icon-style1 {
+    background-color: white !important;
+    color: #9dc3b3 !important;
+    padding: 5px !important;
+    font-size: 20px !important;
+    border-radius: 50% !important;
+}
+
+.icon-style2 {
+    color: white;
+    padding: 5px !important;
+    font-size: 20px !important;
+    border-radius: 50% !important;
+}
+
+.content {
+    height: 100vh;
+}
+
+.top-padding {
+    padding-top: 15px;
+}
+
+.card-footer {
+    background-color: #87ceb0 !important;
+}
+
+.float-left {
+    float: left;
+}
+
+.justify-end {
+    justify-content: end;
+}
+
+.userProfile {
+    border-radius: 20px;
+}
+
+.button {
+    display: flex;
+    justify-content: end;
+}
+
+.edit-report-btn {
+    margin-right: 10px;
+    color: black;
+}
+
+#successMessage {
+    display: none;
+}

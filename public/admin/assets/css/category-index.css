@@ -1,0 +1,94 @@
+.swal-confirm-btn {
+    color: rgb(58, 58, 58) !important;
+}
+
+.swal-cancel-btn {
+    color: white !important;
+}
+
+colgroup {
+    display: none;
+}
+
+.details-row {
+    background-color: #f8f9fa;
+}
+
+.details-content {
+    padding: 10px;
+    border-left: 3px solid #f89884;
+    margin-left: 10px;
+}
+
+button.expand-btn {
+    background: #f89884;
+    color: white;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: none;
+}
+
+.content-height {
+    height: 100vh;
+}
+
+.card-header-bg {
+    background-color: #f89884 !important;
+}
+.btn-rounded {
+        background-color: #fed9cf !important;
+    }
+.btn-bg-fed9cf {
+    background-color: #fed9cf;
+}
+
+.btn-padding {
+    padding: 6px 12px;
+}
+
+.thead-bg {
+    background-color: #ff8e29;
+}
+
+.th-width {
+    width: 145px;
+}
+
+.icon-cursor {
+    cursor: pointer;
+}
+
+@media screen and (max-width: 767px) {
+    .page-title {
+        font-size: 19px !important;
+        padding-left: 10px !important;
+        text-align: left !important;
+    }
+
+    .report-icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding-top: 15px !important;
+    }
+
+    .report-icon .download {
+        margin-left: 5px !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .d-table-cell.d-md-none {
+        display: none !important;
+    }
+
+    .details-row {
+        display: none !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .d-none.d-md-table-cell {
+        display: none !important;
+    }
+}

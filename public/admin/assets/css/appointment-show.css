@@ -1,0 +1,62 @@
+    @media screen and (max-width:767px) {
+        .page-title {
+            font-size: 16px !important;
+            margin-top: 8px !important;
+        }
+
+        .table-responsive-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            /* Smooth scroll on iOS */
+        }
+
+        .table-responsive-wrapper table {
+            width: 600px;
+            /* or more, depending on number of columns */
+            min-width: 100%;
+            display: block;
+        }
+
+        .icon-style1 {
+            font-size: 17px;
+        }
+    }
+
+    .content {
+        height: 100vh;
+    }
+
+    .top-padding {
+        padding-top: 15px;
+    }
+
+    .card-footer {
+        background-color: #87ceb0 !important;
+    }
+
+    .float-left {
+        float: left;
+    }
+
+    .justify-end {
+        justify-content: end;
+    }
+
+    .userProfile {
+        border-radius: 20px;
+    }
+
+    .button {
+        display: flex;
+        justify-content: end;
+        margin: 0 5px;
+    }
+
+    .edit-appointment-btn {
+        color: black;
+        margin-right: 10px;
+    }
+
+    #successMessage {
+        display: none;
+    }

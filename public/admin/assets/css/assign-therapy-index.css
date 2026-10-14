@@ -1,0 +1,63 @@
+.swal-confirm-btn {
+    color: rgb(58, 58, 58) !important;
+}
+
+.swal-cancel-btn {
+    color: white !important;
+}
+
+.details-row {
+    background-color: #f8f9fa;
+    display: none;
+}
+
+.details-content {
+    padding: 10px;
+    border-left: 3px solid #f89884;
+    margin-left: 10px;
+}
+
+.expand-btn {
+    border: none;
+    background: none;
+    color: #f89884;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button.btn.btn-link.expand-btn {
+    background: #f89884;
+    color: white;
+    padding: 7px;
+    border-radius: 9px;
+}
+
+colgroup {
+    display: none;
+}
+.btn-rounded{
+    background-color: #fed9cf !important;
+}
+.card-header{
+    background-color:#f89884 !important;
+}
+
+@media (min-width: 768px) {
+    .d-table-cell.d-md-none {
+        display: none !important;
+    }
+
+    .details-row {
+        display: none !important;
+    }
+
+    .form-container {
+        height: 900px !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .d-none.d-md-table-cell {
+        display: none !important;
+    }
+}

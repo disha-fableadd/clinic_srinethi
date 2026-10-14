@@ -1,0 +1,55 @@
+.content {
+    height: 100vh;
+}
+
+.content .row {
+    padding-top: 15px;
+}
+
+.page-title {
+    text-align: left;
+}
+
+.card-footer {
+    background-color: #87ceb0 !important;
+}
+
+.card-footer h3 {
+    float: left;
+}
+
+.button {
+    display: flex;
+    justify-content: end;
+    margin: 0 5px;
+}
+
+.edit-category-btn {
+    color: black;
+    margin-right: 10px;
+}
+
+#successMessage {
+    display: none;
+}
+
+.icon-style1 {
+    background-color: white;
+    color: rgb(157 195 179);
+    padding: 5px;
+    font-size: 20px;
+    border-radius: 50%;
+}
+
+.icon-style2 {
+    color: white;
+    padding: 5px;
+    font-size: 20px;
+    border-radius: 50%;
+}
+
+@media screen and (max-width:767px) {
+    .page-title{
+        font-size: 18px !important;
+    }
+}

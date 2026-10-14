@@ -1,0 +1,99 @@
+    .swal-confirm-btn {
+        color: rgb(58, 58, 58) !important;
+    }
+
+    .swal-cancel-btn {
+        color: white !important;
+    }
+
+    .content {
+        height: 100vh ;
+    }
+
+    .content .row {
+        padding-top: 15px;
+    }
+
+    .card-header {
+        background-color: #f89884 !important;
+    }
+
+    .fa-stethoscope {
+        font-size: 20px;
+    }
+
+    .btn-rounded {
+        background-color: #fed9cf !important;
+    }
+
+    #diagnosistbl thead {
+        background-color: #f89884 !important;
+    }
+
+    .view-diagnosis {
+        cursor: pointer;
+    }
+
+    .icon {
+        cursor: pointer;
+    }
+
+    colgroup {
+        display: none;
+    }
+
+    button.btn.btn-link.expand-btn {
+        background: #f89884;
+        color: white;
+        padding: 7px;
+        border-radius: 9px;
+    }
+
+    .details-row {
+        background-color: #f8f9fa;
+    }
+
+    .details-content {
+        padding: 10px;
+        border-left: 3px solid #f89884;
+        margin-left: 10px;
+    }
+
+    #diagnosistbl thead th {
+        vertical-align: middle !important;
+        padding: 8px !important;
+    }
+
+    .expand-btn {
+        border: none;
+        background: none;
+        color: #f89884;
+        font-size: 16px;
+    }
+
+    .expand-btn:hover {
+        color: #f89884;
+    }
+
+    @media (min-width: 768px) {
+        .d-table-cell.d-md-none {
+            display: none !important;
+        }
+
+        .details-row {
+            display: none !important;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .d-none.d-md-table-cell {
+            display: none !important;
+        }
+    }
+
+    @media screen and (max-width: 767px) {
+        .page-title {
+            font-size: 19px !important;
+            padding-left: 10px !important;
+        }
+    }

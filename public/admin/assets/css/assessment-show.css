@@ -1,0 +1,183 @@
+.page-wrapper {
+    max-width: 720px !important;
+    margin: 0 auto !important;
+    padding: 20px !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    /* align-items: center;  */
+    min-height: 100vh !important;
+}
+
+/* Card container */
+.assessment-card {
+    background: #fff !important;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    margin-top: 30px;
+    border: 1px solid #e0e0e0;
+}
+
+/* Card header */
+.assessment-card-header {
+    color: #2c3e50;
+    font-weight: 900;
+    font-size: 2rem;
+    padding: 22px 30px;
+    border-bottom: 1px solid #e0e0e0;
+    text-transform: capitalize;
+    letter-spacing: 1.1px;
+    text-align: center;
+    background: #f9f9f9;
+}
+
+/* Each entry row */
+.assessment-entry {
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+    padding: 20px 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.assessment-entry:last-child {
+    border-bottom: none;
+    padding-bottom: 30px;
+}
+
+/* Image styling */
+.assessment-image {
+    width: 160px;
+    height: 160px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+    flex-shrink: 0;
+    background: #fafafa;
+}
+
+/* Text container */
+.assessment-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Title with underline */
+.assessment-title {
+    font-weight: 900;
+    font-size: 1.7rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    position: relative;
+    padding-bottom: 8px;
+    text-transform: capitalize;
+}
+
+.assessment-title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 70px;
+    height: 5px;
+    background: #27ae60;
+    border-radius: 3px;
+}
+
+/* Description */
+.assessment-description {
+    font-size: 1.05rem;
+    color: #555;
+    margin-bottom: 14px;
+    line-height: 1.5;
+    white-space: normal;
+}
+
+/* Extra info */
+.assessment-extra {
+    font-size: 0.9rem;
+    color: #888;
+    font-style: italic;
+}
+
+/* Back button below card */
+.btn-primary {
+    display: inline-block !important;
+    margin: 35px auto 60px !important;
+    padding: 12px 28px !important;
+    font-size: 1.1rem !important;
+    border-radius: 8px !important;
+    /* background-color: #27ae60; */
+    border: none !important;
+    color: black !important;
+    cursor: pointer !important;
+    text-align: center !important;
+    transition: background-color 0.3s ease !important;
+}
+
+div#assessmentCard {
+    margin-top: 98px;
+}
+
+/* Card header wrapper */
+#assessmentCardHeaderWrapper {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 22px 30px !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    background: #f9f9f9 !important;
+    text-transform: capitalize !important;
+    font-weight: 900 !important;
+    font-size: 2rem !important;
+    color: #2c3e50 !important;
+}
+
+/* Download button styling */
+.downloadpdf {
+    color: #2c3e50 !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    font-size: 1.5rem !important;
+    transition: color 0.3s ease !important;
+}
+
+.downloadpdf:hover {
+    color: #cfece0 !important; 
+}
+
+/* .btn-primary:hover {
+    background-color: #1e8449;
+} */
+
+/* Responsive */
+@media (max-width: 768px) {
+    .page-wrapper {
+        max-width: 95%;
+        margin: 20px auto;
+    }
+
+    .assessment-entry {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px 15px;
+    }
+
+    .assessment-image {
+        width: 100%;
+        max-width: 320px;
+        height: auto;
+        margin-bottom: 15px;
+    }
+
+    .assessment-text {
+        align-items: center;
+    }
+}

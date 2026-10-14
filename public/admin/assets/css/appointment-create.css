@@ -1,0 +1,90 @@
+/* Page Title & Header Buttons */
+.appointment-title {
+    padding-left: 130px !important;
+    text-align: center !important;
+}
+
+.appointment-button {
+    padding-right: 75px !important;
+    text-align: center !important;
+}
+
+/* Form Width */
+#appointmentForm {
+    width: 60% ;
+    padding-bottom: 60px !important;
+}
+
+/* Step Buttons */
+.next-btn,
+.prev-btn,
+.submit-btn {
+    padding: 8px 50px;
+    border-radius: 50px;
+}
+
+/* Float Fix */
+.next-btn {
+    margin-left: 5px !important;
+    padding: 8px 50px !important;
+    float: right !important;
+}
+
+.prev-btn {
+    padding: 8px 50px !important;
+    border-radius: 50px !important;
+    float: left !important;
+}
+
+.submit-btn {
+    float: right;
+}
+
+.followup_update {
+    border-radius: 10px !important;
+}
+
+/* Mobile Responsive */
+@media (max-width:768px) {
+    .appointment-title {
+        padding-left: 15px !important;
+        text-align: left !important;
+    }
+
+    .page-title {
+        padding-top: 5px !important;
+        font-size: 16px !important;
+    }
+
+    .appointment-button {
+        padding-right: 15px !important;
+        text-align: right !important;
+    }
+
+    #appointmentForm {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width:767px) {
+     #appointmentForm {
+        width: 100%;
+    }
+    .page-title {
+        font-size: 16px !important;
+    }
+}
+
+@media screen and (max-width:380px) {
+     #appointmentForm {
+        width: 100%;
+    }
+    .page-title {
+        font-size: 15px !important;
+    }
+
+    .card .card-header .card-title {
+        font-size: 14px !important;
+        margin-top: 4px !important;
+    }
+}

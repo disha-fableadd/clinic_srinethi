@@ -1,0 +1,4 @@
+ID,User,Patient,Treatment,Date,"Remain Amount",Status,"Collected By",Comment,"Payment History (Amount / Mode / Paid Type / Cash / Online / Paid / Remain)","Created At"
+1,N/A,"Amaya Cruz","Upton Nichols",2025-08-21,204.00,pending,N/A,fghgfhfghgfhgfh,"704.00 | cash+online | partial | Cash:200 | Online:300 | Paid:500.00 | Remain:204.00","21-Aug-2025 11:40 AM"
+2,N/A,N/A,"Ella Ortiz",2025-08-20,0.00,paid,N/A,"Nihil minus nobis do","800.00 | cash | fully | Cash:800 | Online:0 | Paid:800.00 | Remain:0.00","20-Aug-2025 02:39 PM"
+3,N/A,N/A,"Upton Nichols",2025-08-20,0.00,paid,N/A,"Quis quas excepturi","704.00 | online | fully | Cash:0 | Online:704 | Paid:704.00 | Remain:0.00","20-Aug-2025 01:46 PM"
