@@ -1,4 +1,4 @@
-﻿@extends('layout.app')
+@extends('layout.app')
 <link rel="stylesheet" href="{{ asset(env('IMAGE_PATH').'admin/assets/css/appointment-create.css') }}">
 
 
@@ -38,10 +38,10 @@
                                                     class="text-danger">*</span></label>
 
                                             @if (app('hasPermission')(5, 'create'))
-                                                <a href="{{ route('patients.create') }}" target="_blank"
-                                                    class="btn btn-primary btn-sm">
-                                                    <i class="fas fa-plus"></i> Add Patient
-                                                </a>
+                                                <button type="button" class="btn btn-primary btn-sm"
+                                                    data-bs-toggle="modal" data-bs-target="#quickAddPatientModal">
+                                                    <i class="fas fa-plus"></i> Add 
+                                                </button>
                                             @endif
                                         </div>
 
@@ -62,10 +62,10 @@
                                                     class="text-danger">*</span></label>
 
                                             @if (app('hasPermission')(7, 'create'))
-                                                <a href="{{ route('treatment.create') }}" target="_blank"
-                                                    class="btn btn-primary btn-sm">
-                                                    <i class="fas fa-plus"></i> Add Treatment
-                                                </a>
+                                                <button type="button" class="btn btn-primary btn-sm"
+                                                    data-bs-toggle="modal" data-bs-target="#quickAddTreatmentModal">
+                                                    <i class="fas fa-plus"></i> Add 
+                                                </button>
                                             @endif
                                         </div>
 
@@ -83,10 +83,10 @@
                                                     class="text-danger">*</span></label>
 
                                             @if (app('hasPermission')(3, 'create'))
-                                                <a href="{{ route('user.create') }}" target="_blank"
-                                                    class="btn btn-primary btn-sm">
-                                                    <i class="fas fa-plus"></i> Add Doctor
-                                                </a>
+                                                <button type="button" class="btn btn-primary btn-sm"
+                                                    data-bs-toggle="modal" data-bs-target="#quickAddDoctorModal">
+                                                    <i class="fas fa-plus"></i> Add 
+                                                </button>
                                             @endif
                                         </div>
 
@@ -184,6 +184,160 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <!-- Quick Add Patient Modal -->
+    <div class="modal fade" id="quickAddPatientModal" tabindex="-1" aria-labelledby="quickAddPatientModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px; overflow: hidden;">
+                <div class="modal-header" style="background-color: #CFECE0; color: #000;">
+                    <h5 class="modal-title font-weight-bold" id="quickAddPatientModalLabel">
+                        <i class="fas fa-user-plus mr-2"></i> Add Patient
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="quickAddPatientForm">
+                    <div class="modal-body p-4">
+                        <div id="quickPatientAlert" class="alert alert-danger" style="display: none;"></div>
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold"><i class="fas fa-user icon-style"></i> Full Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="fullname" placeholder="Enter Full Name" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold"><i class="fas fa-phone icon-style"></i> Phone <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="phone" placeholder="Enter 10 Digit Phone" maxlength="10" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="font-weight-bold"><i class="fas fa-venus-mars icon-style"></i> Gender</label>
+                                    <select class="form-control" name="gender">
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="font-weight-bold"><i class="fas fa-calendar-alt icon-style"></i> Age</label>
+                                    <input type="number" class="form-control" name="age" placeholder="Age" min="0" max="150">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label class="font-weight-bold"><i class="fas fa-envelope icon-style"></i> Email</label>
+                            <input type="email" class="form-control" name="email" placeholder="Enter Email (Optional)">
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4" id="btnSaveQuickPatient">
+                            <span class="spinner-border spinner-border-sm me-1" style="display:none;"></span> Save Patient
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Add Treatment Modal -->
+    <div class="modal fade" id="quickAddTreatmentModal" tabindex="-1" aria-labelledby="quickAddTreatmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px; overflow: hidden;">
+                <div class="modal-header" style="background-color: #CFECE0; color: #000;">
+                    <h5 class="modal-title font-weight-bold" id="quickAddTreatmentModalLabel">
+                        <i class="fas fa-pills mr-2"></i> Add Treatment
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="quickAddTreatmentForm">
+                    <div class="modal-body p-4">
+                        <div id="quickTreatmentAlert" class="alert alert-danger" style="display: none;"></div>
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold"><i class="fas fa-cogs icon-style"></i> Treatment Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="name" placeholder="Enter Treatment Name" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold"><i class="fas fa-money-bill-wave icon-style"></i> Price <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="price" placeholder="Enter Price" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold"><i class="fas fa-user-md icon-style"></i> Doctor</label>
+                            <select class="form-control" name="doctor_id" id="quickTreatmentDoctorSelect">
+                                <option value="">Select Doctor (Optional)</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label class="font-weight-bold"><i class="fas fa-clipboard-list icon-style"></i> Description</label>
+                            <textarea class="form-control" name="description" rows="2" placeholder="Brief description (Optional)" style="border-radius: 10px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4" id="btnSaveQuickTreatment">
+                            <span class="spinner-border spinner-border-sm me-1" style="display:none;"></span> Save Treatment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Add Doctor Modal -->
+    <div class="modal fade" id="quickAddDoctorModal" tabindex="-1" aria-labelledby="quickAddDoctorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px; overflow: hidden;">
+                <div class="modal-header" style="background-color: #CFECE0; color: #000;">
+                    <h5 class="modal-title font-weight-bold" id="quickAddDoctorModalLabel">
+                        <i class="fas fa-user-md mr-2"></i> Add Doctor
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="quickAddDoctorForm">
+                    <div class="modal-body p-4">
+                        <div id="quickDoctorAlert" class="alert alert-danger" style="display: none;"></div>
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold"><i class="fas fa-user icon-style"></i> Doctor Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="fullname" placeholder="Enter Full Name" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold"><i class="fas fa-envelope icon-style"></i> Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" name="email" placeholder="Enter Email" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold"><i class="fas fa-phone icon-style"></i> Phone <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="phone" placeholder="Enter 10 Digit Phone" maxlength="10" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="font-weight-bold"><i class="fas fa-lock icon-style"></i> Password <span class="text-danger">*</span></label>
+                                    <input type="password" class="form-control" name="password" placeholder="Min 6 characters" minlength="6" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="font-weight-bold"><i class="fas fa-venus-mars icon-style"></i> Gender</label>
+                                    <select class="form-control" name="gender">
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4" id="btnSaveQuickDoctor">
+                            <span class="spinner-border spinner-border-sm me-1" style="display:none;"></span> Save Doctor
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -299,126 +453,154 @@
             });
 
             let token = @json(session('access_token'));
-            console.log(token);
-            
-
             let branchId = localStorage.getItem('selectedBranchId');
 
+            // Reusable loader for Patients
+            function loadPatients(selectedId = null) {
+                $.ajax({
+                    url: "/api/patientss",
+                    type: "GET",
+                    data: { branch_id: branchId },
+                    dataType: "json",
+                    xhrFields: { withCredentials: true },
+                    success: function(response) {
+                        let patientDropdown = $('#patientDropdown');
+                        if (patientDropdown.length === 0) return;
 
-            $.ajax({
-                url: "/api/patientss",
-                type: "GET",
-                data: {
-                    branch_id: branchId
-                },
-                dataType: "json",
-                xhrFields: {
-                    withCredentials: true // ✅ send session cookie for Sanctum
-                },
-                success: function(response) {
-                    let patientDropdown = $('#patientDropdown');
+                        patientDropdown.empty().append('<option value="">Select Patient</option>');
+                        if (!response.patients || response.patients.length === 0) {
+                            return;
+                        }
 
-                    if (patientDropdown.length === 0) {
-                        console.error("Dropdown not found! Check your HTML.");
-                        return;
+                        $.each(response.patients, function(index, patient) {
+                            const capitalizedName = patient.fullname.charAt(0).toUpperCase() + patient.fullname.slice(1);
+                            patientDropdown.append(
+                                `<option value="${patient.id}" data-treatment-id="${patient.treatment_id || ''}">
+                                    ${capitalizedName}
+                                </option>`
+                            );
+                        });
+
+                        patientDropdown.select2({
+                            placeholder: "Select Patient",
+                            allowClear: true,
+                            width: '100%'
+                        });
+
+                        patientDropdown.on('select2:open', function() {
+                            $('.select2-search__field').attr('placeholder', 'Search Patient');
+                        });
+
+                        if (selectedId) {
+                            patientDropdown.val(selectedId).trigger('change');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error("API Error:", xhr.status, xhr.responseText);
                     }
+                });
+            }
 
-                    patientDropdown.empty().append('<option value="">Select Patient</option>');
+            // Reusable loader for Treatments
+            function loadTreatments(selectedId = null) {
+                $.ajax({
+                    url: "/api/treatments",
+                    type: "GET",
+                    data: { branch_id: branchId },
+                    xhrFields: { withCredentials: true },
+                    success: function(data) {
+                        let treatmentDropdown = $('select[name="treatment_id"]');
+                        if (!treatmentDropdown.length) return;
 
-                    if (!response.patients || response.patients.length === 0) {
-                        console.warn("No patients found for this branch.");
-                        return;
+                        treatmentDropdown.empty().append('<option value="">Select Treatment</option>');
+                        let treatmentsList = data.treatments || [];
+
+                        $.each(treatmentsList, function(key, treatment) {
+                            const name = treatment.name.charAt(0).toUpperCase() + treatment.name.slice(1);
+                            treatmentDropdown.append(
+                                `<option value="${treatment.id}" data-doctor-id="${treatment.doctor_id || ''}">${name}</option>`
+                            );
+                        });
+
+                        treatmentDropdown.select2({
+                            placeholder: "Select Treatment",
+                            allowClear: true,
+                            width: '100%'
+                        });
+
+                        treatmentDropdown.on('select2:open', function() {
+                            $('.select2-search__field').attr('placeholder', 'Search Treatment');
+                        });
+
+                        if (selectedId) {
+                            treatmentDropdown.val(selectedId).trigger('change');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log("API Error:", xhr.status, xhr.responseText);
                     }
+                });
+            }
 
-                    $.each(response.patients, function(index, patient) {
-                        const capitalizedName = patient.fullname.charAt(0).toUpperCase() +
-                            patient.fullname.slice(1);
+            // Reusable loader for Doctors
+            function loadDoctors(selectedId = null) {
+                $.ajax({
+                    url: "/api/doctors",
+                    type: "GET",
+                    data: { branch_id: branchId },
+                    dataType: "json",
+                    headers: { "Authorization": "Bearer " + token },
+                    success: function(response) {
+                        let doctorDropdown = $('.doctorSelect');
+                        doctorDropdown.empty().append('<option value="">Select Doctor</option>');
 
-                        patientDropdown.append(
-                            `<option value="${patient.id}" data-treatment-id="${patient.treatment_id}">
-                    ${capitalizedName}
-                </option>`
-                        );
-                    });
+                        let quickDoctorDropdown = $('#quickTreatmentDoctorSelect');
+                        quickDoctorDropdown.empty().append('<option value="">Select Doctor (Optional)</option>');
 
-                    patientDropdown.select2({
-                        placeholder: "Select Patient",
-                        allowClear: true,
-                        width: '100%'
-                    });
+                        let doctorsList = response.doctors || [];
+                        $.each(doctorsList, function(index, doctor) {
+                            const capitalizedName = doctor.fullname.charAt(0).toUpperCase() + doctor.fullname.slice(1);
+                            doctorDropdown.append(`<option value="${doctor.id}">${capitalizedName}</option>`);
+                            quickDoctorDropdown.append(`<option value="${doctor.id}">${capitalizedName}</option>`);
+                        });
 
-                    patientDropdown.on('select2:open', function() {
-                        $('.select2-search__field').attr('placeholder', 'Search Patient');
-                    });
-                },
-                error: function(xhr) {
-                    console.error("API Error:", xhr.status, xhr.responseText);
-                }
-            });
+                        if (!doctorDropdown.hasClass('select2-hidden-accessible')) {
+                            doctorDropdown.select2({
+                                placeholder: "Select Doctor",
+                                allowClear: true,
+                                width: '100%'
+                            });
+                        }
 
+                        doctorDropdown.on('select2:open', function() {
+                            $('.select2-search__field').attr('placeholder', 'Search Doctor');
+                        });
+
+                        if (selectedId) {
+                            doctorDropdown.val(selectedId).trigger('change');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error("API Error:", xhr.status, xhr.responseText);
+                    }
+                });
+            }
+
+            // Initial load of dropdowns
+            loadPatients();
+            loadTreatments();
+            loadDoctors();
 
             // Handle Patient Selection
             $('#patientDropdown').on("change", function() {
                 let selectedPatient = $(this).find("option:selected");
-                let treatmentId = selectedPatient.data("treatment-id"); // Get assigned treatment
+                let treatmentId = selectedPatient.data("treatment-id");
 
                 if (!treatmentId) {
-                    console.warn("No treatment assigned for this patient.");
-                    $('select[name="treatment_id"]').val("").trigger("change"); // Reset treatment dropdown
-                    $('.doctorSelect').val("").trigger("change"); // Reset doctor dropdown
                     return;
                 }
-
-                // Automatically select treatment
                 $('select[name="treatment_id"]').val(treatmentId).trigger("change");
             });
-
-           
-
-
-            $.ajax({
-                url: "/api/treatments",
-                type: "GET",
-                data: {
-                    branch_id: branchId
-                },
-                xhrFields: {
-                    withCredentials: true // send session cookie for Sanctum
-                },
-                success: function(data) {
-                    let treatmentDropdown = $('select[name="treatment_id"]');
-
-                    if (!treatmentDropdown.length) return;
-
-                    treatmentDropdown.empty().append('<option value="">Select Treatment</option>');
-
-                    let treatmentsList = data.treatments || [];
-
-                    $.each(treatmentsList, function(key, treatment) {
-                        const name = treatment.name.charAt(0).toUpperCase() + treatment.name
-                            .slice(1);
-                        treatmentDropdown.append(
-                            `<option value="${treatment.id}" data-doctor-id="${treatment.doctor_id}">${name}</option>`
-                        );
-                    });
-
-                    treatmentDropdown.select2({
-                        placeholder: "Select Treatment",
-                        allowClear: true,
-                        width: '100%'
-                    });
-
-                    treatmentDropdown.on('select2:open', function() {
-                        $('.select2-search__field').attr('placeholder', 'Search Treatment');
-                    });
-                },
-                error: function(xhr) {
-                    console.log("API Error:", xhr.status, xhr.responseText);
-                }
-            });
-
-
-
 
             // Handle Treatment Selection
             $('select[name="treatment_id"]').on("change", function() {
@@ -426,54 +608,177 @@
                 let doctorId = selectedTreatment.data("doctor-id");
 
                 if (!doctorId) {
-                    console.warn("No doctor assigned for this treatment.");
-                    $('.doctorSelect').val("").trigger("change"); // Reset doctor dropdown
                     return;
                 }
-
-                // Automatically select the doctor
                 $('.doctorSelect').val(doctorId).trigger("change");
             });
 
-            
+            // ---------------- Quick Add Form Submissions ---------------- //
 
-            $.ajax({
-                url: "/api/doctors",
-                type: "GET",
-                data: {
-                    branch_id: branchId
-                }, // branch filter
-                dataType: "json",
-                headers: {
-                    "Authorization": "Bearer " + token
-                },
-                success: function(response) {
-                    let doctorDropdown = $('.doctorSelect');
-                    doctorDropdown.empty().append('<option value="">Select Doctor</option>');
+            // 1. Quick Add Patient Submit
+            $('#quickAddPatientForm').on('submit', function(e) {
+                e.preventDefault();
+                let $btn = $('#btnSaveQuickPatient');
+                let $alert = $('#quickPatientAlert');
+                $alert.hide().empty();
 
-                    let doctorsList = response.doctors || [];
-                    $.each(doctorsList, function(index, doctor) {
-                        const capitalizedName = doctor.fullname.charAt(0).toUpperCase() + doctor
-                            .fullname.slice(1);
-                        doctorDropdown.append(
-                            `<option value="${doctor.id}">${capitalizedName}</option>`);
-                    });
+                let formData = new FormData(this);
+                formData.append('branch_id', branchId);
 
-                    if (!doctorDropdown.hasClass('select2-hidden-accessible')) {
-                        doctorDropdown.select2({
-                            placeholder: "Select Doctor",
-                            allowClear: true,
-                            width: '100%'
-                        });
+                $btn.prop('disabled', true).find('.spinner-border').show();
+
+                $.ajax({
+                    url: "{{ url('api/patient') }}",
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: { "Authorization": "Bearer " + token },
+                    success: function(response) {
+                        $btn.prop('disabled', false).find('.spinner-border').hide();
+                        $('#quickAddPatientForm')[0].reset();
+                        let modalEl = document.getElementById('quickAddPatientModal');
+                        let modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                        modal.hide();
+
+                        // Reload patients and auto-select new patient
+                        let newPatientId = response.patient?.id || response.data?.id;
+                        loadPatients(newPatientId);
+                    },
+                    error: function(xhr) {
+                        $btn.prop('disabled', false).find('.spinner-border').hide();
+                        let errorMsg = 'Failed to create patient.';
+                        if (xhr.status === 422 || xhr.status === 401) {
+                            let errors = xhr.responseJSON?.errors;
+                            if (errors) {
+                                errorMsg = '';
+                                $.each(errors, function(k, v) {
+                                    errorMsg += v[0] + '<br>';
+                                });
+                            } else if (xhr.responseJSON?.message) {
+                                errorMsg = xhr.responseJSON.message;
+                            }
+                        }
+                        $alert.html(errorMsg).show();
                     }
+                });
+            });
 
-                    doctorDropdown.on('select2:open', function() {
-                        $('.select2-search__field').attr('placeholder', 'Search Doctor');
-                    });
-                },
-                error: function(xhr) {
-                    console.error("API Error:", xhr.status, xhr.responseText);
-                }
+            // 2. Quick Add Treatment Submit
+            $('#quickAddTreatmentForm').on('submit', function(e) {
+                e.preventDefault();
+                let $btn = $('#btnSaveQuickTreatment');
+                let $alert = $('#quickTreatmentAlert');
+                $alert.hide().empty();
+
+                let formData = new FormData(this);
+                formData.append('branch_id', branchId);
+                formData.append('gst_option', 'Without GST');
+
+                $btn.prop('disabled', true).find('.spinner-border').show();
+
+                $.ajax({
+                    url: "{{ url('api/treatments') }}",
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: { "Authorization": "Bearer " + token },
+                    success: function(response) {
+                        $btn.prop('disabled', false).find('.spinner-border').hide();
+                        $('#quickAddTreatmentForm')[0].reset();
+                        let modalEl = document.getElementById('quickAddTreatmentModal');
+                        let modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                        modal.hide();
+
+                        // Reload treatments and auto-select new treatment
+                        let newTreatmentId = response.treatment?.id || response.data?.id || response.id;
+                        loadTreatments(newTreatmentId);
+                    },
+                    error: function(xhr) {
+                        $btn.prop('disabled', false).find('.spinner-border').hide();
+                        let errorMsg = 'Failed to create treatment.';
+                        if (xhr.status === 422 || xhr.status === 401) {
+                            let errors = xhr.responseJSON?.errors;
+                            if (errors) {
+                                errorMsg = '';
+                                $.each(errors, function(k, v) {
+                                    errorMsg += v[0] + '<br>';
+                                });
+                            } else if (xhr.responseJSON?.message) {
+                                errorMsg = xhr.responseJSON.message;
+                            }
+                        }
+                        $alert.html(errorMsg).show();
+                    }
+                });
+            });
+
+            // 3. Quick Add Doctor Submit
+            $('#quickAddDoctorForm').on('submit', function(e) {
+                e.preventDefault();
+                let $btn = $('#btnSaveQuickDoctor');
+                let $alert = $('#quickDoctorAlert');
+                $alert.hide().empty();
+
+                let formData = new FormData(this);
+                formData.append('branch_id', branchId);
+                formData.append('role_id', 3); // Doctor Role ID is 3
+                formData.append('address', 'Clinic Address');
+                formData.append('city', 'Surat');
+                formData.append('state', 'Gujarat');
+
+                // Default basic doctor permissions
+                let defaultPermissions = [
+                    { module_id: 1, view: true, create: true, update: true, delete: false },
+                    { module_id: 6, view: true, create: true, update: true, delete: false },
+                    { module_id: 7, view: true, create: true, update: true, delete: false }
+                ];
+                formData.append('permissions', JSON.stringify(defaultPermissions));
+
+                $btn.prop('disabled', true).find('.spinner-border').show();
+
+                $.ajax({
+                    url: "{{ url('api/users') }}",
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: { "Authorization": "Bearer " + token },
+                    success: function(response) {
+                        $btn.prop('disabled', false).find('.spinner-border').hide();
+                        if (response.status === false) {
+                            $alert.html(response.message || 'Error creating doctor.').show();
+                            return;
+                        }
+                        $('#quickAddDoctorForm')[0].reset();
+                        let modalEl = document.getElementById('quickAddDoctorModal');
+                        let modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                        modal.hide();
+
+                        // Reload doctors and auto-select new doctor
+                        let newDoctorId = response.user?.id || response.data?.id;
+                        loadDoctors(newDoctorId);
+                    },
+                    error: function(xhr) {
+                        $btn.prop('disabled', false).find('.spinner-border').hide();
+                        let errorMsg = 'Failed to create doctor.';
+                        if (xhr.status === 422 || xhr.status === 401) {
+                            let errors = xhr.responseJSON?.errors;
+                            if (errors) {
+                                errorMsg = '';
+                                $.each(errors, function(k, v) {
+                                    errorMsg += v[0] + '<br>';
+                                });
+                            } else if (xhr.responseJSON?.message) {
+                                errorMsg = xhr.responseJSON.message;
+                            }
+                        } else if (xhr.responseJSON?.error) {
+                            errorMsg = xhr.responseJSON.error;
+                        }
+                        $alert.html(errorMsg).show();
+                    }
+                });
             });
 
 
