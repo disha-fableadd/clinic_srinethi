@@ -1,4 +1,4 @@
-﻿@extends('layout.app')
+@extends('layout.app')
 <style>
     .container {
         width: 60%;
@@ -719,7 +719,7 @@
                     // Show loader
                     Swal.fire({
                         title: 'Please wait...',
-                        text: 'Updating user information and sending email.',
+                        text: 'Updating staff information, please wait.',
                         allowOutsideClick: false,
                         didOpen: () => {
                             Swal.showLoading();
