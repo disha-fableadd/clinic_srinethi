@@ -456,6 +456,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/appointments/app', [AppointmentController::class, 'indexForApp']);
 
     Route::post('/invoice', [SettingController::class, 'generateInvoice'])->name('invoice.create'); //done
+    Route::post('/invoice/{id}', [SettingController::class, 'updateInvoice'])->name('invoice.update');
 
     Route::get('/invoice', [SettingController::class, 'index'])->name('invoice.index'); //done
     Route::delete('/invoice/{id}', [SettingController::class, 'destroy'])->name('invoice.destroy'); //done

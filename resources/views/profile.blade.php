@@ -1,5 +1,6 @@
 @extends('layout.app')
 
+@section('content')
 <style>
     @media screen and (max-width:767px) {
 
@@ -9,8 +10,6 @@
 
     }
 </style>
-
-@section('content')
     <div class="page-wrapper">
         <div class="content" style="height:100vh">
             <div class="row" style="padding-top: 15px;">
@@ -88,7 +87,7 @@
                                                         @endif
                                                     </span></p> --}}
 
-{{--                                                <p class="text-dark"><strong>Plan:</strong>
+                                               <p class="text-dark"><strong>Plan:</strong>
                                                     <span>
                                                         @if (Auth::check())
                                                             @php
@@ -112,7 +111,7 @@
                                                     </span>
                                                 </p>
   
-                                                <hr> --}}
+                                                <hr>
 
                                                 <p class="text-dark"><strong>Role:</strong> <span id="role-select"></span>
                                                 </p>

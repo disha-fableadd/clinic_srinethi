@@ -278,13 +278,14 @@ class SettingController extends Controller
             'smtp_status' => Setting::where('key', 'smtp_status')->value('value') ?? 'off',
             'firebase_status' => Setting::where('key', 'firebase_status')->value('value') ?? 'off',
             'razorpay_status' => Setting::where('key', 'razorpay_status')->value('value') ?? 'off',
+            'gst_status' => Setting::where('key', 'gst_status')->value('value') ?? 'on',
         ]);
     }
 
     public function updateStatus(Request $request)
     {
         $request->validate([
-            'type' => 'required|in:sms,whatsapp,smtp,firebase,razorpay',
+            'type' => 'required|in:sms,whatsapp,smtp,firebase,razorpay,gst',
             'status' => 'required|in:on,off',
         ]);
 
@@ -957,6 +958,10 @@ class SettingController extends Controller
 
             $pdf = Pdf::loadView('invoice.pdf', $invoiceData)->setPaper('A4', 'portrait');
 
+            if (request()->has('stream') || request()->has('view')) {
+                return $pdf->stream("Invoice_{$invoice->type}_{$invoice->type_id}.pdf");
+            }
+
             return $pdf->download("Invoice_{$invoice->type}_{$invoice->type_id}.pdf");
         } catch (\Exception $e) {
             return back()->with('error', 'PDF generation failed: ' . $e->getMessage());
@@ -1042,7 +1047,73 @@ class SettingController extends Controller
         ));
     }
 
+    public function edit(Request $request, $id)
+    {
+        $invoice = Invoice::with('patient')->findOrFail($id);
 
+        $branchId = $invoice->branch_id ?? (session('branch_id') ?? $request->user()->branch_id);
+
+        $patients = Patients::where('branch_id', $branchId)->get();
+        $treatments = Treatment::where('branch_id', $branchId)->get();
+        $medicines = Medicine::where('branch_id', $branchId)->get();
+
+        $pathologyServices = PathologyTest::where('branch_id', $branchId)->get()
+            ->map(function ($item) {
+                return [
+                    'id' => 'pathology_' . $item->id,
+                    'name' => $item->test_name,
+                    'cost' => $item->cost,
+                    'service_type' => 'pathology',
+                    'gst_option' => $item->gst_option ?? 'Without GST',
+                    'product_gst' => $item->product_gst,
+                ];
+            });
+
+        $radiologyServices = RadiologyTest::where('branch_id', $branchId)->get()
+            ->map(function ($item) {
+                return [
+                    'id' => 'radiology_' . $item->id,
+                    'name' => $item->test_name,
+                    'cost' => $item->cost,
+                    'service_type' => 'radiology',
+                    'gst_option' => $item->gst_option ?? 'Without GST',
+                    'product_gst' => $item->product_gst,
+                ];
+            });
+
+        $services = $pathologyServices->concat($radiologyServices)->values();
+        $therapies = Therapy::where('branch_id', $branchId)->get();
+
+        $appointments = Appointments::with('treatment')
+            ->where('branch_id', $branchId)
+            ->where('status', 'completed')
+            ->get()
+            ->map(function ($appointment) {
+                return [
+                    'id' => $appointment->id,
+                    'name' => 'Appointment #' . $appointment->id . ' - ' . ($appointment->treatment->name ?? 'No Treatment'),
+                    'unit' => $appointment->treatment->unit ?? 0,
+                    'treatment_id' => $appointment->treatment_id,
+                ];
+            });
+
+        $taxLabel = DB::table('settings')->where('key', 'tax_name')->value('value') ?? 'Tax';
+        $taxValue = DB::table('settings')->where('key', 'value')->value('value') ?? '0';
+        $taxtype = DB::table('settings')->where('key', 'tax_type')->value('value') ?? 'percentage';
+
+        return view('invoice.edit', compact(
+            'invoice',
+            'patients',
+            'treatments',
+            'services',
+            'medicines',
+            'appointments',
+            'therapies',
+            'taxLabel',
+            'taxValue',
+            'taxtype'
+        ));
+    }
 
     public function generateInvoice(Request $request)
     {
@@ -1255,11 +1326,196 @@ class SettingController extends Controller
         }
     }
 
+    public function updateInvoice(Request $request, $id)
+    {
+        try {
+            $invoice = Invoice::findOrFail($id);
 
+            if (!$request->filled('branch_id')) {
+                $request->merge(['branch_id' => $invoice->branch_id ?? 1]);
+            }
 
+            // Validate Input
+            $validatorRules = [
+                'invoice_type' => 'required|in:treatment,service,medicine,followup,appointment,therapy,discharge',
+                'patient_id' => 'required|exists:patients,id',
+                'branch_id' => 'nullable|exists:branches,id',
+                'items' => 'required|array|min:1',
+                'items.*.type_service' => 'required',
+                'items.*.quantity' => 'required|integer|min:1',
+                'items.*.price' => 'required|numeric|min:0',
+                'items.*.total' => 'required|numeric|min:0',
+                'items.*.gst_option' => 'nullable|string|in:With GST,Without GST',
+                'items.*.product_gst' => 'nullable',
+                'grandTotal' => 'required|numeric|min:0',
+                'tax' => 'nullable|numeric|min:0',
+                'discount_type' => 'nullable|in:fixed_amount,percentage',
+                'discount' => 'nullable|numeric|min:0',
+                'payment_type' => 'required|in:Cash,Online',
+                'payment_status' => 'required|in:Paid,Pending',
+            ];
 
+            if ($request->invoice_type === 'service') {
+                $validatorRules['items.*.type_service'] = ['required', 'string', 'regex:/^(pathology|radiology)_\\d+$/'];
+            } else if (!in_array($request->invoice_type, ['appointment', 'discharge'])) {
+                $validatorRules['items.*.type_service'] = ['required', 'integer'];
+            }
 
+            if (in_array($request->invoice_type, ['appointment', 'discharge'])) {
+                $validatorRules['items.*.type_service'] = 'nullable';
+                $validatorRules['items.*.quantity'] = 'nullable|integer';
+            }
 
+            $validator = Validator::make($request->all(), $validatorRules);
+
+            if ($validator->fails()) {
+                return response()->json(['status' => 'error', 'message' => $validator->errors()], 422);
+            }
+
+            // Manual service validation
+            if ($request->invoice_type === 'service') {
+                foreach ($request->items as $item) {
+                    $sid = $item['type_service'] ?? null;
+                    if (!$sid) continue;
+                    if (!is_string($sid) || !preg_match('/^(pathology|radiology)_(\\d+)$/', $sid, $m)) {
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => "Invalid service ID: {$sid}"
+                        ], 422);
+                    }
+                    $model = $m[1] === 'pathology' ? PathologyTest::class : RadiologyTest::class;
+                    $valid = $model::find((int) $m[2]);
+                    if (!$valid) {
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => "Invalid service ID: {$sid}"
+                        ], 422);
+                    }
+                }
+            }
+            if ($request->invoice_type === 'therapy') {
+                foreach ($request->items as $item) {
+                    $tid = $item['type_service'] ?? null;
+                    if (!$tid) continue;
+                    if (!Therapy::find($tid)) {
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => "Invalid therapy ID: {$tid}"
+                        ], 422);
+                    }
+                }
+            }
+
+            $invoice_type = $request->invoice_type;
+            $patient_id = $request->patient_id;
+            $patient = Patients::find($patient_id);
+            $settings = Setting::whereIn('key', [
+                'clinic_logo',
+                'clinic_name',
+                'clinic_address',
+                'clinic_phone',
+                'clinic_email',
+                'clinic_city',
+                'clinic_state',
+                'tax_name',
+                'tax_type'
+            ])->pluck('value', 'key');
+
+            // Map items
+            $services = collect($request->items)->map(function ($item) use ($invoice_type) {
+                $row = [
+                    'id' => $item['type_service'] ?? null,
+                    'name' => $this->getServiceName($invoice_type, $item['type_service'] ?? null),
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price'],
+                    'total' => $item['total'],
+                ];
+                $row['gst_option'] = $item['gst_option'] ?? 'Without GST';
+                $row['product_gst'] = isset($item['product_gst']) ? (is_array($item['product_gst']) ? $item['product_gst'] : json_decode($item['product_gst'], true)) : null;
+                return $row;
+            });
+
+            $discount_type = (!empty($request->discount_type) && in_array($request->discount_type, ['fixed_amount', 'percentage'])) 
+                ? $request->discount_type 
+                : 'fixed_amount';
+            $discount = (!empty($request->discount) && is_numeric($request->discount)) 
+                ? floatval($request->discount) 
+                : 0;
+
+            $invoiceNo = $invoice->type_id ?? rand(1000, 9999);
+            $invoiceDate = !empty($request->date1) ? \Carbon\Carbon::parse($request->date1)->format('d-m-Y') : now()->format('d-m-Y');
+
+            // Prepare Invoice Data for PDF
+            $invoiceData = [
+                'invoice_no' => $invoiceNo,
+                'date' => $invoiceDate,
+                'branch_id' => $request->branch_id,
+                'patient' => $patient,
+                'clinic_logo' => !empty($settings['clinic_logo']) ? (file_exists(public_path($settings['clinic_logo'])) ? public_path($settings['clinic_logo']) : (file_exists(public_path('uploads/clinic_logos/' . basename($settings['clinic_logo']))) ? public_path('uploads/clinic_logos/' . basename($settings['clinic_logo'])) : $settings['clinic_logo'])) : null,
+                'clinic_name' => $settings['clinic_name'] ?? 'My Clinic',
+                'services' => $services,
+                'tax_type' => $settings['tax_type'] ?? '',
+                'grand_total' => $request->grandTotal,
+                'invoice_type' => $invoice_type,
+                'tax' => $request->input('tax', 0),
+                'discount_type' => $discount_type,
+                'discount' => $discount,
+                'clinic_address' => $settings['clinic_address'] ?? '',
+                'clinic_phone' => $settings['clinic_phone'] ?? '',
+                'clinic_state' => $settings['clinic_state'] ?? '',
+                'clinic_city' => $settings['clinic_city'] ?? '',
+                'clinic_email' => $settings['clinic_email'] ?? '',
+                'tax_name' => $settings['tax_name'] ?? '',
+                'payment_type' => $request->payment_type,
+                'payment_status' => $request->payment_status,
+                'declaration' => Setting::where('key', 'invoice_declaration')->value('value') ?? '',
+                'declaration_status' => Setting::where('key', 'invoice_declaration_status')->value('value') ?? 'off',
+            ];
+
+            // Re-generate PDF
+            $pdf = Pdf::loadView('invoice.pdf', $invoiceData)->setPaper('A4', 'portrait');
+
+            $invoiceDirectory = public_path('uploads/invoices');
+            if (!file_exists($invoiceDirectory)) {
+                mkdir($invoiceDirectory, 0755, true);
+            }
+
+            $pdfFileName = 'invoice_' . $invoiceData['invoice_no'] . '.pdf';
+            $pdfPath = $invoiceDirectory . '/' . $pdfFileName;
+            $pdf->save($pdfPath);
+
+            $host = request()->getHost();
+            if ($host === '127.0.0.1' || $host === 'localhost') {
+                $pdfUrl = asset('uploads/invoices/' . $pdfFileName);
+            } else {
+                $pdfUrl = asset('public/uploads/invoices/' . $pdfFileName);
+            }
+
+            // Update Database record
+            $invoice->update([
+                'patient_id' => $patient_id,
+                'branch_id' => $request->branch_id,
+                'type' => $invoice_type,
+                'date' => !empty($request->date1) ? \Carbon\Carbon::parse($request->date1)->format('Y-m-d') : $invoice->date,
+                'instruction' => $request->input('instruction', ''),
+                'types_details' => $services,
+                'grand_total' => $request->grandTotal,
+                'tax' => $request->input('tax', 0),
+                'discount_type' => $discount_type,
+                'discount' => $discount,
+                'payment_type' => $request->payment_type,
+                'payment_status' => $request->payment_status,
+            ]);
+
+            return response()->json([
+                'message' => 'Invoice updated successfully',
+                'url' => $pdfUrl,
+                'status' => true,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
 
     public function generateAppointmentInvoice(Request $request)
     {

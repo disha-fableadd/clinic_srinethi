@@ -15,6 +15,11 @@ class AppointmentService
 {
     public function create($request)
     {
+        $clinicLocation = $request->clinic_location;
+        if (empty($clinicLocation)) {
+            $clinicLocation = \App\Models\Setting::getValue('clinic_address', 'No.44(17), Kaveri Street, Rajaji Nagar Villivakkam Chennai -600049');
+        }
+
         $appointment = Appointments::create([
             'user_id' => auth()->id(),
             'patient_id' => $request->patient_id,
@@ -24,7 +29,7 @@ class AppointmentService
             'date' => $request->date,
             'duration' => $request->duration,
             'appoint_type' => $request->appoint_type,
-            'clinic_location' => $request->clinic_location,
+            'clinic_location' => $clinicLocation,
             'followup_update' => $request->followup_update,
             'branch_id' => $request->branch_id,
         ]);

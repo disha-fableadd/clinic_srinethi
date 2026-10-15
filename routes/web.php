@@ -282,6 +282,7 @@ Route::middleware(['session.auth', 'check.permission'])->group(function () {
 
     Route::get('/invoice', [SettingController::class, 'index'])->name('invoice.index');
     Route::get('/invoice/create', [SettingController::class, 'invoice'])->name('invoice.create');
+    Route::get('/invoice/edit/{id}', [SettingController::class, 'edit'])->name('invoice.edit');
     Route::get('/invoice/pdf/{id}', [SettingController::class, 'pdf'])->name('invoice.pdf');
 
 
