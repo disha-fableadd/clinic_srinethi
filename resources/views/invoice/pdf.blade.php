@@ -502,7 +502,7 @@
                         @endif
                     </td>
                     <td class="signatory-cell">
-                        <div style="font-size: 10px; color: #0c4b33; margin-bottom: 18px;">For, Fablead Developer</div>
+                        <div style="font-size: 10px; color: #0c4b33; margin-bottom: 45px;">For, Fablead Developer</div>
                         <div style="font-size: 10px; color: #0c4b33;">Authorized Signatory</div>
                     </td>
                 </tr>
