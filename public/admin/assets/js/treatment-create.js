@@ -64,10 +64,12 @@ $(document).ready(function() {
     });
 
     // GST Option Toggle
-    $('#gst_option').select2({
-        placeholder: "Select GST Option",
-        width: '100%'
-    });
+    if ($('select#gst_option').length) {
+        $('select#gst_option').select2({
+            placeholder: "Select GST Option",
+            width: '100%'
+        });
+    }
 
     function ensureProductGstSelect2() {
         const $el = $('#product_gst');

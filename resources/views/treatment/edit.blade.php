@@ -199,16 +199,17 @@
                             <textarea cols="7" rows="4" class="form-control" id="description" name="description"
                                 style="border-radius:10px"></textarea>
                         </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-cogs icon-style"></i> Price</label>
-                            <input class="form-control" type="number" id="price" name="price" required>
-                        </div>
-
                         @php
                             $gstEnabled = \App\Models\Setting::getValue('gst_status', 'on') === 'on';
                         @endphp
                         @if($gstEnabled)
                         <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label><i class="fas fa-cogs icon-style"></i> Price</label>
+                                    <input class="form-control" type="number" id="price" name="price" required>
+                                </div>
+                            </div>
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label><i class="fas fa-percent icon-style"></i> GST Option <span
@@ -232,7 +233,11 @@
                             </div>
                         </div>
                         @else
-                        <input type="hidden" name="gst_option" id="gst_option" value="Without GST">
+                        <div class="form-group">
+                            <label><i class="fas fa-cogs icon-style"></i> Price</label>
+                            <input class="form-control" type="number" id="price" name="price" required>
+                        </div>
+                        <input type="hidden" name="gst_option" id="hidden_gst_option" value="Without GST">
                         @endif
                         <div id="editsuccesstreat" class="alert alert-success" style="display:none;"></div>
                         <div id="editerrortreat" class="alert alert-danger" style="display:none;"></div>
@@ -313,10 +318,12 @@
                 }
             });
 
-            $('#gst_option').select2({
-                placeholder: "Select GST Option",
-                width: '100%'
-            });
+            if ($('select#gst_option').length) {
+                $('select#gst_option').select2({
+                    placeholder: "Select GST Option",
+                    width: '100%'
+                });
+            }
 
             function ensureProductGstSelect2() {
                 const $el = $('#product_gst');

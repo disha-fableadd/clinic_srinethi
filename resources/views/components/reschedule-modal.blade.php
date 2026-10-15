@@ -18,7 +18,7 @@
             <div class="modal-body">
                 <form id="rescheduleForm_{{ $appointment_id }}">
                     @csrf
-                    <input type="hidden" name="branch_id" id="branch_id">
+                    <input type="hidden" name="branch_id" id="branch_id" value="1">
                     <input type="hidden" name="appointment_id" id="rescheduleAppointmentId"
                         value="{{ $appointment_id }}">
 
@@ -112,11 +112,9 @@
     const today = new Date().toISOString().split("T")[0];
     form.find("input[name='date']").attr("min", today);
 
-    // ✅ Set branch_id AFTER reset
-    let storedBranchId = localStorage.getItem('selectedBranchId');
-    if (storedBranchId) {
-        form.find("input[name='branch_id']").val(storedBranchId);
-    }
+    // ✅ Set branch_id AFTER reset (default to 1)
+    let storedBranchId = localStorage.getItem('selectedBranchId') || 1;
+    form.find("input[name='branch_id']").val(storedBranchId);
 
     $("#rescheduleModal_" + appointmentId).modal("show");
 });
