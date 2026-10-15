@@ -88,7 +88,7 @@
 
                         <div id="dynamicFieldsWrapper">
                             <div class="row mb-2 invoice-item-row align-items-end">
-                                <div class="col-md-2 type-service-col">
+                                <div class="col-md-4 type-service-col">
                                     <div class="d-flex align-items-center justify-content-between mb-1">
                                         <label class="mb-0">Type/Service</label>
                                         @if (app('hasPermission')(7, 'create'))
@@ -104,7 +104,7 @@
                                         {{-- options will be added dynamically --}}
                                     </select>
                                 </div>
-                                <div class="col-md-1">
+                                <div class="col-md-2 qty-col">
                                     <label>Qty</label>
                                     <input type="number" name="items[0][quantity]" class="form-control quantity" min="1"
                                         value="1">
@@ -129,11 +129,11 @@
                                     </select>
                                     <input type="hidden" name="items[0][gst_option]" class="gst-option-hidden" value="Without GST">
                                 </div>
-                                <div class="col-md-1 gst-pct-col">
+                                <div class="col-md-1 gst-pct-col" style="display: none;">
                                     <label>GST (%)</label>
                                     <input type="number" step="0.01" min="0" max="100" name="items[0][gst_percent_display]" class="form-control gst-percent-display" placeholder="0">
                                 </div>
-                                <div class="col-md-2 gst-amt-col">
+                                <div class="col-md-1 gst-amt-col" style="display: none;">
                                     <label>GST Amount</label>
                                     <input type="number" step="0.01" min="0" name="items[0][gst_amount_display]" class="form-control gst-amount-display" placeholder="0">
                                 </div>
@@ -410,71 +410,98 @@
 
 
 
+            function updateRowGstVisibility($row) {
+                const selectedType = $('#invoiceType').val();
+                const $typeService = $row.find('.type-service-col');
+                const $quantity = $row.find('.qty-col');
+                const $priceCol = $row.find('.price-col');
+                const $amountCol = $row.find('.amount-col');
+                const $amount = $row.find('.amount');
+                const $gstOptCol = $row.find('.gst-option-col');
+                const $gstPctCol = $row.find('.gst-pct-col');
+                const $gstAmtCol = $row.find('.gst-amt-col');
+                const gstOptVal = $row.find('.gst-option-select').val();
+
+                if (selectedType === 'appointment') {
+                    $typeService.hide();
+                    $quantity.hide();
+                    $gstOptCol.hide();
+                    $gstPctCol.hide();
+                    $gstAmtCol.hide();
+                    $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-6');
+                    $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-6');
+                    $amountCol.find('.amount-label-default').show();
+                    $amountCol.find('.amount-label-total-bill').hide();
+                    $amount.removeClass('invoice-total-bill');
+                } else if (selectedType === 'discharge') {
+                    $typeService.hide();
+                    $quantity.hide();
+                    $amountCol.find('.amount-label-default').hide();
+                    $amountCol.find('.amount-label-total-bill').show();
+                    $amount.addClass('invoice-total-bill');
+                    $gstOptCol.show();
+
+                    if (gstOptVal === 'With GST') {
+                        $gstPctCol.show();
+                        $gstAmtCol.show();
+                        $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-3');
+                        $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-3');
+                        $gstOptCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
+                        $gstPctCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
+                        $gstAmtCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
+                    } else {
+                        $gstPctCol.hide();
+                        $gstAmtCol.hide();
+                        $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-4');
+                        $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-4');
+                        $gstOptCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-4');
+                    }
+                } else {
+                    // Standard multi-row types: treatment, medicine, service, therapy
+                    $typeService.show();
+                    $quantity.show();
+                    $gstOptCol.show();
+                    $amountCol.find('.amount-label-default').show();
+                    $amountCol.find('.amount-label-total-bill').hide();
+                    $amount.removeClass('invoice-total-bill');
+
+                    if (gstOptVal === 'With GST') {
+                        $gstPctCol.show();
+                        $gstAmtCol.show();
+                        // 3 + 1 + 2 + 2 + 2 + 1 + 1 = 12 cols
+                        $typeService.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-3');
+                        $quantity.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-1');
+                        $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
+                        $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
+                        $gstOptCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
+                        $gstPctCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-1');
+                        $gstAmtCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-1');
+                    } else {
+                        $gstPctCol.hide();
+                        $gstAmtCol.hide();
+                        // 4 + 2 + 2 + 2 + 2 = 12 cols
+                        $typeService.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-4');
+                        $quantity.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
+                        $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
+                        $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
+                        $gstOptCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
+                    }
+                }
+            }
+            window.updateRowGstVisibility = updateRowGstVisibility;
+
             function toggleFieldsByInvoiceType() {
                 const selectedType = $('#invoiceType').val();
 
+                if (selectedType === 'appointment' || selectedType === 'discharge') {
+                    $('#addRowBtn, #removeRowBtn').hide();
+                } else {
+                    $('#addRowBtn').show();
+                    toggleRemoveButton();
+                }
+
                 $('.invoice-item-row').each(function () {
-                    const $row = $(this);
-                    const $typeService = $row.find('.type-service-select').closest('[class*="col-"]');
-                    const $quantity = $row.find('.quantity').closest('[class*="col-"]');
-                    const $priceCol = $row.find('.price').closest('.price-col');
-                    const $amountCol = $row.find('.amount').closest('.amount-col');
-                    const $amount = $row.find('.amount');
-                    const $gstOptCol = $row.find('.gst-option-select').closest('.gst-option-col');
-                    const $gstPctCol = $row.find('.gst-pct-col');
-                    const $gstAmtCol = $row.find('.gst-amt-col');
-
-                    if (selectedType === 'appointment' || selectedType === 'discharge') {
-                        $typeService.hide();
-                        $quantity.hide();
-                        $('#addRowBtn, #removeRowBtn').hide();
-                        // reset sizing first
-                        $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-6');
-                        $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-6');
-                        $gstOptCol.show();
-                        $gstPctCol.show();
-                        $gstAmtCol.show();
-
-                        if (selectedType === 'discharge') {
-                            $amountCol.find('.amount-label-default').hide();
-                            $amountCol.find('.amount-label-total-bill').show();
-                            $amount.addClass('invoice-total-bill');
-
-                            // Discharge single row: col-md-3, col-md-3, col-md-2, col-md-2, col-md-2
-                            $priceCol.removeClass('col-md-6').addClass('col-md-3');
-                            $amountCol.removeClass('col-md-6').addClass('col-md-3');
-                            $gstOptCol.removeClass('col-md-6 col-md-4 col-md-2 col-md-1').addClass('col-md-2');
-                            $gstPctCol.removeClass('col-md-6 col-md-4 col-md-2 col-md-1').addClass('col-md-2');
-                            $gstAmtCol.removeClass('col-md-6 col-md-4 col-md-2 col-md-1').addClass('col-md-2');
-                        } else {
-                            $amountCol.find('.amount-label-default').show();
-                            $amountCol.find('.amount-label-total-bill').hide();
-                            $amount.removeClass('invoice-total-bill');
-
-                            // Appointment: remove GST fields entirely (only price + amount)
-                            $gstOptCol.hide();
-                            $gstPctCol.hide();
-                            $gstAmtCol.hide();
-                            $row.find('.gst-option-select').val('Without GST');
-                            $row.find('.gst-option-hidden').val('Without GST');
-                            $row.find('.gst-percent-display').val('');
-                            $row.find('.gst-amount-display').val('');
-                            $row.find('.product-gst-json').val('');
-                        }
-                    } else {
-                        $typeService.show();
-                        $quantity.show();
-                        $('#addRowBtn').show();
-                        toggleRemoveButton();
-                        $priceCol.removeClass('col-md-6 col-md-4 col-md-3').addClass('col-md-2');
-                        $amountCol.removeClass('col-md-6 col-md-4 col-md-3').addClass('col-md-2');
-                        $amountCol.find('.amount-label-default').show();
-                        $amountCol.find('.amount-label-total-bill').hide();
-                        $amount.removeClass('invoice-total-bill');
-                        $gstOptCol.show();
-                        $gstPctCol.show();
-                        $gstAmtCol.show();
-                    }
+                    updateRowGstVisibility($(this));
                 });
 
                 // Toggle Quick Add Treatment button (only visible when type === 'treatment')
@@ -770,6 +797,7 @@
                 });
 
                 populateTypeServiceSelect(row, selected);
+                updateRowGstVisibility(row);
 
                 rowIndex++;
                 updateGrandTotal();
@@ -821,6 +849,7 @@
             function setRowGstOption(row, option) {
                 row.find('.gst-option-select').val(option);
                 row.find('.gst-option-hidden').val(option);
+                updateRowGstVisibility(row);
             }
 
             function syncRowGstFromPercent(row) {
@@ -933,12 +962,14 @@
                         row.find('.price').val(parseFloat(price).toFixed(2));
                     }
 
-                    // GST: for service/medicine/therapy, if product has With GST, auto-fill
+                    // Auto-fill and calculate row amount (price * quantity)
+                    const rowAmt = calculateRowAmount(row);
+
+                    // GST: if product has With GST, auto-fill and show GST cols
                     const gstOption = selectedItem.gst_option || '';
                     const productGst = selectedItem.product_gst || (selectedItem.product_gst !== undefined && typeof selectedItem.product_gst === 'string' ? (() => { try { return JSON.parse(selectedItem.product_gst); } catch(e) { return null; } })() : null);
                     if ((gstOption === 'With GST' || gstOption === 'with_gst') && productGst && (Array.isArray(productGst) ? productGst.length : productGst)) {
                         setRowGstOption(row, 'With GST');
-                        const rowAmt = calculateRowAmount(row);
                         updateRowGstDisplay(row, Array.isArray(productGst) ? productGst : [productGst], rowAmt);
                     } else {
                         setRowGstOption(row, 'Without GST');
@@ -952,6 +983,7 @@
                     }
                 } else if (!selectedItem) {
                     row.find('.price').val('');
+                    calculateRowAmount(row);
                     setRowGstOption(row, 'Without GST');
                     updateRowGstDisplay(row, null);
                 }
@@ -963,11 +995,13 @@
                 updateGrandTotal();
             });
 
-            // When GST option changes, clear or show GST display
+            // When GST option changes, clear or show GST display and adjust column widths
             wrapper.on('change', '.gst-option-select', function () {
                 const row = $(this).closest('.invoice-item-row');
                 const val = $(this).val();
                 row.find('.gst-option-hidden').val(val);
+                updateRowGstVisibility(row);
+
                 if (val !== 'With GST') {
                     row.find('.gst-percent-display').val('');
                     row.find('.gst-amount-display').val('');
