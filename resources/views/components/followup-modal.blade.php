@@ -12,12 +12,28 @@ $treatments = DB::table('treatments')
 
 //$user = auth()->user(); // Get logged-in user
 
-$doctors = User::whereHas('role', function ($query) {
-    $query->where('name', 'Doctor');
-})->select('id', 'fullname', 'profile', 'created_by')->get();
+$doctorsQuery = User::where(function ($q) {
+    $q->where('role_id', 3)
+      ->orWhereHas('role', function ($r) {
+          $r->where('name', 'Doctor');
+      });
+})->get();
 
-//dd($patients);
-//print_r($doctor_id, $appointment_id);
+$adminsQuery = User::where(function ($q) {
+    $q->where('role_id', 2)
+      ->orWhereHas('role', function ($r) {
+          $r->where('name', 'Admin');
+      });
+})->get()->map(function ($admin) use ($user) {
+    if ($user && $admin->id === $user->id) {
+        $admin->fullname = $admin->fullname . ' (Self)';
+    } else {
+        $admin->fullname = $admin->fullname . ' (Admin)';
+    }
+    return $admin;
+});
+
+$doctors = $doctorsQuery->merge($adminsQuery);
 @endphp
 
 <!-- Follow-up Modal -->
