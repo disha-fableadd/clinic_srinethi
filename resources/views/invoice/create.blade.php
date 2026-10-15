@@ -119,11 +119,11 @@
                                 <div class="col-md-2 amount-col">
                                     <label class="amount-label-default">Amount</label>
                                     <label class="amount-label-total-bill" style="display:none;"><i class="fas fa-money-bill-wave icon-style"></i> Total Bill <span class="text-danger">*</span></label>
-                                    <input type="text" name="items[0][total]" class="form-control amount invoice-amount-input" readonly>
+                                    <input type="number" step="0.01" min="0" name="items[0][total]" class="form-control amount invoice-amount-input" value="0.00">
                                 </div>
                                 <div class="col-md-2 gst-option-col">
                                     <label>GST Option</label>
-                                    <select class="form-control gst-option-select" disabled>
+                                    <select class="form-control gst-option-select">
                                         <option value="Without GST" selected>Without GST</option>
                                         <option value="With GST">With GST</option>
                                     </select>
@@ -131,11 +131,11 @@
                                 </div>
                                 <div class="col-md-1 gst-pct-col">
                                     <label>GST (%)</label>
-                                    <input type="text" name="items[0][gst_percent_display]" class="form-control gst-percent-display" readonly placeholder="0">
+                                    <input type="number" step="0.01" min="0" max="100" name="items[0][gst_percent_display]" class="form-control gst-percent-display" placeholder="0">
                                 </div>
                                 <div class="col-md-2 gst-amt-col">
                                     <label>GST Amount</label>
-                                    <input type="text" name="items[0][gst_amount_display]" class="form-control gst-amount-display" readonly placeholder="0">
+                                    <input type="number" step="0.01" min="0" name="items[0][gst_amount_display]" class="form-control gst-amount-display" placeholder="0">
                                 </div>
                                 <input type="hidden" name="items[0][product_gst]" class="product-gst-json" value="">
                             </div>
@@ -686,7 +686,8 @@
             let totalGstAmount = 0;
             $('.invoice-item-row').each(function () {
                 const row = $(this);
-                subtotal += calculateRowAmount(row);
+                const amt = parseFloat(row.find('.amount').val()) || 0;
+                subtotal += amt;
                 if (row.find('.gst-option-select').val() === 'With GST') {
                     const gstAmt = parseFloat(row.find('.gst-amount-display').val()) || 0;
                     totalGstAmount += gstAmt;
@@ -822,6 +823,66 @@
                 row.find('.gst-option-hidden').val(option);
             }
 
+            function syncRowGstFromPercent(row) {
+                const rowAmt = parseFloat(row.find('.amount').val()) || 0;
+                const gstOpt = row.find('.gst-option-select').val();
+                if (gstOpt !== 'With GST') {
+                    return;
+                }
+                const pctVal = parseFloat(row.find('.gst-percent-display').val()) || 0;
+                const gstAmt = (rowAmt * pctVal) / 100;
+                row.find('.gst-amount-display').val(gstAmt.toFixed(2));
+
+                let existingGst = [];
+                try {
+                    const raw = row.find('.product-gst-json').val();
+                    if (raw) existingGst = JSON.parse(raw);
+                } catch(e) {}
+
+                if (Array.isArray(existingGst) && existingGst.length > 0) {
+                    const oldTotalRate = existingGst.reduce((sum, t) => sum + (parseFloat(t.tax_rate) || 0), 0);
+                    if (oldTotalRate > 0 && Math.abs(oldTotalRate - pctVal) < 0.01) {
+                        existingGst = existingGst.map(t => {
+                            const r = parseFloat(t.tax_rate) || 0;
+                            return { ...t, tax_amount: ((rowAmt * r) / 100).toFixed(2) };
+                        });
+                    } else {
+                        const name = existingGst.length === 1 ? (existingGst[0].tax_name || 'GST') : 'GST';
+                        existingGst = [{ tax_name: name, tax_rate: pctVal.toFixed(2), tax_amount: gstAmt.toFixed(2) }];
+                    }
+                } else if (pctVal > 0 || gstAmt > 0) {
+                    existingGst = [{ tax_name: 'GST', tax_rate: pctVal.toFixed(2), tax_amount: gstAmt.toFixed(2) }];
+                } else {
+                    existingGst = [];
+                }
+
+                row.find('.product-gst-json').val(existingGst.length > 0 ? JSON.stringify(existingGst) : '');
+            }
+
+            function syncRowGstFromAmount(row) {
+                const rowAmt = parseFloat(row.find('.amount').val()) || 0;
+                const gstOpt = row.find('.gst-option-select').val();
+                if (gstOpt !== 'With GST') {
+                    return;
+                }
+                const gstAmt = parseFloat(row.find('.gst-amount-display').val()) || 0;
+                let pctVal = 0;
+                if (rowAmt > 0) {
+                    pctVal = (gstAmt / rowAmt) * 100;
+                    row.find('.gst-percent-display').val(pctVal.toFixed(2));
+                }
+
+                let existingGst = [];
+                try {
+                    const raw = row.find('.product-gst-json').val();
+                    if (raw) existingGst = JSON.parse(raw);
+                } catch(e) {}
+
+                const name = (Array.isArray(existingGst) && existingGst.length === 1) ? (existingGst[0].tax_name || 'GST') : 'GST';
+                existingGst = [{ tax_name: name, tax_rate: pctVal.toFixed(2), tax_amount: gstAmt.toFixed(2) }];
+                row.find('.product-gst-json').val(JSON.stringify(existingGst));
+            }
+
             // Handle changes to rows
             wrapper.on('input change', '.quantity, .price, .type-service-select', function () {
                 const row = $(this).closest('.invoice-item-row');
@@ -887,14 +948,7 @@
                     // Quantity or price changed: recalc amount and GST for this row
                     calculateRowAmount(row);
                     if (row.find('.gst-option-select').val() === 'With GST') {
-                        const productGstJson = row.find('.product-gst-json').val();
-                        if (productGstJson) {
-                            try {
-                                const productGst = JSON.parse(productGstJson);
-                                const rowAmt = parseFloat(row.find('.amount').val()) || 0;
-                                updateRowGstDisplay(row, productGst, rowAmt);
-                            } catch (e) {}
-                        }
+                        syncRowGstFromPercent(row);
                     }
                 } else if (!selectedItem) {
                     row.find('.price').val('');
@@ -918,7 +972,55 @@
                     row.find('.gst-percent-display').val('');
                     row.find('.gst-amount-display').val('');
                     row.find('.product-gst-json').val('');
+                } else {
+                    let pct = parseFloat(row.find('.gst-percent-display').val());
+                    if (isNaN(pct) || pct <= 0) {
+                        const opt = row.find('.type-service-select option:selected');
+                        const productGstData = opt.attr('data-product-gst');
+                        if (productGstData) {
+                            try {
+                                const parsed = JSON.parse(productGstData);
+                                const rowAmt = parseFloat(row.find('.amount').val()) || 0;
+                                updateRowGstDisplay(row, parsed, rowAmt);
+                            } catch(e) {}
+                        }
+                    }
+                    syncRowGstFromPercent(row);
                 }
+                updateGrandTotal();
+            });
+
+            // When Amount is manually changed
+            wrapper.on('input change', '.amount', function () {
+                const row = $(this).closest('.invoice-item-row');
+                const amt = parseFloat($(this).val()) || 0;
+                const qty = parseFloat(row.find('.quantity').val()) || 1;
+                if (qty > 0) {
+                    row.find('.price').val((amt / qty).toFixed(2));
+                }
+                syncRowGstFromPercent(row);
+                updateGrandTotal();
+            });
+
+            // When GST (%) is manually changed
+            wrapper.on('input change', '.gst-percent-display', function () {
+                const row = $(this).closest('.invoice-item-row');
+                const pct = parseFloat($(this).val());
+                if (!isNaN(pct) && pct > 0 && row.find('.gst-option-select').val() !== 'With GST') {
+                    setRowGstOption(row, 'With GST');
+                }
+                syncRowGstFromPercent(row);
+                updateGrandTotal();
+            });
+
+            // When GST Amount is manually changed
+            wrapper.on('input change', '.gst-amount-display', function () {
+                const row = $(this).closest('.invoice-item-row');
+                const amt = parseFloat($(this).val());
+                if (!isNaN(amt) && amt > 0 && row.find('.gst-option-select').val() !== 'With GST') {
+                    setRowGstOption(row, 'With GST');
+                }
+                syncRowGstFromAmount(row);
                 updateGrandTotal();
             });
 
