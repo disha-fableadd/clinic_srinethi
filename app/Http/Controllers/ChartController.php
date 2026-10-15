@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class ChartController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $projectType = Setting::where('key', 'project_type_id')->value('value');
 
@@ -15,7 +15,6 @@ class ChartController extends Controller
             return view('chart_physio');
         }
 
-        // Hospital + Dental
         return view('chart');
     }
 }

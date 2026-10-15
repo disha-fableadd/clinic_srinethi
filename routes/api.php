@@ -536,6 +536,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/search', [SearchController::class, 'search']); //done
 
     Route::get('/chart-data', [chartController::class, 'getChartData']); //done
+    Route::get('/report-overview', [chartController::class, 'getReportOverview']); // report page stats & overview
 
     Route::post('/send-sms', [SmsController::class, 'sendSms'])->name('send.sms'); //done
 
