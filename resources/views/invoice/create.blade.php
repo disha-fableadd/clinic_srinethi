@@ -1135,6 +1135,12 @@
                 $('#branch_id').val(branchId);
 
                 const formData = new FormData(this);
+                if (!formData.get('discount_type')) {
+                    formData.set('discount_type', 'fixed_amount');
+                }
+                if (!formData.get('discount')) {
+                    formData.set('discount', '0');
+                }
                 console.log('branch_id from form:', formData.get('branch_id'));
                 $.ajax({
                     url: '/api/invoice', // update to your endpoint

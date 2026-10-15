@@ -242,28 +242,48 @@
 
     <div class="invoice-wrapper">
 
+        @php
+            $displayClinicName = $clinic_name ?? \App\Models\Setting::where('key', 'clinic_name')->value('value') ?? 'Srinethi Clinic & Lakshmi Lab';
+            $displayClinicLogo = $clinic_logo ?? null;
+            if (!$displayClinicLogo) {
+                $rawLogo = \App\Models\Setting::where('key', 'clinic_logo')->value('value');
+                if ($rawLogo && file_exists(public_path($rawLogo))) {
+                    $displayClinicLogo = public_path($rawLogo);
+                } elseif (file_exists(public_path('admin/assets/img/cliniclogo.png'))) {
+                    $displayClinicLogo = public_path('admin/assets/img/cliniclogo.png');
+                }
+            }
+            $displayClinicPhone = $clinic_phone ?? \App\Models\Setting::where('key', 'clinic_phone')->value('value');
+            $displayClinicEmail = $clinic_email ?? \App\Models\Setting::where('key', 'clinic_email')->value('value');
+            $displayClinicAddress = $clinic_address ?? \App\Models\Setting::where('key', 'clinic_address')->value('value');
+            $displayClinicCity = $clinic_city ?? \App\Models\Setting::where('key', 'clinic_city')->value('value');
+            $displayClinicState = $clinic_state ?? \App\Models\Setting::where('key', 'clinic_state')->value('value');
+            $addressParts = array_filter([$displayClinicAddress ?? '', $displayClinicCity ?? '', $displayClinicState ?? '']);
+        @endphp
+
         <!-- Header -->
         <table class="header-table">
             <tr>
-                <td style="width: 45%; vertical-align: middle;">
-                    @if(!empty($clinic_logo))
-                        <img src="{{ $clinic_logo }}" alt="Clinic Logo" style="max-height: 60px; max-width: 190px;">
+                <td style="width: 40%; vertical-align: middle;">
+                    @if(!empty($displayClinicLogo) && file_exists($displayClinicLogo))
+                        <img src="{{ $displayClinicLogo }}" alt="Clinic Logo" style="max-height: 65px; max-width: 190px;">
+                    @elseif(!empty($displayClinicLogo) && (str_starts_with($displayClinicLogo, 'http') || str_starts_with($displayClinicLogo, '/')))
+                        <img src="{{ $displayClinicLogo }}" alt="Clinic Logo" style="max-height: 65px; max-width: 190px;">
                     @else
-                        <div class="clinic-title">{{ $clinic_name ?? 'Clinic Name' }}</div>
+                        <div class="clinic-title">{{ $displayClinicName }}</div>
                     @endif
                 </td>
-                <td style="width: 55%; text-align: right; vertical-align: middle;">
-                    <div class="clinic-title">{{ $clinic_name ?? 'Clinic Name' }}</div>
-                    @php
-                        $addressParts = array_filter([$clinic_address ?? '', $clinic_city ?? '', $clinic_state ?? '']);
-                    @endphp
+                <td style="width: 60%; text-align: right; vertical-align: middle;">
+                    <div class="clinic-title">{{ $displayClinicName }}</div>
                     @if(!empty($addressParts))
                         <div class="clinic-sub">
                             {{ implode(', ', $addressParts) }}
                         </div>
                     @endif
                     <div class="clinic-sub">
-                        PHONE: {{ $displayVal($clinic_phone ?? '') }} | EMAIL: {{ $displayVal($clinic_email ?? '') }}
+                        @if(!empty($displayClinicPhone))PHONE: {{ $displayClinicPhone }}@endif
+                        @if(!empty($displayClinicPhone) && !empty($displayClinicEmail)) | @endif
+                        @if(!empty($displayClinicEmail))EMAIL: {{ $displayClinicEmail }}@endif
                     </div>
                 </td>
             </tr>
@@ -502,19 +522,15 @@
                         @endif
                     </td>
                     <td class="signatory-cell">
-                        <div style="font-size: 10px; color: #0c4b33; margin-bottom: 45px;">For, Fablead Developer</div>
+                        <div style="font-size: 10px; color: #0c4b33; margin-bottom: 45px;">For, {{ $displayClinicName }}</div>
                         <div style="font-size: 10px; color: #0c4b33;">Authorized Signatory</div>
                     </td>
                 </tr>
             </table>
         @endif
 
-        <!-- Footer Note -->
-        <div class="footer-note">
-            For more information or any issues or concerns, email us at
-            <strong>{{ $clinic_email ?? 'clinic@example.com' }}</strong> or contact
-            <strong>{{ $clinic_phone ?? '9876543210' }}</strong>
-        </div>
+       
+     
 
     </div>
 
