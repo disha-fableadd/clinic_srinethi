@@ -137,9 +137,9 @@
                         <input type="number" class="form-control" name="price" placeholder="Enter Price" min="0" step="0.01" required>
                     </div>
                     <div class="form-group mb-3">
-                        <label class="font-weight-bold mb-1"><i class="fas fa-user-md icon-style"></i> Doctor</label>
-                        <select class="form-control" name="doctor_id" id="quickTreatmentDoctorSelect">
-                            <option value="">Select Doctor (Optional)</option>
+                        <label class="font-weight-bold mb-1"><i class="fas fa-user-md icon-style"></i> Doctor <span class="text-danger">*</span></label>
+                        <select class="form-control" name="doctor_id" id="quickTreatmentDoctorSelect" required>
+                            <option value="">Select Doctor</option>
                         </select>
                     </div>
                     <div class="form-group mb-2">
@@ -420,7 +420,7 @@
                 xhrFields: { withCredentials: true },
                 success: function(response) {
                     let doctors = response.doctors || response.data || [];
-                    $select.empty().append('<option value="">Select Doctor (Optional)</option>');
+                    $select.empty().append('<option value="">Select Doctor</option>');
                     $.each(doctors, function(index, doctor) {
                         let name = (doctor.fullname || doctor.name || '');
                         if (name) {
@@ -583,6 +583,9 @@
                     required: true,
                     number: true,
                     min: 0
+                },
+                doctor_id: {
+                    required: true
                 }
             },
             {
@@ -594,6 +597,9 @@
                     required: "Please enter price",
                     number: "Please enter a valid number",
                     min: "Price cannot be negative"
+                },
+                doctor_id: {
+                    required: "Please select a doctor"
                 }
             },
             function() {

@@ -698,8 +698,15 @@
         const appointments = @json($appointments);
         const therapies = @json($therapies ?? []);
 
-        function loadTreatments(selectedId = null) {
+        let lastQuickAddTreatmentRow = null;
+        $(document).on('click', '.quick-add-treatment-btn', function () {
+            lastQuickAddTreatmentRow = $(this).closest('.invoice-item-row');
+        });
+
+        function loadTreatments(selectedId = null, targetRow = null) {
             let branchId = (typeof getBranchId === 'function') ? getBranchId() : (localStorage.getItem('selectedBranchId') || '1');
+            const $target = (targetRow && targetRow.length) ? targetRow : (lastQuickAddTreatmentRow && lastQuickAddTreatmentRow.length ? lastQuickAddTreatmentRow : null);
+            
             return $.ajax({
                 url: "/api/treatments",
                 type: "GET",
@@ -709,17 +716,38 @@
                     treatments = data.treatments || [];
                     const currentType = $('#invoiceType').val();
                     if (currentType === 'treatment') {
-                        $('#dynamicFieldsWrapper .invoice-item-row').each(function(idx) {
-                            const $row = $(this);
-                            populateTypeServiceSelect($row, 'treatment');
-                            if (selectedId && idx === 0) {
-                                $row.find('.type-service-select').val(selectedId).trigger('change');
+                        const allRows = $('#dynamicFieldsWrapper .invoice-item-row');
+                        
+                        // First, if we have a target row and a newly created treatment, assign it to that target row
+                        if (selectedId && $target && $target.length) {
+                            populateTypeServiceSelect($target, 'treatment');
+                            $target.find('.type-service-select').val(selectedId).trigger('change');
+                        } else if (selectedId && allRows.length > 0) {
+                            // Fallback: if no target row tracked, find first empty row or default to row 0
+                            let $emptyRow = allRows.filter(function() {
+                                return !$(this).find('.type-service-select').val();
+                            }).first();
+                            if (!$emptyRow.length) {
+                                $emptyRow = allRows.first();
                             }
+                            populateTypeServiceSelect($emptyRow, 'treatment');
+                            $emptyRow.find('.type-service-select').val(selectedId).trigger('change');
+                        }
+
+                        // Then refresh remaining rows so the new item shows in their dropdown options as well
+                        allRows.each(function() {
+                            const $r = $(this);
+                            if ($target && $r.is($target)) {
+                                return; // already populated and selected
+                            }
+                            populateTypeServiceSelect($r, 'treatment');
                         });
                     }
+                    lastQuickAddTreatmentRow = null; // reset
                 },
                 error: function(xhr) {
                     console.error("API Error loading treatments:", xhr.status, xhr.responseText);
+                    lastQuickAddTreatmentRow = null;
                 }
             });
         }
@@ -908,7 +936,12 @@
                     }
                 });
 
-                row.find('.quick-add-treatment-btn').remove();
+                // Ensure quick-add button visibility matches current invoice type
+                if (selected === 'treatment') {
+                    row.find('.quick-add-treatment-btn').show();
+                } else {
+                    row.find('.quick-add-treatment-btn').hide();
+                }
 
                 $('#dynamicFieldsWrapper').append(row);
 

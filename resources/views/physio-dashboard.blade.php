@@ -97,23 +97,71 @@
 
     <style>
         .height-card {
-            height: 540px;
+            height: 480px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-row-cards {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-row-cards > [class*='col-'] {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calender-apointment {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .calender-apointment > [class*='col-'] {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calender-apointment .card {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 30px;
+        }
+
+        .calender-card #calendar {
+            height: 100% !important;
+            min-height: 490px;
+        }
+
+        .dashboard-upcoming-body {
+            height: 440px !important;
+            overflow-y: auto !important;
+        }
+
+        .dashboard-patient-body {
+            height: 410px;
+            overflow-y: auto;
+        }
+
+        .graph {
+            width: 100% !important;
+            height: 400px !important;
+        }
+
+        #appointmentStatusChart_admin {
+            width: 100% !important;
+            height: 400px !important;
+            position: relative;
         }
 
         #appointmentStatusChart_admin canvas {
-            position: absolute;
+            width: 100% !important;
+            height: 100% !important;
+            position: relative !important;
             left: 0px;
             top: 0px;
-            /* width: 500px !important; */
-            height: 454px !important;
-            user-select: none;
-            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-            padding: 0px;
-            margin: 0px;
-            border-width: 0px;
         }
-
-
 
         .status-dot {
             width: 15px;
@@ -125,36 +173,24 @@
 
         .upcoming {
             background-color: #007bff;
-            /* Blue */
         }
 
         .confirmed {
-            /* Cyan */
-            /* background-color: #17a2b8; */
             background-color: #005c6b;
         }
 
         .completed {
             background-color: #28a745;
-            /* Green */
         }
 
         .cancelled {
             background-color: #dc3545;
-            /* Red */
         }
 
         .follow-up {
             background-color: #ffc107;
-            /* Yellow */
             color: #000;
         }
-
-        .graph {
-            width: 580px;
-            height: 430px;
-        }
-
 
         .upcoming:hover,
         .confirmed:hover,
@@ -696,7 +732,7 @@
                                             class="fas fa-arrow-right ml-1"></i></a>
                                 @endif
                             </div>
-                            <div class="card-body " style="height: 430px;overflow-y: scroll;">
+                            <div class="card-body dashboard-upcoming-body">
                                 <div class="table-responsive">
                                     <table class="table custom-table12 tbl1">
                                         <thead style="background-color:rgb(233 152 136);" class="text-center">
@@ -1002,7 +1038,7 @@
 
 
                             </div>
-                            <div class="card-body" style="height: 445px;overflow-y: scroll;">
+                            <div class="card-body dashboard-patient-body">
                                 <div class="table-responsive">
                                     <table class="table custom-table patient-tbl">
                                         <thead style="background-color:#ff8e29;">
