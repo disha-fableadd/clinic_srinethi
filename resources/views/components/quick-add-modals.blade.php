@@ -402,6 +402,50 @@
             }
         });
 
+        // Auto-load doctors into quickTreatmentDoctorSelect
+        function loadQuickTreatmentDoctors(selectedId) {
+            let token = getToken();
+            let branchId = getBranchId();
+            let $select = $('#quickTreatmentDoctorSelect');
+            if (!$select.length) return;
+
+            let prevVal = selectedId !== undefined ? selectedId : $select.val();
+
+            $.ajax({
+                url: "{{ url('/api/doctors') }}",
+                type: "GET",
+                data: { branch_id: branchId },
+                dataType: "json",
+                headers: token ? { "Authorization": "Bearer " + token } : {},
+                xhrFields: { withCredentials: true },
+                success: function(response) {
+                    let doctors = response.doctors || response.data || [];
+                    $select.empty().append('<option value="">Select Doctor (Optional)</option>');
+                    $.each(doctors, function(index, doctor) {
+                        let name = (doctor.fullname || doctor.name || '');
+                        if (name) {
+                            name = name.charAt(0).toUpperCase() + name.slice(1);
+                        }
+                        $select.append(`<option value="${doctor.id}">${name}</option>`);
+                    });
+                    if (prevVal) {
+                        $select.val(prevVal);
+                    }
+                },
+                error: function(xhr) {
+                    console.warn("Could not load doctors for quick treatment modal:", xhr.status, xhr.responseText);
+                }
+            });
+        }
+
+        // Fetch doctors whenever Add Treatment modal is opened
+        $('#quickAddTreatmentModal').on('show.bs.modal', function() {
+            loadQuickTreatmentDoctors();
+        });
+
+        // Initial load of doctors if select is present
+        loadQuickTreatmentDoctors();
+
         // Setup jQuery Validation for a form
         function setupValidation(formSelector, rules, messages, submitHandler) {
             let $form = $(formSelector);

@@ -55,7 +55,6 @@ class DashboardController extends Controller
                 'medicineCount' => 0,
                 'appointmentsToday' => collect(),
                 'followupsToday' => collect(),
-                'expiredPlans' => collect(),
                 'planExpirationWarning' => $planExpirationWarning,
             ]);
         }
@@ -73,28 +72,20 @@ class DashboardController extends Controller
             ->whereDate('date', Carbon::today())
             ->where('branch_id', $branchId);
 
-        $expiredPlansQuery = TreatmentBooking::with(['patient', 'treatment'])
-            ->where('branch_id', $branchId);
-
         // Role-based filters
         if ($user->role->name == 'Doctor') {
             $appointmentsQuery->where('doctor_id', $userId);
             $followupsQuery->where('doctor_id', $userId);
-            $expiredPlansQuery->whereHas('treatment', function ($q) use ($userId) {
-                $q->where('doctor_id', $userId);
-            });
         } elseif ($user->role->name == 'Patient') {
             $patient = Patients::where('login_patient_id', $userId)->first();
             if ($patient) {
                 $appointmentsQuery->where('patient_id', $patient->id);
                 $followupsQuery->where('patient_id', $patient->id);
-                $expiredPlansQuery->where('patient_id', $patient->id);
             } else {
                 return view($viewName, [
                     'medicineCount' => $medicineCount,
                     'appointmentsToday' => collect(),
                     'followupsToday' => collect(),
-                    'expiredPlans' => collect()
                 ]);
             }
         }
@@ -103,27 +94,10 @@ class DashboardController extends Controller
         $appointmentsToday = $appointmentsQuery->get();
         $followupsToday = $followupsQuery->get();
 
-        // Expired treatment plans filter
-        $expiredPlans = $expiredPlansQuery->get()->filter(function ($plan) {
-            $createdAt = Carbon::parse($plan->created_at);
-            $today = Carbon::today();
-
-            if ($plan->plan === 'monthly') {
-                return $createdAt->addMonth()->isSameDay($today);
-            }
-
-            if ($plan->plan === 'weekly') {
-                return $createdAt->addWeek()->isSameDay($today);
-            }
-
-            return false;
-        });
-
         return view($viewName, compact(
             'medicineCount',
             'appointmentsToday',
             'followupsToday',
-            'expiredPlans',
             'planExpirationWarning'
         ));
     }

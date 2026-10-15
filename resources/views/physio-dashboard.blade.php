@@ -1713,54 +1713,7 @@
                             </div>
                         @endif
 
-                        <hr />
-                        <h5 class="mt-4 mb-3 font-weight-bold">Expired Treatment Plans</h5>
-                        @if ($expiredPlans->isEmpty())
-                            <p class="text-muted">No treatment plans expiring today.</p>
-                        @else
-                            <div class="row">
-                                @foreach ($expiredPlans as $plan)
-                                    <div class="col-md-12 mb-3">
-                                        <a href="{{ route('treatment.show', $plan->id) }}"
-                                            class="text-decoration-none text-dark view-plan" data-id="{{ $plan->id }}"
-                                            style="cursor: pointer;">
-                                            <div class="card shadow-sm border rounded-3 m-0">
-                                                <div class="card-body py-3">
-                                                    <div class="d-flex justify-content-between">
-                                                        <div>
-                                                            <h5 class="card-title">
-                                                                Patient:
-                                                                <strong>{{ $plan->patient->fullname ?? '-' }}</strong> <br>
-                                                                Treatment:
-                                                                <strong>{{ $plan->treatment->name ?? '-' }}</strong>
-                                                            </h5>
-                                                        </div>
-                                                        <div>
-                                                            <span class="badge"
-                                                                style="padding: 8px 15px;background-color: #f5b6a5 !important;border-radius: 50px !important;font-size: 12px;">
-                                                                Expiring Today
-                                                            </span>
 
-                                                        </div>
-                                                    </div>
-                                                    <p class="card-text mb-0">
-                                                        Plan: <strong>{{ ucfirst($plan->plan ?? '-') }}</strong> |
-                                                        Remaining Amount: <strong>{{ $plan->remain_amount }}</strong> <br>
-                                                        <span class="text-danger">
-                                                            ⚠️ This treatment plan will expire today
-                                                            ({{ \Carbon\Carbon::parse($plan->payment_date)->format('d M Y') }})
-                                                        </span>
-                                                    </p>
-
-
-
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
 
 
                     </div>

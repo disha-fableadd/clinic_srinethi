@@ -43,9 +43,16 @@
                         <input type="hidden" name="branch_id" id="branch_id">
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label>Patient <span class="text-danger">*</span></label>
-
-
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <label class="mb-0">Patient <span class="text-danger">*</span></label>
+                                    @if (app('hasPermission')(5, 'create'))
+                                        <button type="button" class="btn btn-sm quick-modal-add-sm-btn"
+                                            data-bs-toggle="modal" data-bs-target="#quickAddPatientModal"
+                                            data-toggle="modal" data-target="#quickAddPatientModal">
+                                            <i class="fas fa-plus"></i> Add
+                                        </button>
+                                    @endif
+                                </div>
                                 <select class="form-control select2" name="patient_id" id="patientDropdown" required>
                                     <option value="">Select Patient</option>
                                 </select>
@@ -79,16 +86,19 @@
                             </script>
                         </div>
 
-                       
-
-
-
-
-
                         <div id="dynamicFieldsWrapper">
                             <div class="row mb-2 invoice-item-row align-items-end">
-                                <div class="col-md-2">
-                                    <label>Type/Service</label>
+                                <div class="col-md-2 type-service-col">
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <label class="mb-0">Type/Service</label>
+                                        @if (app('hasPermission')(7, 'create'))
+                                            <button type="button" class="btn btn-sm quick-modal-add-sm-btn quick-add-treatment-btn"
+                                                data-bs-toggle="modal" data-bs-target="#quickAddTreatmentModal"
+                                                data-toggle="modal" data-target="#quickAddTreatmentModal">
+                                                <i class="fas fa-plus"></i> 
+                                            </button>
+                                        @endif
+                                    </div>
                                     <select name="items[0][type_service]" class="form-control type-service-select select2">
                                         <option value="">Select</option>
                                         {{-- options will be added dynamically --}}
@@ -259,6 +269,8 @@
         </div>
     </div>
 
+    @include('components.quick-add-modals')
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -334,59 +346,65 @@
             $('.select2-search__field').attr('placeholder', 'Search Type');
         });
 
+        function getBranchId() {
+            let b = localStorage.getItem('selectedBranchId');
+            return (b && b !== 'null' && b !== 'undefined' && b !== '') ? b : '1';
+        }
+
         $(document).ready(function () {
 
+            let branchId = getBranchId();
+            $('#branch_id').val(branchId);
 
+            function loadPatients(selectedId = null) {
+                let currentBranchId = getBranchId();
+                $.ajax({
+                    url: "/api/patientss",
+                    type: "GET",
+                    dataType: "json",
+                    data: { branch_id: currentBranchId },
+                    success: function (response) {
+                        let patientDropdown = $('#patientDropdown');
 
-            let branchId = localStorage.getItem('selectedBranchId');
+                        if (patientDropdown.length === 0) {
+                            console.error("Dropdown not found! Check your HTML.");
+                            return;
+                        }
 
-            if (!branchId) {
-                Swal.fire('Error', 'Please select a branch first.', 'error');
-                return;
+                        patientDropdown.empty().append('<option value="">Select Patient</option>');
+
+                        if (!response.patients || response.patients.length === 0) {
+                            console.warn("No patients found for this branch.");
+                            return;
+                        }
+
+                        $.each(response.patients, function (index, patient) {
+                            patientDropdown.append(
+                                `<option value="${patient.id}" data-treatment-id="${patient.treatment_id}">${patient.fullname}</option>`
+                            );
+                        });
+
+                        patientDropdown.select2({
+                            placeholder: "Select Patient",
+                            allowClear: true,
+                            width: '100%'
+                        });
+
+                        patientDropdown.on('select2:open', function () {
+                            $('.select2-search__field').attr('placeholder', 'Search Patient');
+                        });
+
+                        if (selectedId) {
+                            patientDropdown.val(selectedId).trigger('change');
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error("API Error:", xhr.status, xhr.responseText);
+                    }
+                });
             }
-
-            $.ajax({
-                url: "/api/patientss",
-                type: "GET",
-                dataType: "json",
-                data: { branch_id: branchId }, // ✅ send branch_id as query param
-                success: function (response) {
-                    let patientDropdown = $('#patientDropdown');
-
-                    if (patientDropdown.length === 0) {
-                        console.error("Dropdown not found! Check your HTML.");
-                        return;
-                    }
-
-                    patientDropdown.empty().append('<option value="">Select Patient</option>');
-
-                    if (!response.patients || response.patients.length === 0) {
-                        console.warn("No patients found for this branch.");
-                        return;
-                    }
-
-                    $.each(response.patients, function (index, patient) {
-                        patientDropdown.append(
-                            `<option value="${patient.id}" data-treatment-id="${patient.treatment_id}">${patient.fullname}</option>`
-                        );
-                    });
-
-                    // Initialize Select2
-                    patientDropdown.select2({
-                        placeholder: "Select Patient",
-                        allowClear: true,
-                        width: '100%'
-                    });
-
-                    // Set search input placeholder
-                    patientDropdown.on('select2:open', function () {
-                        $('.select2-search__field').attr('placeholder', 'Search Patient');
-                    });
-                },
-                error: function (xhr) {
-                    console.error("API Error:", xhr.status, xhr.responseText);
-                }
-            });
+            window.loadPatients = loadPatients;
+            loadPatients();
 
 
 
@@ -458,6 +476,13 @@
                         $gstAmtCol.show();
                     }
                 });
+
+                // Toggle Quick Add Treatment button (only visible when type === 'treatment')
+                if (selectedType === 'treatment') {
+                    $('.quick-add-treatment-btn').show();
+                } else {
+                    $('.quick-add-treatment-btn').hide();
+                }
             }
 
             // Initial load
@@ -549,10 +574,37 @@
 
     <script>
         const services = @json($services);
-        const treatments = @json($treatments);
+        let treatments = @json($treatments);
         const medicines = @json($medicines);
         const appointments = @json($appointments);
         const therapies = @json($therapies ?? []);
+
+        function loadTreatments(selectedId = null) {
+            let branchId = (typeof getBranchId === 'function') ? getBranchId() : (localStorage.getItem('selectedBranchId') || '1');
+            return $.ajax({
+                url: "/api/treatments",
+                type: "GET",
+                data: { branch_id: branchId },
+                xhrFields: { withCredentials: true },
+                success: function(data) {
+                    treatments = data.treatments || [];
+                    const currentType = $('#invoiceType').val();
+                    if (currentType === 'treatment') {
+                        $('#dynamicFieldsWrapper .invoice-item-row').each(function(idx) {
+                            const $row = $(this);
+                            populateTypeServiceSelect($row, 'treatment');
+                            if (selectedId && idx === 0) {
+                                $row.find('.type-service-select').val(selectedId).trigger('change');
+                            }
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    console.error("API Error loading treatments:", xhr.status, xhr.responseText);
+                }
+            });
+        }
+        window.loadTreatments = loadTreatments;
 
         let rowIndex = 1;
 
@@ -705,6 +757,8 @@
                         }
                     }
                 });
+
+                row.find('.quick-add-treatment-btn').remove();
 
                 $('#dynamicFieldsWrapper').append(row);
 
@@ -941,12 +995,7 @@
                     });
                     return; // stop submission
                 }
-                let branchId = localStorage.getItem('selectedBranchId');
-                if (!branchId) {
-                    Swal.fire('Error', 'Please select a branch first', 'error');
-                    return;
-                }
-
+                let branchId = getBranchId();
                 $('#branch_id').val(branchId);
 
                 const formData = new FormData(this);
@@ -982,6 +1031,25 @@
                     }
                 });
             });
+
+            // Initialize shared Quick Add Modals
+            let token = @json(session('access_token')) || localStorage.getItem('authToken');
+            if (typeof window.initQuickAddModals === 'function') {
+                window.initQuickAddModals({
+                    getToken: function() { return token; },
+                    getBranchId: function() { return getBranchId(); },
+                    onPatientAdded: function(newId) {
+                        if (typeof window.loadPatients === 'function') {
+                            window.loadPatients(newId);
+                        }
+                    },
+                    onTreatmentAdded: function(newId) {
+                        if (typeof window.loadTreatments === 'function') {
+                            window.loadTreatments(newId);
+                        }
+                    }
+                });
+            }
 
         });
     </script>
