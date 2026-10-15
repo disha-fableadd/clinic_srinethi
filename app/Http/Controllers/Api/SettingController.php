@@ -1166,6 +1166,13 @@ class SettingController extends Controller
                 return $row;
             });
 
+            $discount_type = (!empty($request->discount_type) && in_array($request->discount_type, ['fixed_amount', 'percentage'])) 
+                ? $request->discount_type 
+                : 'fixed_amount';
+            $discount = (!empty($request->discount) && is_numeric($request->discount)) 
+                ? floatval($request->discount) 
+                : 0;
+
             // Step 6: Prepare Invoice Data
             $invoiceData = [
                 'invoice_no' => rand(1000, 9999),
@@ -1179,8 +1186,8 @@ class SettingController extends Controller
                 'grand_total' => $request->grandTotal,
                 'invoice_type' => $invoice_type,
                 'tax' => $request->input('tax', 0),
-                'discount_type' => $request->discount_type,
-                'discount' => $request->discount,
+                'discount_type' => $discount_type,
+                'discount' => $discount,
                 'clinic_address' => $settings['clinic_address'] ?? '',
                 'clinic_phone' => $settings['clinic_phone'] ?? '',
                 'clinic_state' => $settings['clinic_state'] ?? '',
@@ -1223,8 +1230,8 @@ class SettingController extends Controller
                 'types_details' => $services,
                 'grand_total' => $request->grandTotal,
                 'tax' => $request->input('tax', 0),
-                'discount_type' => $request->discount_type,
-                'discount' => $request->discount,
+                'discount_type' => $discount_type,
+                'discount' => $discount,
                 'payment_type' => $request->payment_type,
                 'payment_status' => $request->payment_status,
             ]);

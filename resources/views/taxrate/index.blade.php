@@ -1,4 +1,4 @@
-﻿@extends('layout.app')
+@extends('layout.app')
 <style>
     .custom-close {
         background-color: #f5b6a5 !important;
@@ -34,30 +34,34 @@
         border-radius: 9px !important;
     }
 
-    button.btn.action-btn.edit-taxrate.icon1,
-    button.btn.action-btn.delete-taxrate.icon2 {
+    /* Clean action icon styling consistent with other tables */
+    .icon {
+        font-size: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .icon .icon1,
+    .icon .icon2 {
         padding: 8px;
         background-color: #f89884;
         color: white;
         border-radius: 10px;
-    }
-
-    .action-btn {
-        background-color: #f89884 !important;
-        color: white !important;
-        border-radius: 50%;
-        width: 35px;
-        height: 35px;
+        margin: 0 4px;
+        cursor: pointer;
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        width: 32px;
+        height: 32px;
         border: none;
-        margin: 0 2px;
     }
 
-    .action-btn:hover {
-        background-color: #e58773 !important;
-        color: white !important;
+    .icon .icon1:hover,
+    .icon .icon2:hover {
+        background-color: #e58773;
+        color: white;
     }
 
     .details-row {
@@ -83,7 +87,8 @@
 
     #taxratetbl thead th {
         vertical-align: middle !important;
-        padding: 8px !important;
+        padding: 10px 8px !important;
+        color: white !important;
     }
 
     .card-header {
@@ -150,8 +155,9 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table id="taxratetbl" class="table">
-                                    <thead>
+                                <div id="demo_info" class="box"></div>
+                                <table id="taxratetbl" class="table custom-table">
+                                    <thead style="background-color:#f89884;" class="text-center">
                                         <tr>
                                             <th>Taxname</th>
                                             <th class="d-none d-md-table-cell">Tax%</th>
@@ -395,21 +401,18 @@
                             {
                                 data: null,
                                 render: function(data, type, row) {
-                                    let buttons = '<div class="action-buttons">';
+                                    let buttons = '<div class="icon" style="cursor:pointer;">';
                                     @if (app('hasPermission')(36, 'update'))
-                                        buttons += `<button class="btn action-btn edit-taxrate icon1" data-id="${row.id}" title="Edit">
-                                        <i class="fa fa-pencil"></i>
-                                    </button>`;
+                                        buttons += `<i class="fa fa-pencil m-r-5 icon1 edit-taxrate" data-id="${row.id}" title="Edit"></i>`;
                                     @endif
                                     @if (app('hasPermission')(36, 'delete'))
-                                        buttons += `<button class="btn action-btn delete-taxrate icon2" data-id="${row.id}" title="Delete">
-                                        <i class="fa fa-trash-o"></i>
-                                    </button>`;
+                                        buttons += `<i class="fa fa-trash-o m-r-5 icon2 delete-taxrate" data-id="${row.id}" title="Delete"></i>`;
                                     @endif
                                     buttons += '</div>';
                                     return buttons;
                                 },
-                                className: "d-none d-md-table-cell text-center"
+                                className: "d-none d-md-table-cell text-center",
+                                orderable: false
                             },
                             {
                                 data: null,
@@ -469,16 +472,12 @@
                 const actionButtons = `
                 <div class="mt-2">
                     <strong>Actions:</strong>
-                    <div class="mt-2">
+                    <div class="icon mt-2" style="cursor:pointer; justify-content: flex-start;">
                         @if (app('hasPermission')(36, 'update'))
-                            <button class="btn action-btn edit-taxrate icon1" data-id="${data.id}" title="Edit" style="margin-right: 5px;">
-                                <i class="fa fa-pencil"></i>
-                            </button>
+                            <i class="fa fa-pencil m-r-5 icon1 edit-taxrate" data-id="${data.id}" title="Edit"></i>
                         @endif
                         @if (app('hasPermission')(36, 'delete'))
-                            <button class="btn action-btn delete-taxrate icon2" data-id="${data.id}" title="Delete">
-                                <i class="fa fa-trash-o"></i>
-                            </button>
+                            <i class="fa fa-trash-o m-r-5 icon2 delete-taxrate" data-id="${data.id}" title="Delete"></i>
                         @endif
                     </div>
                 </div>
