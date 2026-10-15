@@ -8,15 +8,116 @@
             padding-top: 6px !important;
         }
     }
-    /* Total Bill amount field style (like Add Discharge form) when type = Discharge */
-    .invoice-amount-input.invoice-total-bill {
-        border-radius: 50px;
-        border-color: rgb(207, 236, 224);
-        font-weight: 500;
+    /* Invoice item row boxed card styling (like Purchase page) */
+    .invoice-item-row {
+        background: #ffffff;
+        border: 1.5px solid #ffbc99;
+        border-radius: 12px;
+        padding: 16px 14px 14px 14px;
+        margin-bottom: 16px !important;
+        position: relative;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+        transition: all 0.2s ease-in-out;
     }
-    .amount-col .icon-style {
-        margin-right: 6px;
-        color: #28a745;
+    .invoice-item-row:hover {
+        border-color: #f69460;
+        box-shadow: 0 3px 8px rgba(246, 148, 96, 0.12);
+    }
+    .invoice-item-row .form-control {
+        height: 40px !important;
+        border-radius: 50px !important;
+        font-size: 14px !important;
+        border: 1px solid rgb(207, 236, 224) !important;
+    }
+    .invoice-item-row .select2-container .select2-selection--single {
+        height: 40px !important;
+        border-radius: 25px !important;
+        border: 1px solid rgb(207, 236, 224) !important;
+        display: flex;
+        align-items: center;
+    }
+    .invoice-item-row .select2-container .select2-selection--single .select2-selection__rendered {
+        line-height: 38px !important;
+        padding-left: 12px !important;
+    }
+    .invoice-item-row .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 38px !important;
+        right: 10px !important;
+    }
+    .invoice-item-row label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 6px;
+        display: block;
+    }
+    .row-action-col {
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+        padding-bottom: 0px;
+    }
+    .btn-row-action {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        border-radius: 50px !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        padding: 0 !important;
+        border: none;
+        cursor: pointer;
+        transition: transform 0.15s, opacity 0.15s;
+    }
+    .btn-row-action:hover {
+        transform: scale(1.04);
+        opacity: 0.92;
+    }
+    .btn-row-add {
+        background-color: #cfece0 !important;
+        color: #106346 !important;
+    }
+    .btn-row-remove {
+        background-color: #f89884 !important;
+        color: #ffffff !important;
+    }
+
+    /* Mobile Responsive Optimizations */
+    @media (max-width: 767px) {
+        .invoice-item-row {
+            padding: 14px 12px;
+            margin-bottom: 14px !important;
+        }
+        .invoice-item-row .row > [class*="col-"] {
+            margin-bottom: 10px;
+        }
+        .invoice-item-row .item-line-1,
+        .invoice-item-row .item-line-2 {
+            margin-top: 0 !important;
+        }
+        .invoice-item-row .row-action-col {
+            margin-top: 6px;
+            margin-bottom: 4px;
+            justify-content: flex-end;
+            width: 100%;
+        }
+        .invoice-item-row .btn-row-action {
+            width: 44px;
+            height: 44px;
+        }
+        .invoice-item-row .type-service-col,
+        .invoice-item-row .price-col,
+        .invoice-item-row .amount-col,
+        .invoice-item-row .qty-col,
+        .invoice-item-row .gst-option-col,
+        .invoice-item-row .gst-pct-col,
+        .invoice-item-row .gst-amt-col {
+            width: 100% !important;
+            max-width: 100% !important;
+            flex: 0 0 100% !important;
+        }
     }
 </style>
 @section('content')
@@ -87,88 +188,70 @@
                         </div>
 
                         <div id="dynamicFieldsWrapper">
-                            <div class="row mb-2 invoice-item-row align-items-end">
-                                <div class="col-md-4 type-service-col">
-                                    <div class="d-flex align-items-center justify-content-between mb-1">
-                                        <label class="mb-0">Type/Service</label>
-                                        @if (app('hasPermission')(7, 'create'))
-                                            <button type="button" class="btn btn-sm quick-modal-add-sm-btn quick-add-treatment-btn"
-                                                data-bs-toggle="modal" data-bs-target="#quickAddTreatmentModal"
-                                                data-toggle="modal" data-target="#quickAddTreatmentModal">
-                                                <i class="fas fa-plus"></i> 
-                                            </button>
-                                        @endif
+                            <div class="invoice-item-row">
+                                <!-- Line 1 of the card -->
+                                <div class="row align-items-end item-line-1">
+                                    <div class="col-md-3 type-service-col">
+                                        <div class="d-flex align-items-center justify-content-between mb-1">
+                                            <label class="mb-0">Type/Service</label>
+                                            @if (app('hasPermission')(7, 'create'))
+                                                <button type="button" class="btn btn-sm quick-modal-add-sm-btn quick-add-treatment-btn"
+                                                    data-bs-toggle="modal" data-bs-target="#quickAddTreatmentModal"
+                                                    data-toggle="modal" data-target="#quickAddTreatmentModal">
+                                                    <i class="fas fa-plus"></i> 
+                                                </button>
+                                            @endif
+                                        </div>
+                                        <select name="items[0][type_service]" class="form-control type-service-select select2">
+                                            <option value="">Select</option>
+                                            {{-- options will be added dynamically --}}
+                                        </select>
                                     </div>
-                                    <select name="items[0][type_service]" class="form-control type-service-select select2">
-                                        <option value="">Select</option>
-                                        {{-- options will be added dynamically --}}
-                                    </select>
+                                    <div class="col-md-2 qty-col">
+                                        <label>Qty</label>
+                                        <input type="number" name="items[0][quantity]" class="form-control quantity" min="1"
+                                            value="1">
+                                        <div class="text-danger error-message quantity-error"></div>
+                                    </div>
+                                    <div class="col-md-2 price-col">
+                                        <label>Price</label>
+                                        <input type="number" name="items[0][price]" class="form-control price" min="0" value="0"
+                                            required step="0.01">
+                                        <div class="text-danger error-message price-error"></div>
+                                    </div>
+                                    <div class="col-md-2 amount-col">
+                                        <label class="amount-label-default">Amount</label>
+                                        <label class="amount-label-total-bill" style="display:none;"><i class="fas fa-money-bill-wave icon-style"></i> Total Bill <span class="text-danger">*</span></label>
+                                        <input type="number" step="0.01" min="0" name="items[0][total]" class="form-control amount invoice-amount-input" value="0.00">
+                                    </div>
+                                    <div class="col-md-2 gst-option-col">
+                                        <label>GST Option</label>
+                                        <select class="form-control gst-option-select">
+                                            <option value="Without GST" selected>Without GST</option>
+                                            <option value="With GST">With GST</option>
+                                        </select>
+                                        <input type="hidden" name="items[0][gst_option]" class="gst-option-hidden" value="Without GST">
+                                    </div>
+                                    <div class="col-md-1 row-action-col">
+                                        <button type="button" class="btn btn-row-action btn-row-add" title="Add Row">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="col-md-2 qty-col">
-                                    <label>Qty</label>
-                                    <input type="number" name="items[0][quantity]" class="form-control quantity" min="1"
-                                        value="1">
-                                    <div class="text-danger error-message quantity-error"></div>
-                                </div>
-                                <div class="col-md-2 price-col">
-                                    <label>Price</label>
-                                    <input type="number" name="items[0][price]" class="form-control price" min="0" value="0"
-                                        required step="0.01">
-                                    <div class="text-danger error-message price-error"></div>
-                                </div>
-                                <div class="col-md-2 amount-col">
-                                    <label class="amount-label-default">Amount</label>
-                                    <label class="amount-label-total-bill" style="display:none;"><i class="fas fa-money-bill-wave icon-style"></i> Total Bill <span class="text-danger">*</span></label>
-                                    <input type="number" step="0.01" min="0" name="items[0][total]" class="form-control amount invoice-amount-input" value="0.00">
-                                </div>
-                                <div class="col-md-2 gst-option-col">
-                                    <label>GST Option</label>
-                                    <select class="form-control gst-option-select">
-                                        <option value="Without GST" selected>Without GST</option>
-                                        <option value="With GST">With GST</option>
-                                    </select>
-                                    <input type="hidden" name="items[0][gst_option]" class="gst-option-hidden" value="Without GST">
-                                </div>
-                                <div class="col-md-1 gst-pct-col" style="display: none;">
-                                    <label>GST (%)</label>
-                                    <input type="number" step="0.01" min="0" max="100" name="items[0][gst_percent_display]" class="form-control gst-percent-display" placeholder="0">
-                                </div>
-                                <div class="col-md-1 gst-amt-col" style="display: none;">
-                                    <label>GST Amount</label>
-                                    <input type="number" step="0.01" min="0" name="items[0][gst_amount_display]" class="form-control gst-amount-display" placeholder="0">
+
+                                <!-- Line 2 of the card (Appears when With GST is selected) -->
+                                <div class="row align-items-end mt-2 item-line-2" style="display: none;">
+                                    <div class="col-md-3 gst-pct-col">
+                                        <label>GST (%)</label>
+                                        <input type="number" step="0.01" min="0" max="100" name="items[0][gst_percent_display]" class="form-control gst-percent-display" placeholder="0">
+                                    </div>
+                                    <div class="col-md-3 gst-amt-col">
+                                        <label>GST Amount</label>
+                                        <input type="number" step="0.01" min="0" name="items[0][gst_amount_display]" class="form-control gst-amount-display" placeholder="0">
+                                    </div>
                                 </div>
                                 <input type="hidden" name="items[0][product_gst]" class="product-gst-json" value="">
                             </div>
-                        </div>
-                        <script>
-                            $(document).ready(function () {
-
-                                $('#dynamicFieldsWrapper').on('input', '.quantity, .price', function () {
-                                    let $input = $(this);
-                                    let value = parseFloat($input.val());
-                                    let isQuantity = $input.hasClass('quantity');
-                                    let $errorDiv = isQuantity ? $input.closest('.col-md-3').find(
-                                        '.quantity-error') : $input.closest('.col-md-3').find(
-                                            '.price-error');
-
-                                    // Reset error message
-                                    $errorDiv.text('');
-
-                                    if (value < 0) {
-                                        $errorDiv.text('Value cannot be negative');
-                                        $input.val(''); // optional: clear the field
-                                    }
-                                });
-                            });
-                        </script>
-                        <div class="col-md-3 my-auto">
-                            <button type="button" id="addRowBtn" class="btn btn-sm btn-primary mr-3">
-                                + Add More
-                            </button>
-                            <button type="button" id="removeRowBtn" class="btn btn-sm btn-danger "
-                                style="border-radius:20px">
-                                - Remove
-                            </button>
                         </div>
 
 
@@ -422,34 +505,40 @@
                 const $gstAmtCol = $row.find('.gst-amt-col');
                 const gstOptVal = $row.find('.gst-option-select').val();
 
+                const $actionCol = $row.find('.row-action-col');
+                const rowCount = $('.invoice-item-row').length;
+
                 if (selectedType === 'appointment') {
                     $typeService.hide();
                     $quantity.hide();
                     $gstOptCol.hide();
                     $gstPctCol.hide();
                     $gstAmtCol.hide();
-                    $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-6');
-                    $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-6');
+                    $actionCol.hide();
+                    $row.find('.item-line-2').hide();
+                    $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-6');
+                    $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-6');
                     $amountCol.find('.amount-label-default').show();
                     $amountCol.find('.amount-label-total-bill').hide();
                     $amount.removeClass('invoice-total-bill');
                 } else if (selectedType === 'discharge') {
                     $typeService.hide();
                     $quantity.hide();
+                    $actionCol.hide();
                     $amountCol.find('.amount-label-default').hide();
                     $amountCol.find('.amount-label-total-bill').show();
                     $amount.addClass('invoice-total-bill');
                     $gstOptCol.show();
 
                     if (gstOptVal === 'With GST') {
-                        $gstPctCol.show();
-                        $gstAmtCol.show();
-                        $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-3');
-                        $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-3');
-                        $gstOptCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
-                        $gstPctCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
-                        $gstAmtCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
+                        $row.find('.item-line-2').show();
+                        $gstPctCol.show().removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-3');
+                        $gstAmtCol.show().removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-3');
+                        $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-4');
+                        $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-4');
+                        $gstOptCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-4');
                     } else {
+                        $row.find('.item-line-2').hide();
                         $gstPctCol.hide();
                         $gstAmtCol.hide();
                         $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-4');
@@ -461,30 +550,29 @@
                     $typeService.show();
                     $quantity.show();
                     $gstOptCol.show();
+                    $actionCol.show();
+                    $row.find('.item-line-2').show();
                     $amountCol.find('.amount-label-default').show();
                     $amountCol.find('.amount-label-total-bill').hide();
                     $amount.removeClass('invoice-total-bill');
 
+                    // Line 1: Type/Service (3) + Qty (2) + Price (2) + Amount (2) + GST Option (2) + Action (1) = 12 cols
+                    $typeService.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-3');
+                    $quantity.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-2');
+                    $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-2');
+                    $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-2');
+                    $gstOptCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-2');
+                    $actionCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-1');
+
+                    // Line 2: GST (%) (3) + GST Amt (3) - only displayed when With GST is selected
                     if (gstOptVal === 'With GST') {
-                        $gstPctCol.show();
-                        $gstAmtCol.show();
-                        // 3 + 1 + 2 + 2 + 2 + 1 + 1 = 12 cols
-                        $typeService.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-3');
-                        $quantity.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-1');
-                        $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
-                        $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
-                        $gstOptCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
-                        $gstPctCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-1');
-                        $gstAmtCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-1');
+                        $row.find('.item-line-2').show();
+                        $gstPctCol.show().removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-3');
+                        $gstAmtCol.show().removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-3');
                     } else {
+                        $row.find('.item-line-2').hide();
                         $gstPctCol.hide();
                         $gstAmtCol.hide();
-                        // 4 + 2 + 2 + 2 + 2 = 12 cols
-                        $typeService.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-4');
-                        $quantity.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
-                        $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
-                        $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
-                        $gstOptCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-2');
                     }
                 }
             }
@@ -503,6 +591,10 @@
                 $('.invoice-item-row').each(function () {
                     updateRowGstVisibility($(this));
                 });
+
+                if (typeof window.updateRowActionButtons === 'function') {
+                    window.updateRowActionButtons();
+                }
 
                 // Toggle Quick Add Treatment button (only visible when type === 'treatment')
                 if (selectedType === 'treatment') {
@@ -744,6 +836,7 @@
 
             // Initial population
             populateTypeServiceSelect($('.invoice-item-row').first(), type);
+            updateRowActionButtons();
 
             $('#invoiceType').change(function () {
                 const selected = $(this).val();
@@ -756,7 +849,36 @@
 
 
 
-            $('#addRowBtn').click(function () {
+            function updateRowActionButtons() {
+                const rows = wrapper.find('.invoice-item-row');
+                const selectedType = $('#invoiceType').val();
+
+                if (selectedType === 'appointment' || selectedType === 'discharge') {
+                    rows.find('.row-action-col').hide();
+                    return;
+                }
+
+                rows.each(function (index) {
+                    const $col = $(this).find('.row-action-col');
+                    $col.show();
+                    if (index === 0) {
+                        $col.html(`
+                            <button type="button" class="btn btn-row-action btn-row-add" title="Add Row">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        `);
+                    } else {
+                        $col.html(`
+                            <button type="button" class="btn btn-row-action btn-row-remove" title="Remove Row">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `);
+                    }
+                });
+            }
+            window.updateRowActionButtons = updateRowActionButtons;
+
+            function addNewRow() {
                 const selected = $('#invoiceType').val();
 
                 // destroy select2 before cloning
@@ -801,16 +923,19 @@
 
                 rowIndex++;
                 updateGrandTotal();
-                toggleRemoveButton(); // 🔥 add this
+                updateRowActionButtons();
+            }
+
+            // Click event for + (Add row)
+            wrapper.on('click', '.btn-row-add', function () {
+                addNewRow();
             });
 
-
-            $('#removeRowBtn').click(function () {
-                const rows = wrapper.find('.invoice-item-row');
-                if (rows.length > 1) {
-                    rows.last().remove();
-                    updateGrandTotal();
-                }
+            // Click event for x (Remove row)
+            wrapper.on('click', '.btn-row-remove', function () {
+                $(this).closest('.invoice-item-row').remove();
+                updateGrandTotal();
+                updateRowActionButtons();
             });
 
             // Update row GST display from product_gst (array). Recalculates tax_amount from row amount when rowAmount provided.
