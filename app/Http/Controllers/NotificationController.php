@@ -93,4 +93,58 @@ class NotificationController extends Controller
             'message' => 'All notifications marked as read',
         ]);
     }
+
+    public function destroy(string $id)
+    {
+        try {
+            $notification = Notification::findOrFail($id);
+            $user = Auth::user();
+            $userRole = $user->role->name ?? null;
+
+            if ($userRole !== 'Admin' && $notification->receiver_id != $user->id) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You are not authorized to delete this notification',
+                ], 403);
+            }
+
+            $notification->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Notification deleted successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to delete notification',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function deleteAll(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            $userRole = $user->role->name ?? null;
+
+            if ($userRole === 'Admin') {
+                Notification::query()->delete();
+            } else {
+                Notification::where('receiver_id', $user->id)->delete();
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'All notifications deleted successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to delete all notifications',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

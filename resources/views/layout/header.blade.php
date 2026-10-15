@@ -1295,9 +1295,7 @@
         <li class="nav-item dropdown has-arrow">
             <a href="#" class="nav-link nav-icon" data-toggle="dropdown" data-display="static">
                 <i class="fa fa-bell"></i>
-                @if ($notificationCount > 0)
-                    <span class="badge badge-number">{{ $notificationCount ?? 0 }}</span>
-                @endif
+                <span class="badge badge-number">{{ $notificationCount ?? 0 }}</span>
             </a>
 
             <ul class="dropdown-menu dropdown-menu-right notifications drop-down-notification"
