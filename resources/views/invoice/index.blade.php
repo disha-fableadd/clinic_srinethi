@@ -112,7 +112,7 @@
                                 <table class="table " id="invoiceTable">
                                     <thead>
                                         <tr>
-                                            <th>Type</th>
+                                            <th>Patient</th>
                                             <th>Total</th>
                                             <th class="d-none d-md-table-cell">Payment Status</th>
                                             <th class="d-none d-md-table-cell">Created At</th>
@@ -192,8 +192,8 @@
                 // Get data from row
                 const type = tr.find('td').eq(0).text();
                 const total = tr.find('td').eq(1).text();
-                const status = tr.find('td').eq(2).text();
-                const date = tr.find('td').eq(3).text();
+                const status = tr.find('td').eq(3).text();
+                const date = tr.find('td').eq(4).text();
 
                 const linkBtn = `
                                                     <button class="btn btn-sm btn-outline-success generate-invoice-link-btn mt-2"
@@ -279,9 +279,10 @@
                         tableBody.empty();
 
                         data.forEach(invoice => {
+                            const patientName = invoice.patient?.fullname || 'N/A';
                             let row = `
                                             <tr data-invoice-id="${invoice.id}">
-                                                <td>${ucfirst(invoice.type)}</td>
+                                                <td>${patientName}<br><small>Type: ${ucfirst(invoice.type)}</small></td>
                                                 <td>₹${parseFloat(invoice.grand_total).toFixed(2)}</td>
 
                                                 <td class="d-none d-md-table-cell">${ucfirst(invoice.payment_status)}</td>
