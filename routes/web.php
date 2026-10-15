@@ -793,3 +793,5 @@ Route::middleware(['session.auth', 'check.permission'])->group(function () {
     // Route::get('/export/home-advice', [HomeAdviceController::class, 'exportCsv'])->name('homeadvice.export');
     Route::get('/soap/export', [SoapController::class, 'exportCsv'])->name('soap.export');
 });
+
+

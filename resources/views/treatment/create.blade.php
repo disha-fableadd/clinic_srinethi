@@ -194,7 +194,7 @@
                                 </div>
                             </div>
                             @else
-                            <input type="hidden" name="gst_option" id="gst_option" value="Without GST">
+                            <input type="hidden" name="gst_option" id="hidden_gst_option" value="Without GST">
                             @endif
                         </div>
 

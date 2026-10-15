@@ -27,9 +27,28 @@ class Invoice extends Model
           'branch_id',
     ];
 
+    protected $attributes = [
+        'discount_type' => 'fixed_amount',
+        'discount' => 0,
+    ];
+
     protected $casts = [
         'types_details' => 'array',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($invoice) {
+            if (empty($invoice->discount_type)) {
+                $invoice->discount_type = 'fixed_amount';
+            }
+            if ($invoice->discount === null || $invoice->discount === '') {
+                $invoice->discount = 0;
+            }
+        });
+    }
 
 
     public function patient()

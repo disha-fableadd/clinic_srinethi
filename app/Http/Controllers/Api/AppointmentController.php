@@ -63,6 +63,27 @@ class AppointmentController extends Controller
             $clinic_logo = $settings['clinic_logo'] ?? 'admin/assets/img/cliniclogo.png';
             $clinic_logo_path = public_path($clinic_logo);
 
+            $invoice = \App\Models\Invoice::where('type', 'appointment')
+                ->where(function ($q) use ($appointment) {
+                    $q->where('patient_id', $appointment->patient_id)
+                      ->whereJsonContains('types_details', [['id' => (string)$appointment->id]])
+                      ->orWhereJsonContains('types_details', [['id' => (int)$appointment->id]]);
+                })
+                ->latest('id')
+                ->first();
+
+            // Fallback invoice search by patient_id & date if types_details didn't match
+            if (!$invoice) {
+                $invoice = \App\Models\Invoice::where('type', 'appointment')
+                    ->where('patient_id', $appointment->patient_id)
+                    ->latest('id')
+                    ->first();
+            }
+
+            $price = $invoice ? floatval($invoice->grand_total) : floatval($appointment->treatment->price ?? 0);
+            $taxName = Setting::where('key', 'tax_name')->value('value') ?? 'Tax';
+            $taxType = Setting::where('key', 'tax_type')->value('value') ?? '%';
+
             // ✅ Data for Blade
             $data = [
                 'date' => now()->format('d-m-Y'),
@@ -71,11 +92,19 @@ class AppointmentController extends Controller
                 'doctor' => $appointment->doctor,
                 'treatment' => $appointment->treatment,
                 'history' => $appointment->appointment_history,
+                'invoice' => $invoice,
+                'price' => $price,
+                'tax_name' => $taxName,
+                'tax_type' => $taxType,
                 'clinic_logo' => $clinic_logo_path,
                 'clinic_name' => $settings['clinic_name'] ?? 'Sunshine Clinic',
                 'clinic_address' => $settings['clinic_address'] ?? '123 Health Street',
+                'clinic_city' => $settings['clinic_city'] ?? '',
+                'clinic_state' => $settings['clinic_state'] ?? '',
                 'clinic_phone' => $settings['clinic_phone'] ?? '1234567890',
                 'clinic_email' => $settings['clinic_email'] ?? 'clinic@example.com',
+                'declaration' => Setting::where('key', 'invoice_declaration')->value('value') ?? '',
+                'declaration_status' => Setting::where('key', 'invoice_declaration_status')->value('value') ?? 'off',
             ];
 
             // ✅ Generate PDF

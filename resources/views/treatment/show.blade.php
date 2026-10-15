@@ -65,6 +65,10 @@
                             </p>
                             <hr>
                            
+                            @php
+                                $gstEnabled = \App\Models\Setting::getValue('gst_status', 'on') === 'on';
+                            @endphp
+                            @if($gstEnabled)
                             <p class="text-dark">
                                 <strong><i class="fa fa-percent icon-style1"></i> GST Option: </strong>
                                 <span id="gst_option"></span>
@@ -77,13 +81,13 @@
                                     <span id="product_gst"></span>
                                 </p>
                                 <hr>
-                                 <p class="text-dark">
+                            </div>
+                            @endif
+                            <p class="text-dark">
                                 <strong><i class="fas fa-clipboard-list icon-style1"></i> Price: </strong>
                                 <span id="price"></span>
                             </p>
                             <hr>
-
-                            </div>
 
                             <p class="text-dark">
                                 <strong><i class="fas fa-clipboard-list icon-style1"></i> Description: </strong>
