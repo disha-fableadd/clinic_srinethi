@@ -20,7 +20,7 @@
         transition: all 0.2s ease-in-out;
     }
     .invoice-item-row:hover {
-        border-color: #f69460;
+        border-color: #cfece0;
         box-shadow: 0 3px 8px rgba(246, 148, 96, 0.12);
     }
     .invoice-item-row .form-control {

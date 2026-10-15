@@ -112,6 +112,7 @@
                                 <table class="table " id="invoiceTable">
                                     <thead>
                                         <tr>
+                                            <th class="d-none">ID</th>
                                             <th>Patient</th>
                                             <th>Total</th>
                                             <th class="d-none d-md-table-cell">Payment Status</th>
@@ -189,11 +190,12 @@
                     return;
                 }
 
-                // Get data from row
-                const patientInfo = tr.find('td').eq(0).html();
-                const total = tr.find('td').eq(1).text();
-                const status = tr.find('td').eq(2).text();
-                const date = tr.find('td').eq(3).text();
+                // Get data from row (filter out hidden td:eq(0) if present)
+                const visibleTds = tr.find('td:visible');
+                const patientInfo = (visibleTds.length > 0 ? visibleTds.eq(0).html() : tr.find('td').eq(1).html());
+                const total = (visibleTds.length > 1 ? visibleTds.eq(1).text() : tr.find('td').eq(2).text());
+                const status = (visibleTds.length > 2 ? visibleTds.eq(2).text() : tr.find('td').eq(3).text());
+                const date = (visibleTds.length > 3 ? visibleTds.eq(3).text() : tr.find('td').eq(4).text());
 
                 const linkBtn = `
                                                     <button class="btn btn-sm btn-outline-success generate-invoice-link-btn mt-2"
@@ -309,6 +311,7 @@
 
                             let row = `
                                             <tr data-invoice-id="${invoice.id}">
+                                                <td class="d-none">${invoice.id}</td>
                                                 <td>
                                                     <strong style="font-size: 14px; color: #1a202c;">${patientName}</strong>
                                                     <div style="font-size: 12px; line-height: 1.5; margin-top: 3px;">
@@ -354,13 +357,17 @@
                         });
 
 
-                        // Initialize DataTable
+                        // Initialize DataTable with descending order by ID
                         $('#invoiceTable').DataTable({
                             paging: true,
                             searching: true,
                             ordering: true,
+                            order: [[0, 'desc']], // Descending order by ID
                             responsive: true,
-                            autoWidth: false
+                            autoWidth: false,
+                            columnDefs: [
+                                { targets: [0], visible: false, searchable: false }
+                            ]
                         })
                             .on('order.dt', () => eventFired('Order'))
                             .on('search.dt', () => eventFired('Search'))
