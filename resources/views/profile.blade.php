@@ -88,7 +88,7 @@
                                                         @endif
                                                     </span></p> --}}
 
-                                                <p class="text-dark"><strong>Plan:</strong>
+{{--                                                <p class="text-dark"><strong>Plan:</strong>
                                                     <span>
                                                         @if (Auth::check())
                                                             @php
@@ -112,8 +112,7 @@
                                                     </span>
                                                 </p>
   
-                                                <hr>
-                                                </p>
+                                                <hr> --}}
 
                                                 <p class="text-dark"><strong>Role:</strong> <span id="role-select"></span>
                                                 </p>

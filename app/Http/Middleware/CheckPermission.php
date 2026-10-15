@@ -65,6 +65,7 @@ class CheckPermission
             'clinic.settings.update',
             'notificationView',
             'notification.update',
+            'notification.markAllAsRead',
             'hide.today.appointments',
         ];
 

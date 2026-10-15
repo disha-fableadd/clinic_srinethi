@@ -14,28 +14,24 @@ class NotificationController extends Controller
   
 
 
-     public function notificationView(Request $request)
+    public function notificationView(Request $request)
     {
         $user = Auth::user();
         $userRole = $user->role->name ?? null;
         $notifications = collect(); // default empty collection
 
         if ($userRole == 'Admin') {
-            // Filter: Exclude notifications meant for patients
-            $notifications = Notification::where('receiver_id', $user->id)
-                ->orderBy('created_at', 'desc')
-                ->get();
+            // Admin sees notifications in the system
+            $notifications = Notification::orderBy('created_at', 'desc')->get();
         } elseif ($userRole == 'Patient') {
             // Fetch patient record using login_patient_id
             $patient = \App\Models\Patients::where('login_patient_id', $user->id)->first();
 
             if ($patient) {
-                // Get notifications where patient_id matches
                 $notifications = Notification::where('receiver_id', $user->id)
                     ->orderBy('created_at', 'desc')
                     ->get();
             } else {
-                // Optional: return or log if patient not found
                 return view('notifications.notifications', [
                     'notifications' => collect(),
                     'notificationCount' => 0,
@@ -49,7 +45,7 @@ class NotificationController extends Controller
                 ->get();
         }
 
-        $notificationCount = $notifications->count();
+        $notificationCount = $notifications->where('is_read', false)->count();
 
         return view('notifications.notifications', compact('notifications', 'notificationCount'));
     }
@@ -58,8 +54,7 @@ class NotificationController extends Controller
     public function update(Request $request, string $id)
     {
         $notification = Notification::findOrFail($id);
-        // print_r($notification);
-        if ($notification->read == 1) {
+        if ($notification->is_read == 1 || $notification->is_read === true) {
             return response()->json([
                 'status' => false,
                 'message' => 'Notification is already marked as read',
@@ -72,13 +67,30 @@ class NotificationController extends Controller
             ]);
         }
 
-
-
         $notification->update(['is_read' => 1]);
         return response()->json([
             'status' => true,
             'message' => 'Notification marked as read',
             'data' => $notification,
+        ]);
+    }
+
+    public function markAllAsRead(Request $request)
+    {
+        $user = Auth::user();
+        $userRole = $user->role->name ?? null;
+
+        if ($userRole === 'Admin') {
+            Notification::where('is_read', false)->update(['is_read' => true]);
+        } else {
+            Notification::where('receiver_id', $user->id)
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'All notifications marked as read',
         ]);
     }
 }

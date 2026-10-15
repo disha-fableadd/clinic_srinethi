@@ -186,28 +186,49 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
             });
-            $('.notification-link').on('click', async function(e) {
-                e.preventDefault(); // Prevent the default link behavior
+            $(document).on('click', '.notification-link', function(e) {
+                e.preventDefault();
 
-                var notificationId = $(this).data('id'); // Get the notification ID
-                var updateUrl = $(this).data('url'); // Get the URL for the update method
-                var redirectUrl = $(this).attr('href');
-console.log('notificationId', notificationId, updateUrl, redirectUrl)
-                // return
+                var $item = $(this);
+                var notificationId = $item.data('id');
+                var updateUrl = $item.data('url');
+                var redirectUrl = $item.attr('href');
+                var currentUrl = window.location.href.split('#')[0];
+
                 $.ajax({
                     url: updateUrl,
                     method: 'POST',
                     data: {
-                        _method: 'POST',
-                        read: true 
+                        read: true
                     },
                     success: function(response) {
-                        console.log('Error notification:', response.message);
-                        window.location.href = redirectUrl; // Redirect to the link
+                        // Decrement badge count
+                        var $badge = $('.badge.badge-number');
+                        if ($badge.length) {
+                            var currentCount = parseInt($badge.text().trim(), 10) || 0;
+                            if (currentCount > 1) {
+                                $badge.text(currentCount - 1);
+                            } else {
+                                $badge.remove();
+                            }
+                        }
+
+                        // If redirecting to a different page, navigate there
+                        if (redirectUrl && redirectUrl !== '#' && redirectUrl !== currentUrl) {
+                            window.location.href = redirectUrl;
+                        } else {
+                            // If on the current page or hash, remove item and divider from dropdown
+                            $item.next('li').has('hr').remove();
+                            $item.remove();
+                            if ($('.drop-down-notification .notification-item').length === 0) {
+                                location.reload();
+                            }
+                        }
                     },
                     error: function(xhr) {
-                        window.location.href = redirectUrl; 
-                        console.error('Error while notification:', xhr.responseText);
+                        if (redirectUrl && redirectUrl !== '#' && redirectUrl !== currentUrl) {
+                            window.location.href = redirectUrl;
+                        }
                     }
                 });
             });

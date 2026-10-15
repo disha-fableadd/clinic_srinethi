@@ -196,7 +196,7 @@
                             
 
                             @if (app('hasPermission')(36, 'view'))
-                                <li class="menu-link {{ request()->routeIs('referaldoctor.index') ? 'active' : '' }}">
+                                <li class="menu-link1 {{ request()->routeIs('referaldoctor.index') ? 'active' : '' }}">
 
                                     <a href="{{ route('referaldoctor.index') }}">
                                         <i class="fa-solid fa-user-doctor"></i>
@@ -205,7 +205,7 @@
                             @endif
 
                              @if (app('hasPermission')(5, 'view'))
-                                <li class="menu-link {{ request()->routeIs('symptoms.index') ? 'active' : '' }}">
+                                <li class="menu-link1 {{ request()->routeIs('symptoms.index') ? 'active' : '' }}">
 
                                     <a href="{{ route('symptoms.index') }}"> <i class="fa fa-medkit "></i> <span> All
                                             Symptoms</span></a>
