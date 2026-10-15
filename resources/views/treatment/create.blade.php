@@ -160,20 +160,24 @@
 
 
 
+                        @php
+                            $gstEnabled = \App\Models\Setting::getValue('gst_status', 'on') === 'on';
+                        @endphp
                         <div class="row">
-                            <div class="col-sm-6">
+                            <div class="{{ $gstEnabled ? 'col-sm-6' : 'col-sm-12' }}">
                                 <div class="form-group">
                                     <label><i class="fas fa-money-bill-wave icon-style"></i> Price <span
                                             class="text-danger">*</span></label>
                                     <input class="form-control" type="number" name="price" id="price" required>
                                 </div>
                             </div>
+                            @if($gstEnabled)
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label><i class="fas fa-percent icon-style"></i> GST Option <span
                                             class="text-danger">*</span></label>
                                     <select class="form-control select2 gst-select2" name="gst_option" id="gst_option"
-                                        required>
+                                         required>
                                         <option value="Without GST">Without GST</option>
                                         <option value="With GST">With GST</option>
                                     </select>
@@ -189,6 +193,9 @@
                                     </select>
                                 </div>
                             </div>
+                            @else
+                            <input type="hidden" name="gst_option" id="gst_option" value="Without GST">
+                            @endif
                         </div>
 
                         <div class="row">

@@ -1,4 +1,5 @@
 @extends('layout.app')
+@section('content')
 <style>
     @media screen and (max-width: 767px) {
         .page-title {
@@ -120,7 +121,9 @@
         }
     }
 </style>
-@section('content')
+@php
+    $gstEnabled = \App\Models\Setting::getValue('gst_status', 'on') === 'on';
+@endphp
 
     <div class="page-wrapper">
         <div class="content">
@@ -224,6 +227,7 @@
                                         <label class="amount-label-total-bill" style="display:none;"><i class="fas fa-money-bill-wave icon-style"></i> Total Bill <span class="text-danger">*</span></label>
                                         <input type="number" step="0.01" min="0" name="items[0][total]" class="form-control amount invoice-amount-input" value="0.00">
                                     </div>
+                                    @if($gstEnabled)
                                     <div class="col-md-2 gst-option-col">
                                         <label>GST Option</label>
                                         <select class="form-control gst-option-select">
@@ -232,6 +236,9 @@
                                         </select>
                                         <input type="hidden" name="items[0][gst_option]" class="gst-option-hidden" value="Without GST">
                                     </div>
+                                    @else
+                                    <input type="hidden" name="items[0][gst_option]" class="gst-option-hidden" value="Without GST">
+                                    @endif
                                     <div class="col-md-1 row-action-col">
                                         <button type="button" class="btn btn-row-action btn-row-add" title="Add Row">
                                             <i class="fas fa-plus"></i>
@@ -240,6 +247,7 @@
                                 </div>
 
                                 <!-- Line 2 of the card (Appears when With GST is selected) -->
+                                @if($gstEnabled)
                                 <div class="row align-items-end mt-2 item-line-2" style="display: none;">
                                     <div class="col-md-3 gst-pct-col">
                                         <label>GST (%)</label>
@@ -250,6 +258,7 @@
                                         <input type="number" step="0.01" min="0" name="items[0][gst_amount_display]" class="form-control gst-amount-display" placeholder="0">
                                     </div>
                                 </div>
+                                @endif
                                 <input type="hidden" name="items[0][product_gst]" class="product-gst-json" value="">
                             </div>
                         </div>
@@ -508,6 +517,15 @@
                 const $actionCol = $row.find('.row-action-col');
                 const rowCount = $('.invoice-item-row').length;
 
+                const isGstEnabled = @json($gstEnabled);
+
+                if (!isGstEnabled) {
+                    $gstOptCol.hide();
+                    $gstPctCol.hide();
+                    $gstAmtCol.hide();
+                    $row.find('.item-line-2').hide();
+                }
+
                 if (selectedType === 'appointment') {
                     $typeService.hide();
                     $quantity.hide();
@@ -528,9 +546,16 @@
                     $amountCol.find('.amount-label-default').hide();
                     $amountCol.find('.amount-label-total-bill').show();
                     $amount.addClass('invoice-total-bill');
-                    $gstOptCol.show();
 
-                    if (gstOptVal === 'With GST') {
+                    if (!isGstEnabled) {
+                        $gstOptCol.hide();
+                        $gstPctCol.hide();
+                        $gstAmtCol.hide();
+                        $row.find('.item-line-2').hide();
+                        $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-6');
+                        $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-6');
+                    } else if (gstOptVal === 'With GST') {
+                        $gstOptCol.show();
                         $row.find('.item-line-2').show();
                         $gstPctCol.show().removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-3');
                         $gstAmtCol.show().removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-3');
@@ -538,6 +563,7 @@
                         $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-4');
                         $gstOptCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-4');
                     } else {
+                        $gstOptCol.show();
                         $row.find('.item-line-2').hide();
                         $gstPctCol.hide();
                         $gstAmtCol.hide();
@@ -549,30 +575,44 @@
                     // Standard multi-row types: treatment, medicine, service, therapy
                     $typeService.show();
                     $quantity.show();
-                    $gstOptCol.show();
                     $actionCol.show();
-                    $row.find('.item-line-2').show();
                     $amountCol.find('.amount-label-default').show();
                     $amountCol.find('.amount-label-total-bill').hide();
                     $amount.removeClass('invoice-total-bill');
 
-                    // Line 1: Type/Service (3) + Qty (2) + Price (2) + Amount (2) + GST Option (2) + Action (1) = 12 cols
-                    $typeService.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-3');
-                    $quantity.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-2');
-                    $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-2');
-                    $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-2');
-                    $gstOptCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-2');
-                    $actionCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-1');
-
-                    // Line 2: GST (%) (3) + GST Amt (3) - only displayed when With GST is selected
-                    if (gstOptVal === 'With GST') {
-                        $row.find('.item-line-2').show();
-                        $gstPctCol.show().removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-3');
-                        $gstAmtCol.show().removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-3');
-                    } else {
+                    if (!isGstEnabled) {
+                        $gstOptCol.hide();
                         $row.find('.item-line-2').hide();
                         $gstPctCol.hide();
                         $gstAmtCol.hide();
+                        // 12 cols: Type/Service (4) + Qty (2) + Price (2) + Amount (3) + Action (1) = 12 cols
+                        $typeService.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-4');
+                        $quantity.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-2');
+                        $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-2');
+                        $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-3');
+                        $actionCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-1');
+                    } else {
+                        $gstOptCol.show();
+                        $row.find('.item-line-2').show();
+
+                        // Line 1: Type/Service (3) + Qty (2) + Price (2) + Amount (2) + GST Option (2) + Action (1) = 12 cols
+                        $typeService.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-3');
+                        $quantity.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-2');
+                        $priceCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-2');
+                        $amountCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-2');
+                        $gstOptCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-2');
+                        $actionCol.removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-5 col-md-6').addClass('col-md-1');
+
+                        // Line 2: GST (%) (3) + GST Amt (3) - only displayed when With GST is selected
+                        if (gstOptVal === 'With GST') {
+                            $row.find('.item-line-2').show();
+                            $gstPctCol.show().removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-3');
+                            $gstAmtCol.show().removeClass('col-md-1 col-md-2 col-md-3 col-md-4 col-md-6').addClass('col-md-3');
+                        } else {
+                            $row.find('.item-line-2').hide();
+                            $gstPctCol.hide();
+                            $gstAmtCol.hide();
+                        }
                     }
                 }
             }

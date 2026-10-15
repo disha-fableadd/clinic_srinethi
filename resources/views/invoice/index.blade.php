@@ -1,6 +1,5 @@
 @extends('layout.app')
-
-
+@section('content')
 <style>
     .expand-invoice-btn {
         border: none;
@@ -83,8 +82,6 @@
     use App\Models\Setting;
     $razorpayEnabled = Setting::getValue('razorpay_status') === 'on';
 @endphp
-
-@section('content')
     <div class="page-wrapper">
         <div class="content">
             <div class="row" style="padding-top:15px">
@@ -206,11 +203,17 @@
                                                 `;
 
                 const actions = `
-                                                    <a href="/invoice/pdf/${invoiceId}" class="btn btn-sm btn-light mt-1">
+                                                    <a href="/invoice/pdf/${invoiceId}?stream=1" target="_blank" class="btn btn-sm btn-light mt-1" title="View Invoice">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                    <a href="/invoice/edit/${invoiceId}" class="btn btn-sm btn-light mt-1 edit-invoice" title="Edit Invoice">
+                                                        <i class="fa fa-pencil"></i>
+                                                    </a>
+                                                    <a href="/invoice/pdf/${invoiceId}" class="btn btn-sm btn-light mt-1" title="Download Invoice">
                                                         <i class="fas fa-download"></i>
                                                     </a>
                                                     <button class="btn btn-sm btn-danger delete-invoice mt-1"
-                                                        data-id="${invoiceId}">
+                                                        data-id="${invoiceId}" title="Delete Invoice">
                                                         <i class="fa fa-trash"></i>
                                                     </button>
                                                 `;
@@ -305,7 +308,7 @@
                             }
 
                             let typeDetailsHtml = `<div><strong style="color: #2c3e50;">Type:</strong> <span style="font-weight: 600; color: #34495e;">${ucfirst(invoiceType)}</span></div>`;
-                            if (itemNames.length > 0) {
+                            if (invoiceType.toLowerCase() !== 'appointment' && itemNames.length > 0) {
                                 typeDetailsHtml += `<div><strong style="color: #2c3e50;">Name:</strong> <span style="font-weight: 600; color: #34495e;">${itemNames.join(', ')}</span></div>`;
                             }
 
@@ -335,10 +338,16 @@
                                                 @endif
                                                 <td class="d-none d-md-table-cell">
                                                     <div class="invoice-icons icon">
-                                                        <a href="/invoice/pdf/${invoice.id}" class="m-r-5 icon1">
+                                                        <a href="/invoice/pdf/${invoice.id}?stream=1" target="_blank" class="m-r-5 icon3" title="View Invoice">
+                                                            <i class="fa fa-eye"></i>
+                                                        </a>
+                                                        <a href="/invoice/edit/${invoice.id}" class="m-r-5 icon1 edit-invoice" title="Edit Invoice">
+                                                            <i class="fa fa-pencil"></i>
+                                                        </a>
+                                                        <a href="/invoice/pdf/${invoice.id}" class="m-r-5 icon4" title="Download Invoice">
                                                             <i class="fas fa-download"></i>
                                                         </a>
-                                                        <button class="delete-invoice m-r-5 icon2" data-id="${invoice.id}">
+                                                        <button class="delete-invoice m-r-5 icon2" data-id="${invoice.id}" title="Delete Invoice">
                                                             <i class="fa fa-trash-o"></i>
                                                         </button>
                                                     </div>

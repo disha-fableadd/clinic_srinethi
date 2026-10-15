@@ -74,16 +74,17 @@
         }
 
         .details-box-left {
-            width: 52%;
+            width: 50%;
             border-right: 1px solid #d0e4dc;
         }
 
         .details-box-right {
-            width: 48%;
+            width: 50%;
         }
 
         .section-heading {
-            font-size: 12px;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 11.5px;
             font-weight: bold;
             color: #0c4b33;
             text-transform: uppercase;
@@ -96,36 +97,44 @@
         .info-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 11.5px;
         }
 
-        .info-table td {
-            padding: 2px 0;
+        .info-table td,
+        .info-table th {
+            padding: 2.5px 0;
             vertical-align: top;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 11.5px;
         }
 
         .info-label {
-            width: 95px;
-            color: #555;
-            font-weight: 500;
+            width: 100px;
+            color: #4b5563;
+            font-weight: normal;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         }
 
         .info-sep {
             width: 12px;
-            color: #555;
+            color: #4b5563;
             text-align: center;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         }
 
         .info-val {
-            color: #222;
+            color: #1f2937;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         }
 
         .section-banner {
-            color: #222;
-            font-size: 12px;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #1f2937;
+            font-size: 13px;
             font-weight: bold;
             text-align: center;
-            padding: 5px 0;
+            padding: 6px 0;
             letter-spacing: 1px;
             margin-top: 12px;
             margin-bottom: 6px;
@@ -136,7 +145,8 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 0;
-            font-size: 12px;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 12.5px;
         }
 
         .invoice-box th {
@@ -144,17 +154,19 @@
             color: #0c4b33;
             font-weight: bold;
             text-align: left;
-            padding: 7px 10px;
+            padding: 8px 10px;
             border: 1px solid #b8dfd0;
-            font-size: 11.5px;
+            font-size: 13px;
             letter-spacing: 0.3px;
+            vertical-align: middle;
         }
 
         .invoice-box td {
-            padding: 7px 10px;
+            padding: 8px 10px;
             border: 1px solid #d5e5dd;
             color: #333;
-            font-size: 12px;
+            font-size: 12.5px;
+            vertical-align: middle;
         }
 
         .invoice-box tbody tr:nth-child(even) {
@@ -162,9 +174,19 @@
         }
 
         .invoice-box tfoot td {
-            padding: 6px 10px;
+            padding: 7px 10px;
             border: 1px solid #d5e5dd;
-            font-size: 12px;
+            font-size: 12.5px;
+        }
+
+        .gst-sub-info {
+            display: block;
+            font-size: 11px;
+            color: #555;
+            margin-top: 2px;
+            font-weight: normal;
+            font-style: italic;
+            line-height: 1.25;
         }
 
         .text-right {
@@ -182,7 +204,7 @@
         .grand-total-label {
             background-color: #cfece0 !important;
             color: #0c4b33 !important;
-            font-size: 12.5px;
+            font-size: 13.5px;
             font-weight: bold;
             border: 1px solid #b8dfd0 !important;
         }
@@ -190,7 +212,7 @@
         .grand-total-amount {
             background-color: #f7faf8 !important;
             color: #0c4b33 !important;
-            font-size: 13.5px;
+            font-size: 14px;
             font-weight: bold;
             border: 1px solid #b8dfd0 !important;
         }
@@ -225,10 +247,77 @@
         }
 
         .signatory-cell {
-            height: 64px;
+            height: 90px;
             text-align: right;
-            vertical-align: bottom !important;
+            vertical-align: top !important;
+            position: relative;
         }
+
+        .signatory-company {
+            font-size: 10px;
+            color: #0c4b33;
+            text-align: right;
+        }
+
+        .signatory-bottom {
+            font-size: 10px;
+            color: #0c4b33;
+            text-align: right;
+            margin-top: 55px;
+        }
+        
+.invoice-box thead th,
+.invoice-box tbody td {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+
+.invoice-box .gst-sub-info {
+    display: block;
+    text-align: center;
+    font-size: 11px;
+}
+
+
+
+/* ------------------------------------------------------- */
+
+.declaration-signatory {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.declaration-signatory td {
+    vertical-align: top;
+    padding: 10px;
+}
+
+.declaration-cell {
+    width: 50%;
+}
+
+.signatory-cell {
+    width: 50%;
+    position: relative;
+    height: 135px;
+}
+
+.signatory-company {
+    text-align: right;
+    font-size: 10px;
+}
+
+.signatory-bottom {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    text-align: right;
+    font-size: 10px;
+}
+
+
     </style>
 </head>
 
@@ -407,20 +496,21 @@
         </div>
 
         @php
-            $has_gst = !empty($services) && collect($services)->contains(fn($s) => ($s['gst_option'] ?? '') === 'With GST' && !empty($s['product_gst']));
+            $gstEnabled = \App\Models\Setting::getValue('gst_status', 'on') === 'on';
+            $has_gst = $gstEnabled && !empty($services) && collect($services)->contains(fn($s) => ($s['gst_option'] ?? '') === 'With GST' && !empty($s['product_gst']));
         @endphp
 
         <!-- Invoice Table -->
         <table class="invoice-box">
             <thead>
                 <tr>
-                    <th>
+                    <th class="text-center" style="width: 34%;">
                         @if($invoice_type === 'medicine')
-                            Medicine Name
+                            Medicine
                         @elseif($invoice_type === 'treatment')
-                            Treatment Name
+                            Treatment
                         @elseif($invoice_type === 'service')
-                            Service Name
+                            Service
                         @elseif($invoice_type === 'appointment')
                             Appointment
                         @elseif($invoice_type === 'therapy')
@@ -428,17 +518,15 @@
                         @elseif($invoice_type === 'discharge')
                             Discharge
                         @else
-                            Item Name
+                            Item
                         @endif
                     </th>
-                    <th class="text-center" style="width: 12%;">Quantity</th>
-                    <th class="text-right" style="width: 18%;">Unit Price</th>
-                    <th class="text-right" style="width: 18%;">Total</th>
+                    <th class="text-center" style="width: 10%;">Qty</th>
+                    <th class="text-center" style="width: 18%;">Price</th>
                     @if($has_gst)
-                        <th class="text-center" style="width: 14%;">GST Option</th>
-                        <th class="text-center" style="width: 12%;">GST (%)</th>
-                        <th class="text-right" style="width: 14%;">GST Amount</th>
+                        <th class="text-center" style="width: 18%;">Tax</th>
                     @endif
+                    <th class="text-center" style="width: 20%;">Total</th>
                 </tr>
             </thead>
             <tbody>
@@ -449,22 +537,46 @@
                             $productGst = $service['product_gst'] ?? null;
                             $gstRates = is_array($productGst) ? array_sum(array_map(fn($t) => floatval($t['tax_rate'] ?? 0), $productGst)) : 0;
                             $gstAmt = is_array($productGst) ? array_sum(array_map(fn($t) => floatval($t['tax_amount'] ?? 0), $productGst)) : 0;
+                            
+                            $priceVal = floatval($service['price'] ?? 0);
+                            $lineGstAmt = ($gstOpt === 'With GST') ? $gstAmt : 0;
+                            $lineTotalWithGst = floatval($service['total'] ?? 0) + $lineGstAmt;
+
+                            // Format dynamic tax breakdown, e.g. "(12% CGST)" or "(6% CGST, 6% SGST)"
+                            $taxDetailsList = [];
+                            if ($gstOpt === 'With GST' && is_array($productGst)) {
+                                foreach ($productGst as $taxItem) {
+                                    $tRate = floatval($taxItem['tax_rate'] ?? 0);
+                                    $tName = trim((string)($taxItem['tax_name'] ?? ''));
+                                    if ($tRate > 0 || $tName !== '') {
+                                        $taxDetailsList[] = ($tRate + 0) . '% ' . ($tName ?: 'GST');
+                                    }
+                                }
+                            }
+                            $taxDetailsStr = count($taxDetailsList) > 0 ? '(' . implode(', ', $taxDetailsList) . ')' : '';
                         @endphp
                         <tr>
-                            <td>{{ $displayVal($service['name'] ?? '') }}</td>
+                            <td class="text-center">{{ $displayVal($service['name'] ?? '') }}</td>
                             <td class="text-center">{{ $service['quantity'] ?? 0 }}</td>
-                            <td class="text-right">{{ number_format($service['price'] ?? 0, 2) }}</td>
-                            <td class="text-right">{{ number_format($service['total'] ?? 0, 2) }}</td>
+                            <td class="text-center">{{ number_format($priceVal, 2) }}</td>
                             @if($has_gst)
-                                <td class="text-center">{{ $displayVal($gstOpt) }}</td>
-                                <td class="text-center">{{ $gstOpt === 'With GST' ? number_format($gstRates, 2) : 'N/A' }}</td>
-                                <td class="text-right">{{ $gstOpt === 'With GST' ? number_format($gstAmt, 2) : 'N/A' }}</td>
+                                <td class="text-center">
+                                    @if($gstOpt === 'With GST' && $gstAmt > 0)
+                                        <div>{{ number_format($gstAmt, 2) }}</div>
+                                        @if($taxDetailsStr)
+                                            <span class="gst-sub-info">{{ $taxDetailsStr }}</span>
+                                        @endif
+                                    @else
+                                        0.00
+                                    @endif
+                                </td>
                             @endif
+                            <td class="text-center">{{ number_format($lineTotalWithGst, 2) }}</td>
                         </tr>
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="{{ $has_gst ? 7 : 4 }}" class="text-center">No items found.</td>
+                        <td colspan="{{ $has_gst ? 5 : 4 }}" class="text-center">No items found.</td>
                     </tr>
                 @endif
             </tbody>
@@ -481,7 +593,7 @@
                     });
 
                     $total_gst_amount = 0;
-                    if (!empty($services)) {
+                    if ($has_gst && !empty($services)) {
                         foreach ($services as $item) {
                             if (($item['gst_option'] ?? '') === 'With GST' && !empty($item['product_gst']) && is_array($item['product_gst'])) {
                                 $total_gst_amount += array_sum(array_map(fn($t) => floatval($t['tax_amount'] ?? 0), $item['product_gst']));
@@ -496,7 +608,7 @@
                         : $discount;
 
                     $total_with_tax = $base_for_tax + $tax_amount - $discount_amount;
-                    $colspan_foot = $has_gst ? 6 : 3;
+                    $colspan_foot = $has_gst ? 4 : 3;
                 @endphp
 
                 <tr>
@@ -563,8 +675,8 @@
                         @endif
                     </td>
                     <td class="signatory-cell">
-                        <div style="font-size: 10px; color: #0c4b33; margin-bottom: 45px;">For, {{ $displayClinicName }}</div>
-                        <div style="font-size: 10px; color: #0c4b33;">Authorized Signatory</div>
+                        <div class="signatory-company">For, {{ $displayClinicName }}</div>
+                        <div class="signatory-bottom">Authorized Signatory</div>
                     </td>
                 </tr>
             </table>

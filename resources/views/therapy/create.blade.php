@@ -1,4 +1,4 @@
-﻿@extends('layout.app')
+@extends('layout.app')
 
 <style>
     .select2-container--default .select2-selection--multiple {
@@ -164,8 +164,11 @@
                             <!-- Normal Range -->
 
 
+                            @php
+                                $gstEnabled = \App\Models\Setting::getValue('gst_status', 'on') === 'on';
+                            @endphp
                             <!-- Cost -->
-                            <div class="col-md-6">
+                            <div class="{{ $gstEnabled ? 'col-md-6' : 'col-md-12' }}">
                                 <div class="form-group">
                                     <label>₹ Cost <span
                                             class="text-danger">*</span></label>
@@ -173,6 +176,7 @@
                                         placeholder="e.g. 250" required>
                                 </div>
                             </div>
+                            @if($gstEnabled)
                             <!-- GST Option -->
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -195,6 +199,9 @@
                                     </select>
                                 </div>
                             </div>
+                            @else
+                            <input type="hidden" name="gst_option" id="gst_option" value="Without GST">
+                            @endif
                             <!-- Sample Type -->
                             <div class="col-md-6">
                                 <div class="form-group">

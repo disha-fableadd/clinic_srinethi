@@ -1,8 +1,6 @@
 @extends('layout.app')
-<link rel="stylesheet" href="{{ asset(env('IMAGE_PATH').'admin/assets/css/appointment-create.css') }}">
-
-
 @section('content')
+<link rel="stylesheet" href="{{ asset(env('IMAGE_PATH').'admin/assets/css/appointment-create.css') }}">
     <div class="page-wrapper">
         <div class="content">
 
@@ -161,10 +159,13 @@
                             </div>
 
                             @if($currentProjectTypeId !== 3)
+                            @php
+                                $defaultClinicAddress = \App\Models\Setting::getValue('clinic_address', 'No.44(17), Kaveri Street, Rajaji Nagar Villivakkam Chennai -600049');
+                            @endphp
                             <div class="form-group">
                                 <label><i class="fas fa-map-marker-alt icon-style"></i> Clinic Location <span
                                         class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="clinic_location">
+                                <input type="text" class="form-control" name="clinic_location" value="{{ $defaultClinicAddress }}">
                             </div>
 
                             <div class="form-group">

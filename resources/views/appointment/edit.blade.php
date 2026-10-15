@@ -627,7 +627,8 @@
 
                             $('#duration').val(formattedDuration);
 
-                            $('#clinic_location').val(appointment.clinic_location);
+                            let settingClinicAddress = @json(\App\Models\Setting::getValue('clinic_address', 'No.44(17), Kaveri Street, Rajaji Nagar Villivakkam Chennai -600049'));
+                            $('#clinic_location').val(appointment.clinic_location || settingClinicAddress);
                             $('#followup_update').val(appointment.followup_update);
 
                            
