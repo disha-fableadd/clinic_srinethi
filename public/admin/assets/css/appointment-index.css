@@ -38,10 +38,14 @@ button.btn.btn-link.expand-btn {
 
 .swal-confirm-btn {
     color: rgb(58, 58, 58) !important;
+    border-radius: 23px !important;
+    padding: 8px 22px !important;
 }
 
 .swal-cancel-btn {
     color: white !important;
+    border-radius: 23px !important;
+    padding: 8px 22px !important;
 }
 
 .patient-cell {

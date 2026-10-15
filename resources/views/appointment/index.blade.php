@@ -1,4 +1,4 @@
-﻿@extends('layout.app')
+@extends('layout.app')
 <link rel="stylesheet" href="{{ asset(env('IMAGE_PATH') . 'admin/assets/css/appointment-index.css') }}">
 <style>
     .btn-outline-success:hover {
@@ -15,12 +15,14 @@
 
     .swal-confirm-btn {
         color: #000 !important;
-        /* BLACK text */
+        border-radius: 23px !important;
+        padding: 8px 22px !important;
     }
 
     .swal-cancel-btn {
         color: white !important;
         border-radius: 23px !important;
+        padding: 8px 22px !important;
     }
 </style>
 
