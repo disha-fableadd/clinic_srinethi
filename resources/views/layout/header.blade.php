@@ -1320,38 +1320,41 @@
                     <li>
                         <hr class="dropdown-divider">
                     </li>
-                    @foreach ($notifications->take(5) as $notification)
-                        @if (!$notification->read)
-                            @php
-                                $module = $notification->info['module'] ?? '';
-                                $moduleId = $notification->info['module_id'] ?? '';
-                                $href = '#'; // Default
+                    @foreach ($notifications->where('is_read', false)->take(5) as $notification)
+                        @php
+                            $module = $notification->info['module'] ?? '';
+                            $moduleId = $notification->info['module_id'] ?? '';
+                            $href = '#'; // Default
 
-                                if ($module === 'appointment') {
-                                    $href = route('appointment.show', $moduleId);
-                                } elseif ($module === 'followup') {
-                                    $href = route('followup.show', $moduleId);
-                                } else {
-                                    $href = url()->current(); // Stay on the current page
-                                }
-                            @endphp
+                            if ($module === 'appointment') {
+                                $href = route('appointment.show', $moduleId);
+                            } elseif ($module === 'followup') {
+                                $href = route('followup.show', $moduleId);
+                            } else {
+                                $href = url()->current(); // Stay on the current page
+                            }
+                        @endphp
 
-                            <a href="{{ $href }}" class="notification-link"
-                                data-id="{{ $notification->id ?? '' }}"
-                                data-url="{{ route('notification.update', $notification->id) }}">
-                                <li class="notification-item">
-                                    <div>
-                                        <h4>{{ $notification->info['message'] ?? 'New Notification' }}</h4>
-                                        <!-- <p>Creator: {{-- ucfirst($notification->sender_user->first_name ?? 'Creator') . ' ' . ucfirst($notification->sender_user->last_name ?? '') --}}</p> -->
-                                        <p>Date: {{ optional($notification->created_at)->format('d/m/Y') ?? '' }}</p>
-                                    </div>
-                                </li>
-                            </a>
-                            <li>
-                                <hr class="dropdown-divider">
+                        <a href="{{ $href }}" class="notification-link"
+                            data-id="{{ $notification->id ?? '' }}"
+                            data-url="{{ route('notification.update', $notification->id) }}">
+                            <li class="notification-item">
+                                <div>
+                                    <h4>{{ $notification->info['message'] ?? 'New Notification' }}</h4>
+                                    <!-- <p>Creator: {{-- ucfirst($notification->sender_user->first_name ?? 'Creator') . ' ' . ucfirst($notification->sender_user->last_name ?? '') --}}</p> -->
+                                    <p>Date: {{ optional($notification->created_at)->format('d/m/Y') ?? '' }}</p>
+                                </div>
                             </li>
-                        @endif
+                        </a>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                     @endforeach
+                    <li class="dropdown-footer text-center py-2" style="position: sticky; bottom: 0; background: white; z-index: 100; border-top: 1px solid #eee;">
+                        <a href="{{ route('notificationView') }}" class="text-primary font-weight-bold" style="font-size: 13px;">
+                            View All Notifications
+                        </a>
+                    </li>
                 @endif
 
 

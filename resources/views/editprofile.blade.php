@@ -365,20 +365,13 @@
                                             <div class="col-6">
                                                 <div class="form-group">
                                                     <label><i class="fas fa-city icon-style"></i> City</label>
-                                                    <select class="form-control select2" name="city" id="user-city">
-                                                        <option value="">Select City</option>
-                                                        <option value="Surat">Surat</option>
-                                                        <option value="Ahemdabad">Ahemdabad</option>
-                                                    </select>
+                                                    <input type="text" class="form-control" name="city" id="user-city" placeholder="Enter City">
                                                 </div>
                                             </div>
                                             <div class="col-6">
                                                 <div class="form-group">
                                                     <label><i class="fas fa-flag icon-style"></i> State</label>
-                                                    <select class="form-control select2" name="state" id="user-state">
-                                                        <option value="">Select State</option>
-                                                        <option value="Gujarat">Gujarat</option>
-                                                    </select>
+                                                    <input type="text" class="form-control" name="state" id="user-state" placeholder="Enter State">
                                                 </div>
                                             </div>
                                         </div>
@@ -557,22 +550,13 @@
                                     <div class="col-12 col-md-6 col-lg-6">
                                         <div class="form-group">
                                             <label><i class="fas fa-city icon-style"></i> City</label>
-                                            <select class="form-control select2" id="select-city" name="city">
-                                                <option value="">Select City</option>
-                                                <option value="Surat">Surat</option>
-                                                <option value="Ahmedabad">Ahmedabad</option>
-                                                <option value="Mumbai">Mumbai</option>
-                                            </select>
+                                            <input type="text" class="form-control" id="select-city" name="city" placeholder="Enter City">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6 col-lg-6">
                                         <div class="form-group">
                                             <label><i class="fas fa-flag icon-style"></i> State</label>
-                                            <select class="form-control select2" id="select-state" name="state">
-                                                <option value="">Select State</option>
-                                                <option value="Gujarat">Gujarat</option>
-                                                <option value="Maharashtra">Maharashtra</option>
-                                            </select>
+                                            <input type="text" class="form-control" id="select-state" name="state" placeholder="Enter State">
                                         </div>
                                     </div>
 
@@ -643,8 +627,8 @@
                         $('input[name="phone"]').val(response.user.phone);
                         $('input[name="birth_date"]').val(response.userDetails.birth_date);
                         $('input[name="address"]').val(response.userDetails.address);
-                        $('select[name="city"]').val(response.userDetails.city).trigger('change');
-                        $('select[name="state"]').val(response.userDetails.state).trigger('change');
+                        $('input[name="city"]').val(response.userDetails.city || '');
+                        $('input[name="state"]').val(response.userDetails.state || '');
                         $('select[name="shift"]').val(response.userDetails.shift).trigger('change');
 
                         // ✅ Set Gender Selection
@@ -728,35 +712,9 @@
     @endphp
 
     <script>
-        $('#user-city').select2({
-            placeholder: "Select City",
-            width: '100%'
-        });
-
-        $('#user-state').select2({
-            placeholder: "Select State",
-            width: '100%'
-        });
-
         $('#user-shift').select2({
             placeholder: "Select Shift",
             width: '100%'
-        });
-
-        $('#select-city').select2({
-            placeholder: "Select City",
-            width: '100%'
-        });
-        $('#select-city').on('select2:open', function () {
-            $('.select2-search__field').attr('placeholder', 'Search City');
-        });
-
-        $('#select-state').select2({
-            placeholder: "Select State",
-            width: '100%'
-        });
-        $('#select-state').on('select2:open', function () {
-            $('.select2-search__field').attr('placeholder', 'Search State');
         });
 
         $('#select-note').select2({
@@ -826,8 +784,8 @@
                         min: "Age cannot be negative"
                     },
                     address: "Please enter your address",
-                    city: "Please select your city",
-                    state: "Please select your state",
+                    city: "Please enter your city",
+                    state: "Please enter your state",
                     
 
                 },
@@ -940,8 +898,8 @@
                         $("input[name='age']").val(patient.age);
                         $("select[name='blood_group']").val(patient.blood_group).trigger('change');
                         $("input[name='address']").val(patient.address);
-                        $("select[name='city']").val(patient.city).trigger('change');
-                        $("select[name='state']").val(patient.state).trigger('change');
+                        $("input[name='city']").val(patient.city || '');
+                        $("input[name='state']").val(patient.state || '');
                         // $('#select-city').val(patient.city).trigger('change');
                         // $('#select-state').val(patient.state).trigger('change');
                         $("textarea[name='medical_history']").val(patient.medical_history);

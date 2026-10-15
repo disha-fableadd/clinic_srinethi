@@ -25,9 +25,13 @@
             <div class="row mt-2">
                 <div class="col-md-12">
                     <div class="card">
-                        <div class="card-header" style="background-color:#f89884;">
-                            <h3 class="card-title d-inline-block text-white"> <i class="fa fa-bell px-2"
+                        <div class="card-header d-flex justify-content-between align-items-center" style="background-color:#f89884;">
+                            <h3 class="card-title d-inline-block text-white mb-0"> <i class="fa fa-bell px-2"
                                     style="font-size:20px"></i>All Notifications </h3>
+                            <button type="button" id="markAllReadBtn" class="btn btn-sm text-dark font-weight-bold"
+                                style="background-color: #cfece0; border-radius: 20px; padding: 6px 16px;">
+                                <i class="fa fa-check-double me-1"></i> Mark All as Read
+                            </button>
                         </div>
                         <div class="card-body ">
                             <div class="table-responsive">
@@ -141,12 +145,26 @@
                         // window.location.href = redirectUrl;
                     },
                     complete: function() {
-                        // Remove spinner and re-enable button after AJAX completes, whether successful or not
                         $button.prop('disabled', false);
                         $button.find('.Btnloader').remove();
-                        // window.location.href = redirectUrl; // Redirect to the link
                     }
+                });
+            });
 
+            $('#markAllReadBtn').on('click', function() {
+                var $btn = $(this);
+                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Marking...');
+
+                $.ajax({
+                    url: '{{ route("notification.markAllAsRead") }}',
+                    method: 'POST',
+                    success: function(response) {
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('Failed to mark notifications as read. Please try again.');
+                        $btn.prop('disabled', false).html('<i class="fa fa-check-double me-1"></i> Mark All as Read');
+                    }
                 });
             });
         });

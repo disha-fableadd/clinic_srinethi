@@ -1294,10 +1294,12 @@
                                         role="tab">Payment History</a>
                                 </li>
                                 --}}
+                                {{--
                                 <li class="nav-item">
                                     <a class="nav-link" id="treatment-tab" data-toggle="tab" href="#treatment-record"
                                         role="tab">Treatment History</a>
                                 </li>
+                                --}}
 
 
                             </ul>
@@ -1405,6 +1407,7 @@
                                     </div>
                                 </div>
 
+                                {{--
                                 <!-- Treatment History Tab -->
                                 <div class="tab-pane fade" id="treatment-record" role="tabpanel">
                                     <div class="table-responsive-wrapper">
@@ -1432,6 +1435,7 @@
                                         No treatment history available.
                                     </div>
                                 </div>
+                                --}}
 
                                 {{-- assessment --}}
                                 <div class="tab-pane fade" id="assessment-record" role="tabpanel">

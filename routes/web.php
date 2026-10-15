@@ -678,6 +678,7 @@ Route::get('/dietchart/export', [DietChartController::class, 'exportDietChart'])
 
     // Route::get('/sms/create', [SmsController::class, 'create'])->name('sms.create');
     Route::get('all-notifications', [NotificationController::class, 'notificationView'])->name('notificationView');
+    Route::post('notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notification.markAllAsRead');
     Route::post('notifications/{id}', [NotificationController::class, 'update'])->name('notification.update');
     Route::post('/hide-today-appointments', function () {
         session()->forget('show_today_appointment_modal');
