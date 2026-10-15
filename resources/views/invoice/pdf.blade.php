@@ -121,16 +121,15 @@
         }
 
         .section-banner {
-            background-color: #cfece0;
-            color: #0c4b33;
+            color: #222;
             font-size: 12px;
             font-weight: bold;
             text-align: center;
-            padding: 6px 10px;
+            padding: 5px 0;
             letter-spacing: 1px;
-            margin-top: 14px;
+            margin-top: 12px;
+            margin-bottom: 6px;
             text-transform: uppercase;
-            border: 1px solid #b8dfd0;
         }
 
         .invoice-box {
