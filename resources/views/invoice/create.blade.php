@@ -11,7 +11,7 @@
     /* Invoice item row boxed card styling (like Purchase page) */
     .invoice-item-row {
         background: #ffffff;
-        border: 1.5px solid #ffbc99;
+        border: 1.5px solid #cfece0;
         border-radius: 12px;
         padding: 16px 14px 14px 14px;
         margin-bottom: 16px !important;

@@ -1179,7 +1179,7 @@ class SettingController extends Controller
                 'date' => now()->format('d-m-Y'),
                 'branch_id' => $request->branch_id, // ✅ STORE HERE
                 'patient' => $patient,
-                'clinic_logo' => $settings['clinic_logo'] ?? 'default-logo.png',
+                'clinic_logo' => !empty($settings['clinic_logo']) ? (file_exists(public_path($settings['clinic_logo'])) ? public_path($settings['clinic_logo']) : (file_exists(public_path('uploads/clinic_logos/' . basename($settings['clinic_logo']))) ? public_path('uploads/clinic_logos/' . basename($settings['clinic_logo'])) : $settings['clinic_logo'])) : null,
                 'clinic_name' => $settings['clinic_name'] ?? 'My Clinic',
                 'services' => $services,
                 'tax_type' => $settings['tax_type'] ?? '',

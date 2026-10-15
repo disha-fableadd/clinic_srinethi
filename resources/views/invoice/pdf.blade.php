@@ -244,15 +244,56 @@
 
         @php
             $displayClinicName = $clinic_name ?? \App\Models\Setting::where('key', 'clinic_name')->value('value') ?? 'Srinethi Clinic & Lakshmi Lab';
-            $displayClinicLogo = $clinic_logo ?? null;
-            if (!$displayClinicLogo) {
-                $rawLogo = \App\Models\Setting::where('key', 'clinic_logo')->value('value');
-                if ($rawLogo && file_exists(public_path($rawLogo))) {
-                    $displayClinicLogo = public_path($rawLogo);
-                } elseif (file_exists(public_path('admin/assets/img/cliniclogo.png'))) {
-                    $displayClinicLogo = public_path('admin/assets/img/cliniclogo.png');
+            
+            // Comprehensive logo resolution
+            $resolvedLogoPath = null;
+            $candidateLogos = array_filter([
+                $clinic_logo ?? null,
+                \App\Models\Setting::where('key', 'clinic_logo')->value('value'),
+                'admin/assets/img/cliniclogo.png',
+                'admin/assets/img/cliniclogohalf.png',
+                'admin/assets/img/logo.png',
+            ]);
+
+            foreach ($candidateLogos as $candidate) {
+                if (empty($candidate) || $candidate === 'default-logo.png') {
+                    continue;
+                }
+                // If it's already an existing absolute path
+                if (file_exists($candidate) && is_file($candidate)) {
+                    $resolvedLogoPath = $candidate;
+                    break;
+                }
+                // Check relative to public_path
+                $cleanCandidate = ltrim(str_replace('\\', '/', $candidate), '/');
+                if (file_exists(public_path($cleanCandidate)) && is_file(public_path($cleanCandidate))) {
+                    $resolvedLogoPath = public_path($cleanCandidate);
+                    break;
+                }
+                // Check inside uploads/clinic_logos/
+                $baseCandidate = basename($candidate);
+                if (file_exists(public_path('uploads/clinic_logos/' . $baseCandidate)) && is_file(public_path('uploads/clinic_logos/' . $baseCandidate))) {
+                    $resolvedLogoPath = public_path('uploads/clinic_logos/' . $baseCandidate);
+                    break;
+                }
+                // Check inside admin/assets/img/
+                if (file_exists(public_path('admin/assets/img/' . $baseCandidate)) && is_file(public_path('admin/assets/img/' . $baseCandidate))) {
+                    $resolvedLogoPath = public_path('admin/assets/img/' . $baseCandidate);
+                    break;
                 }
             }
+
+            // Convert to Base64 Data URI for 100% reliable DomPDF rendering
+            $logoBase64 = null;
+            if ($resolvedLogoPath && file_exists($resolvedLogoPath)) {
+                $fileData = @file_get_contents($resolvedLogoPath);
+                if ($fileData !== false) {
+                    $ext = pathinfo($resolvedLogoPath, PATHINFO_EXTENSION);
+                    $mime = ($ext === 'svg') ? 'image/svg+xml' : (($ext === 'webp') ? 'image/webp' : (($ext === 'jpg' || $ext === 'jpeg') ? 'image/jpeg' : 'image/png'));
+                    $logoBase64 = 'data:' . $mime . ';base64,' . base64_encode($fileData);
+                }
+            }
+
             $displayClinicPhone = $clinic_phone ?? \App\Models\Setting::where('key', 'clinic_phone')->value('value');
             $displayClinicEmail = $clinic_email ?? \App\Models\Setting::where('key', 'clinic_email')->value('value');
             $displayClinicAddress = $clinic_address ?? \App\Models\Setting::where('key', 'clinic_address')->value('value');
@@ -265,10 +306,10 @@
         <table class="header-table">
             <tr>
                 <td style="width: 40%; vertical-align: middle;">
-                    @if(!empty($displayClinicLogo) && file_exists($displayClinicLogo))
-                        <img src="{{ $displayClinicLogo }}" alt="Clinic Logo" style="max-height: 65px; max-width: 190px;">
-                    @elseif(!empty($displayClinicLogo) && (str_starts_with($displayClinicLogo, 'http') || str_starts_with($displayClinicLogo, '/')))
-                        <img src="{{ $displayClinicLogo }}" alt="Clinic Logo" style="max-height: 65px; max-width: 190px;">
+                    @if(!empty($logoBase64))
+                        <img src="{{ $logoBase64 }}" alt="Clinic Logo" style="max-height: 65px; max-width: 190px;">
+                    @elseif(!empty($resolvedLogoPath) && file_exists($resolvedLogoPath))
+                        <img src="{{ $resolvedLogoPath }}" alt="Clinic Logo" style="max-height: 65px; max-width: 190px;">
                     @else
                         <div class="clinic-title">{{ $displayClinicName }}</div>
                     @endif
