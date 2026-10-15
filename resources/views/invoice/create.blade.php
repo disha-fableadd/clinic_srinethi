@@ -38,7 +38,7 @@
             <div class="row">
                 <div class="col-12">
 
-                    <form id="invoiceForm" class="form-container all-form ">
+                    <form id="invoiceForm" class="form-container all-form" novalidate>
                         @csrf
                         <input type="hidden" name="branch_id" id="branch_id">
                         <div class="row">
@@ -229,7 +229,7 @@
 
                         <div class="row mt-3 justify-content-between">
                             <div class="col-md-4">
-                                <label>Payment Type</label>
+                                <label>Payment Type <span class="text-danger">*</span></label>
                                 <select name="payment_type" class="form-control select2" id="payment-type" required>
                                     <option value="">-- Select Payment Type --</option>
                                     <option value="Cash">Cash</option>
@@ -238,7 +238,7 @@
                                 </select>
                             </div>
                             <div class="col-md-4">
-                                <label>Payment Status</label>
+                                <label>Payment Status <span class="text-danger">*</span></label>
                                 <select name="payment_status" class="form-control select2" id="payment-status" required>
                                     <option value="">-- Select Payment Status --</option>
                                     <option value="Paid">Paid</option>
@@ -1110,26 +1110,90 @@
             }
 
 
+            // Initialize jQuery Validation for #invoiceForm
+            const invoiceValidator = $('#invoiceForm').validate({
+                ignore: [],
+                rules: {
+                    patient_id: {
+                        required: true
+                    },
+                    invoice_type: {
+                        required: true
+                    },
+                    date1: {
+                        required: true
+                    },
+                    payment_type: {
+                        required: true
+                    },
+                    payment_status: {
+                        required: true
+                    }
+                },
+                messages: {
+                    patient_id: {
+                        required: "Please select a patient"
+                    },
+                    invoice_type: {
+                        required: "Please select an invoice type"
+                    },
+                    date1: {
+                        required: "Please select a date"
+                    },
+                    payment_type: {
+                        required: "Please select a payment type"
+                    },
+                    payment_status: {
+                        required: "Please select a payment status"
+                    }
+                },
+                errorElement: 'span',
+                errorClass: 'text-danger error-msg',
+                errorPlacement: function (error, element) {
+                    if (element.hasClass('select2-hidden-accessible')) {
+                        error.insertAfter(element.next('.select2-container'));
+                    } else if (element.closest('.input-group').length) {
+                        error.insertAfter(element.closest('.input-group'));
+                    } else {
+                        error.insertAfter(element);
+                    }
+                },
+                highlight: function (element) {
+                    $(element).addClass('is-invalid');
+                    if ($(element).hasClass('select2-hidden-accessible')) {
+                        $(element).next('.select2-container').find('.select2-selection').addClass('is-invalid');
+                    }
+                },
+                unhighlight: function (element) {
+                    $(element).removeClass('is-invalid');
+                    if ($(element).hasClass('select2-hidden-accessible')) {
+                        $(element).next('.select2-container').find('.select2-selection').removeClass('is-invalid');
+                    }
+                }
+            });
+
+            // Revalidate Select2 fields immediately upon user change
+            $('#patientDropdown, #invoiceType, #payment-type, #payment-status').on('change.select2 change', function () {
+                $(this).valid();
+            });
+
             $('#invoiceForm').on('submit', function (e) {
                 e.preventDefault();
 
-                let isFormValid = true;
+                // Check jQuery Validation first
+                const isFormValid = $('#invoiceForm').valid();
 
-                // Validate all rows
+                // Validate dynamic invoice item rows
+                let areRowsValid = true;
                 $('.invoice-item-row').each(function () {
                     const rowValid = isRowValid($(this));
                     if (!rowValid) {
-                        isFormValid = false;
+                        areRowsValid = false;
                     }
                 });
 
-                if (!isFormValid) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Validation Error',
-                        text: 'Please fill all required fields and enter valid price .',
-                    });
-                    return; // stop submission
+                if (!isFormValid || !areRowsValid) {
+                    return; // stop submission and display inline validation messages
                 }
                 let branchId = getBranchId();
                 $('#branch_id').val(branchId);

@@ -1,4 +1,4 @@
-﻿@extends('layout.app')
+@extends('layout.app')
 
 
 <style>
@@ -190,10 +190,10 @@
                 }
 
                 // Get data from row
-                const type = tr.find('td').eq(0).text();
+                const patientInfo = tr.find('td').eq(0).html();
                 const total = tr.find('td').eq(1).text();
-                const status = tr.find('td').eq(3).text();
-                const date = tr.find('td').eq(4).text();
+                const status = tr.find('td').eq(2).text();
+                const date = tr.find('td').eq(3).text();
 
                 const linkBtn = `
                                                     <button class="btn btn-sm btn-outline-success generate-invoice-link-btn mt-2"
@@ -217,7 +217,7 @@
                                                         <tr class="details-row">
                                                             <td colspan="7">
                                                                 <div class="details-content">
-                                                                    <div><strong>Type:</strong> ${type}</div>
+                                                                    <div><strong>Patient:</strong> ${patientInfo}</div>
                                                                     <div><strong>Total:</strong> ${total}</div>
                                                                     <div><strong>Status:</strong> ${status}</div>
                                                                     <div><strong>Date:</strong> ${date}</div>
@@ -279,10 +279,42 @@
                         tableBody.empty();
 
                         data.forEach(invoice => {
-                            const patientName = invoice.patient?.fullname || 'N/A';
+                            const patientName = invoice.patient?.fullname ? ucfirst(invoice.patient.fullname) : 'N/A';
+                            const invoiceType = invoice.type || '';
+
+                            // Extract item/treatment name(s) if available
+                            let itemNames = [];
+                            if (invoice.types_details) {
+                                let details = invoice.types_details;
+                                if (typeof details === 'string') {
+                                    try {
+                                        details = JSON.parse(details);
+                                    } catch (e) {
+                                        details = [];
+                                    }
+                                }
+                                if (Array.isArray(details)) {
+                                    details.forEach(item => {
+                                        if (item && item.name) {
+                                            itemNames.push(item.name);
+                                        }
+                                    });
+                                }
+                            }
+
+                            let typeDetailsHtml = `<div><strong style="color: #2c3e50;">Type:</strong> <span style="font-weight: 600; color: #34495e;">${ucfirst(invoiceType)}</span></div>`;
+                            if (itemNames.length > 0) {
+                                typeDetailsHtml += `<div><strong style="color: #2c3e50;">Name:</strong> <span style="font-weight: 600; color: #34495e;">${itemNames.join(', ')}</span></div>`;
+                            }
+
                             let row = `
                                             <tr data-invoice-id="${invoice.id}">
-                                                <td>${patientName}<br><small>Type: ${ucfirst(invoice.type)}</small></td>
+                                                <td>
+                                                    <strong style="font-size: 14px; color: #1a202c;">${patientName}</strong>
+                                                    <div style="font-size: 12px; line-height: 1.5; margin-top: 3px;">
+                                                        ${typeDetailsHtml}
+                                                    </div>
+                                                </td>
                                                 <td>₹${parseFloat(invoice.grand_total).toFixed(2)}</td>
 
                                                 <td class="d-none d-md-table-cell">${ucfirst(invoice.payment_status)}</td>
