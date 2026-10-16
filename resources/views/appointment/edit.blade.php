@@ -225,12 +225,7 @@
 
 
 
-        $(document).ready(function() {
-            $('.medicine-select').select2({
-                placeholder: "Select Medicine",
-                allowClear: true
-            });
-        });
+
 
         $(document).ready(function() {
             // let token = sessionStorage.getItem('token');
@@ -715,88 +710,6 @@
 
         });
 
-        $(document).ready(function() {
-            let token = sessionStorage.getItem('token'); // Ensure token is available
 
-            function fetchMedicines(dropdownSelector) {
-                $.ajax({
-                    url: "/api/medicine",
-                    type: "GET",
-                    dataType: "json",
-                    headers: {
-                        "Authorization": "Bearer " + token
-                    },
-                    success: function(response) {
-                        let medicineDropdown = $(dropdownSelector);
-                        if (medicineDropdown.length === 0) {
-                            console.error("Dropdown not found! Check your HTML.");
-                            return;
-                        }
-
-                        medicineDropdown.empty().append('<option value="">Select Medicine</option>');
-
-                        if (!response.medicines || response.medicines.length === 0) {
-                            console.warn("No Medicine found for this user.");
-                            return;
-                        }
-
-                        $.each(response.medicines, function(index, medicine) {
-                            medicineDropdown.append(
-                                `<option value="${medicine.id}">${medicine.name}</option>`
-                            );
-                        });
-
-                        // Apply Select2 after data is loaded
-                        medicineDropdown.select2({
-                            placeholder: "Select Medicines",
-                            allowClear: true
-                        });
-                    },
-                    error: function(xhr) {
-                        console.error("API Error:", xhr.status, xhr.responseText);
-                    }
-                });
-            }
-
-            // Reference to the status dropdown
-            let statusDropdown = $('select[name="status"]');
-
-            // Container where the additional fields will be added
-            let extraFieldsContainer = $('<div id="extraFields"></div>');
-            statusDropdown.closest('.form-group').after(extraFieldsContainer);
-
-            // Listen for changes in the status dropdown
-            statusDropdown.on('change', function() {
-                if ($(this).val() === 'completed') {
-                    let extraFields = `
-                                                <div class="row">
-                                                    <div class="col-lg-6">
-                                                        <div class="form-group">
-                                                            <label><i class="fas fa-pills icon-style"></i> Medicines <span class="text-danger">*</span></label>
-                                                            <select class="form-control medicine-select" name="medicines[]" multiple >
-                                                                <option value="">Select Medicine</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-lg-6">
-                                                        <div class="form-group">
-                                                            <label><i class="fas fa-clipboard-list icon-style"></i> Note</label>
-                                                             <input type="text" class="form-control " name="note" >
-                                                        </div>
-                                                    </div>
-                                                </div>`;
-
-                    // Add fields dynamically
-                    $('#extraFields').html(extraFields);
-
-                    // Fetch medicines **after** the dropdown is added
-                    fetchMedicines('.medicine-select');
-                } else {
-                    $('#extraFields').empty(); // Remove fields if status is not "Completed"
-                }
-            });
-
-        });
     </script>
 @endsection
