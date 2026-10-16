@@ -145,6 +145,7 @@
                     <form id="invoiceForm" class="form-container all-form" novalidate>
                         @csrf
                         <input type="hidden" name="branch_id" id="branch_id">
+                        <input type="hidden" name="gst_enabled" id="gst_enabled" value="{{ $gstEnabled ? 1 : 0 }}">
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <div class="d-flex align-items-center justify-content-between mb-1">
@@ -828,8 +829,8 @@
 
            
             data.forEach(item => {
-                const isSelected = currentVal == item.id ? 'selected' : '';
-                if (!selectedIds.includes(String(item.id)) || currentVal == item.id) {
+                const isSelected = (currentVal && currentVal == item.id) ? 'selected' : '';
+                if (!selectedIds.includes(String(item.id)) || (currentVal && currentVal == item.id)) {
                     const gstOpt = (item.gst_option || '') ? ` data-gst-option="${item.gst_option}"` : '';
                     const productGst = (item.product_gst && (Array.isArray(item.product_gst) ? item.product_gst.length : true)) ? ` data-product-gst='${JSON.stringify(item.product_gst || [])}'` : '';
                     select.append(`
@@ -859,8 +860,14 @@
 
 
         function calculateRowAmount(row) {
-            const qty = parseFloat(row.find('.quantity').val()) || 0;
-            const price = parseFloat(row.find('.price').val()) || 0;
+            const qtyVal = row.find('.quantity').val();
+            const priceVal = row.find('.price').val();
+            if (priceVal === '' || priceVal === null || priceVal === undefined) {
+                row.find('.amount').val('');
+                return 0;
+            }
+            const qty = parseFloat(qtyVal) || 0;
+            const price = parseFloat(priceVal) || 0;
             const amt = qty * price;
             row.find('.amount').val(amt.toFixed(2));
             return amt;
@@ -953,6 +960,7 @@
                 $('.type-service-select').select2('destroy');
 
                 const row = $('.invoice-item-row:first').clone();
+                row.find('.type-service-select').empty().append('<option value="">Select</option>').val('');
 
                 row.find('input, select').each(function () {
                     const name = $(this).attr('name')?.replace(/\d+/, rowIndex);
@@ -961,16 +969,16 @@
                         if ($(this).hasClass('quantity')) {
                             $(this).val(1);
                         } else if ($(this).hasClass('price')) {
-                            $(this).val(0);
+                            $(this).val('');
                         } else if ($(this).hasClass('amount')) {
-                            $(this).val('0.00');
+                            $(this).val('');
                         } else if ($(this).hasClass('gst-option-select')) {
                             $(this).val('Without GST');
                         } else if ($(this).hasClass('gst-option-hidden')) {
                             $(this).val('Without GST');
                         } else if ($(this).hasClass('gst-percent-display') || $(this).hasClass('gst-amount-display') || $(this).hasClass('product-gst-json')) {
                             $(this).val('');
-                        } else {
+                        } else if (!$(this).hasClass('type-service-select')) {
                             $(this).val('');
                         }
                     }
@@ -985,13 +993,14 @@
 
                 $('#dynamicFieldsWrapper').append(row);
 
-                // re-init select2
-                $('.type-service-select').select2({
+                // re-init select2 on all existing rows
+                $('.invoice-item-row').not(row).find('.type-service-select').select2({
                     placeholder: "Select Type",
                     width: '100%'
                 });
 
                 populateTypeServiceSelect(row, selected);
+                row.find('.type-service-select').val('').trigger('change.select2');
                 updateRowGstVisibility(row);
 
                 rowIndex++;

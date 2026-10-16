@@ -76,6 +76,173 @@
     button.delete-invoice.m-r-5.icon2 {
         border: none !important;
     }
+
+    /* Revenue Statistics in Header */
+    .invoice-card-header {
+        display: flex !important;
+        align-items: center !important;
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+        padding: 12px 18px !important;
+    }
+
+    .invoice-card-header .card-title {
+        margin: 0 !important;
+        margin-right: auto !important;
+    }
+
+    .invoice-header-actions {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .invoice-revenue-stats {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .rev-stat-badge {
+        background: #ffffff;
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+        line-height: 1.2;
+        white-space: nowrap;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .rev-stat-badge:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .rev-stat-badge.total-rev {
+        border-left: 3.5px solid #2563eb;
+    }
+
+    .rev-stat-badge.paid-rev {
+        border-left: 3.5px solid #16a34a;
+    }
+
+    .rev-stat-badge.pending-rev {
+        border-left: 3.5px solid #ea580c;
+    }
+
+    .rev-icon-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .rev-stat-badge .rev-label {
+        font-weight: 600;
+        color: #4b5563;
+    }
+
+    .rev-stat-badge .rev-value {
+        font-weight: 700;
+        color: #111827;
+        font-size: 13.5px;
+    }
+
+    /* Tablet and Mobile adjustments */
+    @media screen and (max-width: 991px) {
+        .invoice-card-header {
+            justify-content: space-between !important;
+            padding: 12px 14px !important;
+        }
+
+        .invoice-card-header .card-title {
+            order: 1 !important;
+            margin-right: auto !important;
+            font-size: 17px !important;
+        }
+
+        .invoice-header-actions {
+            order: 2 !important;
+            margin-left: auto !important;
+        }
+
+        .invoice-revenue-stats {
+            order: 3 !important;
+            width: 100% !important;
+            margin-top: 8px !important;
+            margin-right: 0 !important;
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 8px !important;
+        }
+
+        .rev-stat-badge {
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            text-align: center !important;
+            padding: 8px 6px !important;
+            border-radius: 12px !important;
+            border-left: none !important;
+            border-top: 3.5px solid transparent !important;
+            min-width: 0 !important;
+        }
+
+        .rev-stat-badge.total-rev {
+            border-top-color: #2563eb !important;
+        }
+
+        .rev-stat-badge.paid-rev {
+            border-top-color: #16a34a !important;
+        }
+
+        .rev-stat-badge.pending-rev {
+            border-top-color: #ea580c !important;
+        }
+
+        .rev-icon-label {
+            margin-bottom: 2px;
+        }
+
+        .rev-stat-badge .rev-label {
+            font-size: 11px !important;
+            line-height: 1.1 !important;
+        }
+
+        .rev-stat-badge .rev-value {
+            font-size: 13px !important;
+            line-height: 1.2 !important;
+        }
+    }
+
+    /* Small Mobile Phones (e.g. <= 480px) */
+    @media screen and (max-width: 480px) {
+        .invoice-revenue-stats {
+            gap: 5px !important;
+        }
+
+        .rev-stat-badge {
+            padding: 6px 3px !important;
+            border-radius: 10px !important;
+        }
+
+        .rev-stat-badge .rev-label {
+            font-size: 10px !important;
+        }
+
+        .rev-stat-badge .rev-value {
+            font-size: 11.5px !important;
+        }
+
+        .invoice-header-actions .btn-hdr {
+            padding: 5px 9px !important;
+            font-size: 12px !important;
+        }
+    }
 </style>
 
 @php
@@ -91,18 +258,52 @@
             <div class="row mt-3">
                 <div class="col-md-12">
                     <div class="card">
-                        <div class="card-header">
+                        <div class="card-header invoice-card-header">
                             <h3 class="card-title d-inline-block text-white">
                                 <i class="fa fa-file-invoice-dollar px-2" style="font-size:20px"></i> All Invoice
                             </h3>
-                            <button class="btn btn-rounded btn-hdr" id="exportButton">
-                                <i class="fa fa-download"></i> <span class="hdr-btn-text">Export</span>
-                            </button>
-                            @if (app('hasPermission')(18, 'create'))
-                                <a href="{{ route('invoice.create') }}" class="btn btn-rounded btn-hdr">
-                                    <i class="fa fa-plus"></i> <span class="hdr-btn-text">Add</span>
-                                </a>
-                            @endif
+                            <div class="invoice-revenue-stats">
+                                <div class="rev-stat-badge total-rev" title="Total Revenue">
+                                    <div class="rev-icon-label">
+                                        <i class="fas fa-coins text-primary"></i>
+                                        <span class="rev-label">
+                                            <span class="d-none d-sm-inline">Total Revenue:</span>
+                                            <span class="d-sm-none">Total:</span>
+                                        </span>
+                                    </div>
+                                    <span class="rev-value" id="statTotalRevenue">₹0.00</span>
+                                </div>
+                                <div class="rev-stat-badge paid-rev" title="Paid Revenue">
+                                    <div class="rev-icon-label">
+                                        <i class="fas fa-check-circle text-success"></i>
+                                        <span class="rev-label">
+                                            <span class="d-none d-sm-inline">Paid Revenue:</span>
+                                            <span class="d-sm-none">Paid:</span>
+                                        </span>
+                                    </div>
+                                    <span class="rev-value" id="statPaidRevenue">₹0.00</span>
+                                </div>
+                                <div class="rev-stat-badge pending-rev" title="Pending Revenue">
+                                    <div class="rev-icon-label">
+                                        <i class="fas fa-clock text-warning"></i>
+                                        <span class="rev-label">
+                                            <span class="d-none d-sm-inline">Pending Revenue:</span>
+                                            <span class="d-sm-none">Pending:</span>
+                                        </span>
+                                    </div>
+                                    <span class="rev-value" id="statPendingRevenue">₹0.00</span>
+                                </div>
+                            </div>
+                            <div class="invoice-header-actions">
+                                <button class="btn btn-rounded btn-hdr" id="exportButton">
+                                    <i class="fa fa-download"></i> <span class="hdr-btn-text">Export</span>
+                                </button>
+                                @if (app('hasPermission')(18, 'create'))
+                                    <a href="{{ route('invoice.create') }}" class="btn btn-rounded btn-hdr">
+                                        <i class="fa fa-plus"></i> <span class="hdr-btn-text">Add</span>
+                                    </a>
+                                @endif
+                            </div>
                         </div>
                         <div class="card-body mt-3">
                             <div class="table-responsive">
@@ -269,10 +470,39 @@
                         if (!response?.status || !Array.isArray(response.data)) {
                             $('#noDataMsg').removeClass('d-none').text(response.message ||
                                 'No invoice data found.');
+                            $('#statTotalRevenue').text('₹0.00');
+                            $('#statPaidRevenue').text('₹0.00');
+                            $('#statPendingRevenue').text('₹0.00');
                             return;
                         }
 
                         let data = response.data;
+
+                        // Update revenue statistics
+                        let totalRev = 0;
+                        let paidRev = 0;
+                        let pendingRev = 0;
+
+                        if (response.summary) {
+                            totalRev = parseFloat(response.summary.total_revenue) || 0;
+                            paidRev = parseFloat(response.summary.paid_revenue) || 0;
+                            pendingRev = parseFloat(response.summary.pending_revenue) || 0;
+                        } else {
+                            data.forEach(invoice => {
+                                const amt = parseFloat(invoice.grand_total) || 0;
+                                totalRev += amt;
+                                const st = (invoice.payment_status || '').toLowerCase();
+                                if (st === 'paid') {
+                                    paidRev += amt;
+                                } else {
+                                    pendingRev += amt;
+                                }
+                            });
+                        }
+
+                        $('#statTotalRevenue').text('₹' + totalRev.toFixed(2));
+                        $('#statPaidRevenue').text('₹' + paidRev.toFixed(2));
+                        $('#statPendingRevenue').text('₹' + pendingRev.toFixed(2));
 
                         // Destroy existing DataTable instance
                         if ($.fn.DataTable.isDataTable("#invoiceTable")) {

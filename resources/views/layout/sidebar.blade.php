@@ -456,7 +456,12 @@
                 @endif
 
 
-                                 <li><a href="{{ route('plans.myplan') }}"><i class="fa-solid fa-file-invoice-dollar"></i>My Plan Details</a></li>
+                                 <li  class="menu-link ">
+                                    <a href="{{ route('plans.myplan') }}">
+                                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                                        <span>My Plan Details</span>
+                                    </a>
+                                </li>
 
 
 

@@ -121,7 +121,6 @@
     }
 </style>
 @php
-    $gstEnabled = \App\Models\Setting::getValue('gst_status', 'on') === 'on';
     $rawItems = is_array($invoice->types_details) ? $invoice->types_details : json_decode($invoice->types_details, true);
     $savedItems = (!empty($rawItems) && is_array($rawItems)) ? array_values($rawItems) : [];
     if (empty($savedItems)) {
@@ -135,13 +134,19 @@
             'product_gst' => null,
         ]];
     }
+
+    $invoiceHasGst = ($invoice->gst_enabled !== null)
+        ? (bool)$invoice->gst_enabled
+        : collect($savedItems)->contains(fn($s) => ($s['gst_option'] ?? '') === 'With GST' && !empty($s['product_gst']));
+    $globalGstEnabled = \App\Models\Setting::getValue('gst_status', 'on') === 'on';
+    $gstEnabled = $invoiceHasGst || $globalGstEnabled;
 @endphp
 
     <div class="page-wrapper">
         <div class="content">
             <div class="row" style="padding-top:15px">
                 <div class="col-6">
-                    <h4 class="page-title">Edit Invoice #{{ $invoice->type_id }}</h4>
+                    <h4 class="page-title">Edit Invoice</h4>
                 </div>
                 @if(app('hasPermission')(18, 'view'))
                     <div class="col-6  m-b-2 eye-btn" style="text-align:end">
@@ -157,6 +162,7 @@
                     <form id="invoiceEditForm" class="form-container all-form" novalidate>
                         @csrf
                         <input type="hidden" name="branch_id" id="branch_id" value="{{ $invoice->branch_id }}">
+                        <input type="hidden" name="gst_enabled" id="gst_enabled" value="{{ $gstEnabled ? 1 : 0 }}">
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <div class="d-flex align-items-center justify-content-between mb-1">
@@ -301,14 +307,14 @@
                                 <label>Discount Type</label>
                                 <select name="discount_type" class="form-control select2" id="discount-type">
                                     <option value="">Select Type</option>
-                                    <option value="fixed_amount" {{ $invoice->discount_type === 'fixed_amount' ? 'selected' : '' }}>Fixed Amount</option>
-                                    <option value="percentage" {{ $invoice->discount_type === 'percentage' ? 'selected' : '' }}>Percentage</option>
+                                    <option value="fixed_amount" {{ floatval($invoice->discount ?? 0) > 0 && $invoice->discount_type === 'fixed_amount' ? 'selected' : '' }}>Fixed Amount</option>
+                                    <option value="percentage" {{ floatval($invoice->discount ?? 0) > 0 && $invoice->discount_type === 'percentage' ? 'selected' : '' }}>Percentage</option>
                                 </select>
                             </div>
 
                             <div class="col-md-4 mb-3">
                                 <label>Discount</label>
-                                <input type="number" class="form-control discount" name="discount" value="{{ $invoice->discount ?? 0 }}">
+                                <input type="number" class="form-control discount" name="discount" value="{{ floatval($invoice->discount ?? 0) > 0 ? $invoice->discount : '' }}">
                                 <div class="text-danger error-message discount-error"></div>
                             </div>
                         </div>
@@ -396,7 +402,7 @@
             const select = row.find('.type-service-select');
             let currentVal = select.val();
             if (!currentVal) {
-                currentVal = select.attr('data-selected-id') || row.attr('data-initial-service');
+                currentVal = select.attr('data-selected-id') || row.attr('data-initial-service') || '';
             }
 
             const selectedIds = $('.type-service-select')
@@ -408,8 +414,8 @@
             select.empty().append('<option value="">Select</option>');
 
             data.forEach(item => {
-                const isSelected = (String(currentVal) === String(item.id)) ? 'selected' : '';
-                if (!selectedIds.includes(String(item.id)) || String(currentVal) === String(item.id)) {
+                const isSelected = (currentVal && String(currentVal) === String(item.id)) ? 'selected' : '';
+                if (!selectedIds.includes(String(item.id)) || (currentVal && String(currentVal) === String(item.id))) {
                     const gstOpt = (item.gst_option || '') ? ` data-gst-option="${item.gst_option}"` : '';
                     const productGst = (item.product_gst && (Array.isArray(item.product_gst) ? item.product_gst.length : true)) ? ` data-product-gst='${JSON.stringify(item.product_gst || [])}'` : '';
                     select.append(`
@@ -429,8 +435,14 @@
         }
 
         function calculateRowAmount(row) {
-            const qty = parseFloat(row.find('.quantity').val()) || 0;
-            const price = parseFloat(row.find('.price').val()) || 0;
+            const qtyVal = row.find('.quantity').val();
+            const priceVal = row.find('.price').val();
+            if (priceVal === '' || priceVal === null || priceVal === undefined) {
+                row.find('.amount').val('');
+                return 0;
+            }
+            const qty = parseFloat(qtyVal) || 0;
+            const price = parseFloat(priceVal) || 0;
             const amt = qty * price;
             row.find('.amount').val(amt.toFixed(2));
             return amt;
@@ -702,6 +714,8 @@
 
             const row = $('.invoice-item-row:first').clone();
             row.removeAttr('data-initial-service');
+            row.find('.type-service-select').removeAttr('data-selected-id');
+            row.find('.type-service-select').empty().append('<option value="">Select</option>').val('');
 
             row.find('input, select').each(function () {
                 const name = $(this).attr('name')?.replace(/\d+/, rowIndex);
@@ -710,16 +724,16 @@
                     if ($(this).hasClass('quantity')) {
                         $(this).val(1);
                     } else if ($(this).hasClass('price')) {
-                        $(this).val(0);
+                        $(this).val('');
                     } else if ($(this).hasClass('amount')) {
-                        $(this).val('0.00');
+                        $(this).val('');
                     } else if ($(this).hasClass('gst-option-select')) {
                         $(this).val('Without GST');
                     } else if ($(this).hasClass('gst-option-hidden')) {
                         $(this).val('Without GST');
                     } else if ($(this).hasClass('gst-percent-display') || $(this).hasClass('gst-amount-display') || $(this).hasClass('product-gst-json')) {
                         $(this).val('');
-                    } else {
+                    } else if (!$(this).hasClass('type-service-select')) {
                         $(this).val('');
                     }
                 }
@@ -733,12 +747,13 @@
 
             $('#dynamicFieldsWrapper').append(row);
 
-            $('.type-service-select').select2({
+            $('.invoice-item-row').not(row).find('.type-service-select').select2({
                 placeholder: "Select Type",
                 width: '100%'
             });
 
             populateTypeServiceSelect(row, selected);
+            row.find('.type-service-select').val('').trigger('change.select2');
             updateRowGstVisibility(row);
 
             rowIndex++;
@@ -767,8 +782,13 @@
         }
 
         $(document).ready(function () {
-            $('#patientDropdown, #invoiceType, #discount-type, #payment-type, #payment-status').select2({
+            $('#patientDropdown, #invoiceType, #payment-type, #payment-status').select2({
                 placeholder: "Select",
+                width: '100%'
+            });
+
+            $('#discount-type').select2({
+                placeholder: "Select Type",
                 width: '100%'
             });
 
@@ -783,9 +803,11 @@
             $('#invoiceType').on('change', function () {
                 const selected = $(this).val();
                 $('.invoice-item-row').each(function () {
+                    $(this).removeAttr('data-initial-service');
+                    $(this).find('.type-service-select').removeAttr('data-selected-id');
                     $(this).find('.type-service-select').val('');
                     $(this).find('.price').val('');
-                    $(this).find('.amount').val('0.00');
+                    $(this).find('.amount').val('');
                     $(this).find('.quantity').val(1);
                     $(this).find('.gst-option-select').val('Without GST');
                     $(this).find('.gst-option-hidden').val('Without GST');
@@ -815,6 +837,11 @@
                 const selectedId = row.find('.type-service-select').val();
                 const selectedType = $('#invoiceType').val();
                 const isServiceChange = $(this).hasClass('type-service-select');
+
+                if (isServiceChange) {
+                    row.find('.type-service-select').attr('data-selected-id', selectedId || '');
+                    row.attr('data-initial-service', selectedId || '');
+                }
 
                 if (selectedType === 'appointment') {
                     setRowGstOption(row, 'Without GST');

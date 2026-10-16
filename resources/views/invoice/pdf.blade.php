@@ -496,8 +496,11 @@
         </div>
 
         @php
-            $gstEnabled = \App\Models\Setting::getValue('gst_status', 'on') === 'on';
-            $has_gst = $gstEnabled && !empty($services) && collect($services)->contains(fn($s) => ($s['gst_option'] ?? '') === 'With GST' && !empty($s['product_gst']));
+            $hasGstInServices = !empty($services) && collect($services)->contains(fn($s) => ($s['gst_option'] ?? '') === 'With GST' && !empty($s['product_gst']));
+            $gstEnabled = isset($gst_enabled)
+                ? (bool)$gst_enabled
+                : ($hasGstInServices ? true : (\App\Models\Setting::getValue('gst_status', 'on') === 'on'));
+            $has_gst = $gstEnabled && $hasGstInServices;
         @endphp
 
         <!-- Invoice Table -->
