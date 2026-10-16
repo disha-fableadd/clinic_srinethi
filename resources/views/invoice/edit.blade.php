@@ -83,6 +83,21 @@
         background-color: #f89884 !important;
         color: #ffffff !important;
     }
+    .btn-update-invoice,
+    .btn-update-invoice:hover,
+    .btn-update-invoice:focus,
+    .btn-update-invoice:active,
+    .btn-update-invoice:disabled,
+    .btn-update-invoice[disabled],
+    button[type="submit"].btn-primary,
+    button[type="submit"].btn-primary:disabled {
+        background-color: #cfece0 !important;
+        border-color: #cfece0 !important;
+        color: #106346 !important;
+        border-radius: 20px !important;
+        font-weight: 500 !important;
+        opacity: 1 !important;
+    }
 
     /* Mobile Responsive Optimizations */
     @media (max-width: 767px) {
@@ -324,16 +339,16 @@
                                 <label>Payment Type <span class="text-danger">*</span></label>
                                 <select name="payment_type" class="form-control select2" id="payment-type" required>
                                     <option value="">-- Select Payment Type --</option>
-                                    <option value="Cash" {{ $invoice->payment_type === 'Cash' ? 'selected' : '' }}>Cash</option>
-                                    <option value="Online" {{ $invoice->payment_type === 'Online' ? 'selected' : '' }}>Online</option>
+                                    <option value="Cash" {{ strcasecmp($invoice->payment_type ?? '', 'Cash') === 0 ? 'selected' : '' }}>Cash</option>
+                                    <option value="Online" {{ strcasecmp($invoice->payment_type ?? '', 'Online') === 0 ? 'selected' : '' }}>Online</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
                                 <label>Payment Status <span class="text-danger">*</span></label>
                                 <select name="payment_status" class="form-control select2" id="payment-status" required>
                                     <option value="">-- Select Payment Status --</option>
-                                    <option value="Paid" {{ $invoice->payment_status === 'Paid' ? 'selected' : '' }}>Paid</option>
-                                    <option value="Pending" {{ $invoice->payment_status === 'Pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="Paid" {{ strcasecmp($invoice->payment_status ?? '', 'Paid') === 0 ? 'selected' : '' }}>Paid</option>
+                                    <option value="Pending" {{ strcasecmp($invoice->payment_status ?? '', 'Pending') === 0 ? 'selected' : '' }}>Pending</option>
                                 </select>
                             </div>
 
@@ -344,7 +359,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary d-flex ml-auto mt-5">Update Invoice</button>
+                        <button type="submit" class="btn btn-primary btn-update-invoice d-flex ml-auto mt-5">Update Invoice</button>
                     </form>
 
                     <div id="invoicesuccessMessage" class="alert alert-success success-message" style="display:none;"></div>
@@ -1072,6 +1087,9 @@
                 });
 
                 if (!isFormValid || !areRowsValid) {
+                    if (typeof toastr !== 'undefined') {
+                        toastr.error('Please fill in all required fields.');
+                    }
                     return;
                 }
 
@@ -1082,6 +1100,9 @@
                 if (!formData.get('discount')) {
                     formData.set('discount', '0');
                 }
+
+                const submitBtn = $(this).find('button[type="submit"]');
+                submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin mr-1"></i> Update Invoice');
 
                 $.ajax({
                     url: '/api/invoice/' + invoiceId,
@@ -1094,24 +1115,33 @@
                     },
                     success: function (response) {
                         if (response.status) {
+                            if (typeof toastr !== 'undefined') {
+                                toastr.success(response.message || 'Invoice updated successfully!');
+                            }
                             $('#invoicesuccessMessage')
                                 .text(response.message || 'Invoice updated successfully!')
                                 .show();
 
                             setTimeout(() => {
-                                if (response?.url) {
-                                    window.open(response.url, '_blank');
-                                }
-                                $('#invoicesuccessMessage').hide();
-                                window.location.href = "{{ route('invoice.index') }}";
-                            }, 1500);
-                            $('#invoiceerrorMessage').text('').hide();
+                                window.location.href = "/invoice";
+                            }, 400);
+                        } else {
+                            submitBtn.prop('disabled', false).text('Update Invoice');
+                            let msg = response.message || 'Something went wrong!';
+                            if (typeof toastr !== 'undefined') {
+                                toastr.error(msg);
+                            }
+                            $('#invoiceerrorMessage').html(msg).show();
                         }
                     },
                     error: function (xhr) {
+                        submitBtn.prop('disabled', false).text('Update Invoice');
                         let message = xhr.responseJSON?.message;
                         if (typeof message === 'object') {
                             message = Object.values(message).flat().join('<br>');
+                        }
+                        if (typeof toastr !== 'undefined') {
+                            toastr.error(message || 'Something went wrong!');
                         }
                         $('#invoiceerrorMessage').html(message || 'Something went wrong!').show();
                     }

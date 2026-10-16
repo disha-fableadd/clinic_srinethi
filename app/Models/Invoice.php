@@ -23,7 +23,6 @@ class Invoice extends Model
         'discount',
         'payment_type',
         'payment_status',
-        'pdf_url',
         'branch_id',
         'gst_enabled',
     ];

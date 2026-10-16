@@ -931,7 +931,7 @@ class SettingController extends Controller
             $grandTotal = ($subtotal - $discountAmount) + $taxAmount;
 
             $invoiceData = [
-                'invoice_no' => $invoice->type_id,
+                'invoice_no' => $invoice->type_id ?: $invoice->id,
                 'date' => \Carbon\Carbon::parse($invoice->date)->format('d-m-Y'),
                 'patient' => $invoice->patient,
                 'clinic_logo' => $clinic_logo_path,
@@ -951,9 +951,9 @@ class SettingController extends Controller
                 'discount' => $discount,
                 'discount_amount' => $discountAmount,
                 'discount_type' => $discount_type,
-                'grand_total' => $grandTotal,
-                'payment_type' => $invoice->payment_type ?? 'N/A',
-                'payment_status' => $invoice->payment_status ?? 'N/A',
+                'grand_total' => $invoice->grand_total ?? $grandTotal,
+                'payment_type' => !empty($invoice->payment_type) ? ucfirst(strtolower($invoice->payment_type)) : 'N/A',
+                'payment_status' => !empty($invoice->payment_status) ? ucfirst(strtolower($invoice->payment_status)) : 'N/A',
                 'declaration' => Setting::where('key', 'invoice_declaration')->value('value') ?? '',
                 'declaration_status' => Setting::where('key', 'invoice_declaration_status')->value('value') ?? 'off',
                 'gst_enabled' => $isInvoiceGstEnabled,
@@ -1365,8 +1365,8 @@ class SettingController extends Controller
                 'tax' => 'nullable|numeric|min:0',
                 'discount_type' => 'nullable|in:fixed_amount,percentage',
                 'discount' => 'nullable|numeric|min:0',
-                'payment_type' => 'required|in:Cash,Online',
-                'payment_status' => 'required|in:Paid,Pending',
+                'payment_type' => 'required|in:Cash,Online,cash,online',
+                'payment_status' => 'required|in:Paid,Pending,paid,pending',
             ];
 
             if ($request->invoice_type === 'service') {
@@ -1467,8 +1467,14 @@ class SettingController extends Controller
                 ? floatval($request->discount) 
                 : 0;
 
-            $invoiceNo = $invoice->type_id ?? rand(1000, 9999);
+            $invoiceNo = $invoice->type_id ?: ($invoice->id ?? rand(1000, 9999));
             $invoiceDate = !empty($request->date1) ? \Carbon\Carbon::parse($request->date1)->format('d-m-Y') : now()->format('d-m-Y');
+            $payment_type = ucfirst(strtolower($request->payment_type));
+            $payment_status = ucfirst(strtolower($request->payment_status));
+
+            $subtotal = collect($services)->sum(function ($item) {
+                return (float) ($item['total'] ?? 0);
+            });
 
             // Prepare Invoice Data for PDF
             $invoiceData = [
@@ -1479,6 +1485,7 @@ class SettingController extends Controller
                 'clinic_logo' => !empty($settings['clinic_logo']) ? (file_exists(public_path($settings['clinic_logo'])) ? public_path($settings['clinic_logo']) : (file_exists(public_path('uploads/clinic_logos/' . basename($settings['clinic_logo']))) ? public_path('uploads/clinic_logos/' . basename($settings['clinic_logo'])) : $settings['clinic_logo'])) : null,
                 'clinic_name' => $settings['clinic_name'] ?? 'My Clinic',
                 'services' => $services,
+                'subtotal' => $subtotal,
                 'tax_type' => $settings['tax_type'] ?? '',
                 'grand_total' => $request->grandTotal,
                 'invoice_type' => $invoice_type,
@@ -1491,14 +1498,14 @@ class SettingController extends Controller
                 'clinic_city' => $settings['clinic_city'] ?? '',
                 'clinic_email' => $settings['clinic_email'] ?? '',
                 'tax_name' => $settings['tax_name'] ?? '',
-                'payment_type' => $request->payment_type,
-                'payment_status' => $request->payment_status,
+                'payment_type' => $payment_type,
+                'payment_status' => $payment_status,
                 'declaration' => Setting::where('key', 'invoice_declaration')->value('value') ?? '',
                 'declaration_status' => Setting::where('key', 'invoice_declaration_status')->value('value') ?? 'off',
                 'gst_enabled' => $isGstEnabled,
             ];
 
-            // Re-generate PDF
+            // Re-generate and save PDF to ensure stored PDF is always up-to-date
             $pdf = Pdf::loadView('invoice.pdf', $invoiceData)->setPaper('A4', 'portrait');
 
             $invoiceDirectory = public_path('uploads/invoices');
@@ -1522,6 +1529,7 @@ class SettingController extends Controller
                 'patient_id' => $patient_id,
                 'branch_id' => $request->branch_id,
                 'type' => $invoice_type,
+                'type_id' => $invoiceNo,
                 'date' => !empty($request->date1) ? \Carbon\Carbon::parse($request->date1)->format('Y-m-d') : $invoice->date,
                 'instruction' => $request->input('instruction', ''),
                 'types_details' => $services,
@@ -1529,8 +1537,8 @@ class SettingController extends Controller
                 'tax' => $request->input('tax', 0),
                 'discount_type' => $discount_type,
                 'discount' => $discount,
-                'payment_type' => $request->payment_type,
-                'payment_status' => $request->payment_status,
+                'payment_type' => $payment_type,
+                'payment_status' => $payment_status,
                 'gst_enabled' => $isGstEnabled,
             ]);
 
