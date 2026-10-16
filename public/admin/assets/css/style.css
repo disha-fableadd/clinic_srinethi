@@ -600,6 +600,15 @@ table.table td h2 span {
 	color: #666666;
 }
 
+.btn-primary:disabled,
+.btn-primary.disabled,
+.btn-primary[disabled] {
+	background-color: #cfece0 !important;
+	border-color: #cfece0 !important;
+	color: #106346 !important;
+	opacity: 0.85 !important;
+}
+
 .btn-outline-primary {
 	border-color: #cfece0;
 	color: #666666;
