@@ -24,7 +24,8 @@ class Invoice extends Model
         'payment_type',
         'payment_status',
         'pdf_url',
-          'branch_id',
+        'branch_id',
+        'gst_enabled',
     ];
 
     protected $attributes = [
@@ -34,6 +35,7 @@ class Invoice extends Model
 
     protected $casts = [
         'types_details' => 'array',
+        'gst_enabled' => 'boolean',
     ];
 
     protected static function boot()

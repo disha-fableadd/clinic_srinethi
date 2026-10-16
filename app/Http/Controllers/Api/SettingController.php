@@ -909,6 +909,9 @@ class SettingController extends Controller
                 ? $invoice->types_details
                 : json_decode($invoice->types_details, true);
 
+            $hasGstItem = !empty($services) && collect($services)->contains(fn($s) => ($s['gst_option'] ?? '') === 'With GST' && !empty($s['product_gst']));
+            $isInvoiceGstEnabled = ($invoice->gst_enabled !== null) ? (bool)$invoice->gst_enabled : $hasGstItem;
+
             $subtotal = collect($services)->sum(function ($item) {
                 return (float) ($item['total'] ?? 0);
             });
@@ -953,6 +956,7 @@ class SettingController extends Controller
                 'payment_status' => $invoice->payment_status ?? 'N/A',
                 'declaration' => Setting::where('key', 'invoice_declaration')->value('value') ?? '',
                 'declaration_status' => Setting::where('key', 'invoice_declaration_status')->value('value') ?? 'off',
+                'gst_enabled' => $isInvoiceGstEnabled,
             ];
             // dd($invoiceData);
 
@@ -1224,7 +1228,10 @@ class SettingController extends Controller
             }
 
             // Step 5: Map Items (with GST fields)
-            $services = collect($request->items)->map(function ($item) use ($invoice_type) {
+            $globalGstStatus = Setting::getValue('gst_status', 'on');
+            $isGstEnabled = ($globalGstStatus === 'on');
+
+            $services = collect($request->items)->map(function ($item) use ($invoice_type, $isGstEnabled) {
                 $row = [
                     'id' => $item['type_service'] ?? null,
                     'name' => $this->getServiceName($invoice_type, $item['type_service'] ?? null),
@@ -1232,8 +1239,13 @@ class SettingController extends Controller
                     'price' => $item['price'],
                     'total' => $item['total'],
                 ];
-                $row['gst_option'] = $item['gst_option'] ?? 'Without GST';
-                $row['product_gst'] = isset($item['product_gst']) ? (is_array($item['product_gst']) ? $item['product_gst'] : json_decode($item['product_gst'], true)) : null;
+                if ($isGstEnabled) {
+                    $row['gst_option'] = $item['gst_option'] ?? 'Without GST';
+                    $row['product_gst'] = isset($item['product_gst']) ? (is_array($item['product_gst']) ? $item['product_gst'] : json_decode($item['product_gst'], true)) : null;
+                } else {
+                    $row['gst_option'] = 'Without GST';
+                    $row['product_gst'] = null;
+                }
                 return $row;
             });
 
@@ -1269,6 +1281,7 @@ class SettingController extends Controller
                 'payment_status' => $request->payment_status,
                 'declaration' => Setting::where('key', 'invoice_declaration')->value('value') ?? '',
                 'declaration_status' => Setting::where('key', 'invoice_declaration_status')->value('value') ?? 'off',
+                'gst_enabled' => $isGstEnabled,
             ];
 
             // Step 7: Generate PDF
@@ -1305,6 +1318,7 @@ class SettingController extends Controller
                 'discount' => $discount,
                 'payment_type' => $request->payment_type,
                 'payment_status' => $request->payment_status,
+                'gst_enabled' => $isGstEnabled,
             ]);
 
             // Step 9: Decrease stock
@@ -1422,7 +1436,13 @@ class SettingController extends Controller
             ])->pluck('value', 'key');
 
             // Map items
-            $services = collect($request->items)->map(function ($item) use ($invoice_type) {
+            $hasGstItem = collect($request->items)->contains(fn($s) => ($s['gst_option'] ?? '') === 'With GST' && !empty($s['product_gst']));
+            $wasGstEnabled = ($invoice->gst_enabled !== null) ? (bool)$invoice->gst_enabled : $hasGstItem;
+            $globalGstStatus = Setting::getValue('gst_status', 'on');
+            $isGlobalGstEnabled = ($globalGstStatus === 'on');
+            $isGstEnabled = $request->has('gst_enabled') ? (bool)$request->gst_enabled : ($wasGstEnabled || $isGlobalGstEnabled);
+
+            $services = collect($request->items)->map(function ($item) use ($invoice_type, $isGstEnabled) {
                 $row = [
                     'id' => $item['type_service'] ?? null,
                     'name' => $this->getServiceName($invoice_type, $item['type_service'] ?? null),
@@ -1430,8 +1450,13 @@ class SettingController extends Controller
                     'price' => $item['price'],
                     'total' => $item['total'],
                 ];
-                $row['gst_option'] = $item['gst_option'] ?? 'Without GST';
-                $row['product_gst'] = isset($item['product_gst']) ? (is_array($item['product_gst']) ? $item['product_gst'] : json_decode($item['product_gst'], true)) : null;
+                if ($isGstEnabled) {
+                    $row['gst_option'] = $item['gst_option'] ?? 'Without GST';
+                    $row['product_gst'] = isset($item['product_gst']) ? (is_array($item['product_gst']) ? $item['product_gst'] : json_decode($item['product_gst'], true)) : null;
+                } else {
+                    $row['gst_option'] = 'Without GST';
+                    $row['product_gst'] = null;
+                }
                 return $row;
             });
 
@@ -1470,6 +1495,7 @@ class SettingController extends Controller
                 'payment_status' => $request->payment_status,
                 'declaration' => Setting::where('key', 'invoice_declaration')->value('value') ?? '',
                 'declaration_status' => Setting::where('key', 'invoice_declaration_status')->value('value') ?? 'off',
+                'gst_enabled' => $isGstEnabled,
             ];
 
             // Re-generate PDF
@@ -1505,6 +1531,7 @@ class SettingController extends Controller
                 'discount' => $discount,
                 'payment_type' => $request->payment_type,
                 'payment_status' => $request->payment_status,
+                'gst_enabled' => $isGstEnabled,
             ]);
 
             return response()->json([
@@ -1638,6 +1665,7 @@ class SettingController extends Controller
                 'payment_status' => $invoiceData['payment']['status'],
                 'declaration' => Setting::where('key', 'invoice_declaration')->value('value') ?? '',
                 'declaration_status' => Setting::where('key', 'invoice_declaration_status')->value('value') ?? 'off',
+                'gst_enabled' => Setting::getValue('gst_status', 'on') === 'on',
             ]);
             // dd($pdf);
             // dd($invoiceData['payment']['status']);
@@ -1677,6 +1705,7 @@ class SettingController extends Controller
                 'payment_type' => null,
                 'payment_status' => 'pending',
                 'pdf' => $pdfFileName,
+                'gst_enabled' => Setting::getValue('gst_status', 'on') === 'on',
             ]);
 
             return response()->json(['status' => true, 'url' => $pdfUrl]);
@@ -1704,10 +1733,19 @@ class SettingController extends Controller
                     ->orderBy('id', 'desc')
                     ->get();
 
+                $totalRevenue = (float) $invoices->sum('grand_total');
+                $paidRevenue = (float) $invoices->filter(fn($i) => strtolower($i->payment_status ?? '') === 'paid')->sum('grand_total');
+                $pendingRevenue = (float) $invoices->filter(fn($i) => strtolower($i->payment_status ?? '') === 'pending')->sum('grand_total');
+
                 return response()->json([
                     'status' => true,
                     'message' => 'Invoices fetched successfully',
                     'data' => $invoices,
+                    'summary' => [
+                        'total_revenue' => $totalRevenue,
+                        'paid_revenue' => $paidRevenue,
+                        'pending_revenue' => $pendingRevenue,
+                    ]
                 ]);
             } catch (\Exception $e) {
                 return response()->json([
