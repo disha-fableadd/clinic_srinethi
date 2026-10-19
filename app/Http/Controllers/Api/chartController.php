@@ -254,6 +254,7 @@ class chartController extends Controller
         // 4. Treatment Performance Table (Top Treatments with Counts and Doctor)
         $treatments = \App\Models\Treatment::with('doctor')
             ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
+            ->orderBy('id', 'desc')
             ->get();
 
         $treatmentPerformance = $treatments->map(function ($t) {
@@ -262,17 +263,17 @@ class chartController extends Controller
                 'id' => $t->id,
                 'name' => $t->name,
                 'price' => $t->price,
-                'doctor_name' => $t->doctor ? $t->doctor->fullname : 'General',
+                'doctor_name' => $t->doctor ? $t->doctor->fullname : 'General Staff',
                 'total_appointments' => $count,
+                'status' => $t->status ?? 1,
             ];
-        })->sortByDesc('total_appointments')->values()->take(10);
+        })->sortByDesc('total_appointments')->values();
 
         // 5. Recent Transaction / Invoice Report Table
         $invoices = \App\Models\Invoice::with('patient')
             ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
             ->orderBy('date', 'desc')
             ->orderBy('id', 'desc')
-            ->take(10)
             ->get();
 
         $recentTransactions = $invoices->map(function ($inv) {

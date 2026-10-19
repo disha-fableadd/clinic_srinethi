@@ -80,9 +80,9 @@
             <i class="fa fa-user-injured" aria-hidden="true"></i><span>Patients</span>
         </a>
     @endif
-    @if (app('hasPermission')(30, 'create'))
-        <a href="{{ route('daily_data.create') }}" class="{{ request()->routeIs('daily_data.*') ? 'active' : '' }}" @if(request()->routeIs('daily_data.*')) aria-current="page" @endif>
-            <i class="fas fa-file-medical-alt" aria-hidden="true"></i><span><span class="d-none d-sm-inline">Daily </span>Register</span>
+    @if (app('hasPermission')(2, 'view') || app('hasPermission')(2, 'create'))
+        <a href="{{ route('followup.index') }}" class="{{ request()->routeIs('followup.*') ? 'active' : '' }}" @if(request()->routeIs('followup.*')) aria-current="page" @endif>
+            <i class="fas fa-user-clock" aria-hidden="true"></i><span>Followup</span>
         </a>
     @endif
     <a href="{{ route('profile') }}" class="{{ request()->routeIs('profile') ? 'active' : '' }}" @if(request()->routeIs('profile')) aria-current="page" @endif>
