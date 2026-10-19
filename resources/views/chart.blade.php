@@ -364,6 +364,80 @@
         color: #f89884;
         text-decoration: underline;
     }
+
+    /* Table Pagination Styling */
+    .rep-pagination-wrap {
+        padding-top: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .rep-pagination-info {
+        font-size: 13px;
+        font-weight: 500;
+        color: #64748b;
+    }
+
+    .rep-pagination-info strong {
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    .rep-pagination {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .rep-pagination .page-item {
+        margin: 0;
+    }
+
+    .rep-pagination .page-link {
+        border-radius: 8px !important;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 6px 12px;
+        min-width: 34px;
+        height: 34px;
+        text-align: center;
+        background: #ffffff;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+    }
+
+    .rep-pagination .page-link:hover:not(.disabled) {
+        background: #cfece0;
+        color: #26846b;
+        border-color: #26846b;
+    }
+
+    .rep-pagination .page-item.active .page-link {
+        background: #26846b !important;
+        border-color: #26846b !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 6px rgba(38, 132, 107, 0.25);
+    }
+
+    .rep-pagination .page-item.disabled .page-link {
+        color: #cbd5e1 !important;
+        cursor: not-allowed;
+        background: #f8fafc;
+        border-color: #f1f5f9;
+        pointer-events: none;
+    }
 </style>
 
 @section('content')
@@ -656,6 +730,11 @@
                             </tbody>
                         </table>
                     </div>
+                    <!-- Pagination for Treatment Performance -->
+                    <div class="rep-pagination-wrap" id="treatmentPaginationWrap">
+                        <div class="rep-pagination-info" id="treatmentPaginationInfo"></div>
+                        <ul class="pagination rep-pagination" id="treatmentPagination"></ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -693,6 +772,11 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <!-- Pagination for Recent Transactions -->
+                    <div class="rep-pagination-wrap" id="transactionPaginationWrap">
+                        <div class="rep-pagination-info" id="transactionPaginationInfo"></div>
+                        <ul class="pagination rep-pagination" id="transactionPagination"></ul>
                     </div>
                 </div>
             </div>
@@ -892,19 +976,113 @@
         });
     }
 
-    function renderTreatmentTable(treatments) {
-        const tbody = $('#treatmentReportTableBody');
-        tbody.empty();
+    let allTreatmentsData = [];
+    let treatmentPage = 1;
+    const treatmentPageSize = 5;
 
-        if (!treatments || treatments.length === 0) {
-            tbody.append('<tr><td colspan="5" class="text-center py-4 text-muted">No treatments found.</td></tr>');
+    let allTransactionsData = [];
+    let transactionPage = 1;
+    const transactionPageSize = 5;
+
+    function renderPaginationControls(paginationId, infoId, wrapId, currentPage, totalItems, pageSize, onPageChange) {
+        const $pagination = $('#' + paginationId);
+        const $info = $('#' + infoId);
+        const $wrap = $('#' + wrapId);
+
+        $pagination.empty();
+
+        if (!totalItems || totalItems === 0) {
+            $info.html('Showing <strong>0</strong> of <strong>0</strong> entries');
+            $wrap.hide();
             return;
         }
 
-        treatments.forEach(function(item) {
+        $wrap.show();
+
+        const totalPages = Math.ceil(totalItems / pageSize) || 1;
+        const startItem = (currentPage - 1) * pageSize + 1;
+        const endItem = Math.min(currentPage * pageSize, totalItems);
+
+        $info.html(`Showing <strong>${startItem}</strong> to <strong>${endItem}</strong> of <strong>${totalItems}</strong> entries`);
+
+        // Previous Button
+        const prevDisabled = currentPage <= 1 ? 'disabled' : '';
+        const $prev = $(`<li class="page-item ${prevDisabled}"><a class="page-link" href="javascript:void(0)" aria-label="Previous"><i class="fas fa-chevron-left" style="font-size: 11px;"></i></a></li>`);
+        if (currentPage > 1) {
+            $prev.find('a').on('click', function(e) {
+                e.preventDefault();
+                onPageChange(currentPage - 1);
+            });
+        }
+        $pagination.append($prev);
+
+        // Page Numbers logic
+        let pages = [];
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            if (currentPage <= 4) {
+                pages = [1, 2, 3, 4, 5, '...', totalPages];
+            } else if (currentPage >= totalPages - 3) {
+                pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+            } else {
+                pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+            }
+        }
+
+        pages.forEach(p => {
+            if (p === '...') {
+                $pagination.append(`<li class="page-item disabled"><span class="page-link" style="border:none; background:transparent;">...</span></li>`);
+            } else {
+                const activeClass = p === currentPage ? 'active' : '';
+                const $pageItem = $(`<li class="page-item ${activeClass}"><a class="page-link" href="javascript:void(0)">${p}</a></li>`);
+                if (p !== currentPage) {
+                    $pageItem.find('a').on('click', function(e) {
+                        e.preventDefault();
+                        onPageChange(p);
+                    });
+                }
+                $pagination.append($pageItem);
+            }
+        });
+
+        // Next Button
+        const nextDisabled = currentPage >= totalPages ? 'disabled' : '';
+        const $next = $(`<li class="page-item ${nextDisabled}"><a class="page-link" href="javascript:void(0)" aria-label="Next"><i class="fas fa-chevron-right" style="font-size: 11px;"></i></a></li>`);
+        if (currentPage < totalPages) {
+            $next.find('a').on('click', function(e) {
+                e.preventDefault();
+                onPageChange(currentPage + 1);
+            });
+        }
+        $pagination.append($next);
+    }
+
+    function renderTreatmentTable(treatments) {
+        if (treatments !== undefined) {
+            allTreatmentsData = treatments || [];
+            treatmentPage = 1;
+        }
+
+        const tbody = $('#treatmentReportTableBody');
+        tbody.empty();
+
+        if (!allTreatmentsData || allTreatmentsData.length === 0) {
+            tbody.append('<tr><td colspan="5" class="text-center py-4 text-muted">No treatments found.</td></tr>');
+            renderPaginationControls('treatmentPagination', 'treatmentPaginationInfo', 'treatmentPaginationWrap', 1, 0, treatmentPageSize, null);
+            return;
+        }
+
+        const startIndex = (treatmentPage - 1) * treatmentPageSize;
+        const endIndex = startIndex + treatmentPageSize;
+        const pageItems = allTreatmentsData.slice(startIndex, endIndex);
+
+        pageItems.forEach(function(item) {
             let doc = item.doctor_name || 'General Staff';
             let price = item.price ? ('₹ ' + Number(item.price).toLocaleString('en-IN')) : 'Free / Not set';
             let count = item.total_appointments || 0;
+            let statusText = (item.status === 0 || item.status === '0' || item.status === 'Inactive') ? 'Inactive' : 'Active';
+            let statusBadge = statusText === 'Active' ? 'badge-paid' : 'badge-failed';
 
             tbody.append(`
                 <tr>
@@ -912,22 +1090,37 @@
                     <td><i class="fas fa-user-md mr-1" style="color: #26846b;"></i> ${doc}</td>
                     <td style="font-weight: 600;">${price}</td>
                     <td><span class="badge" style="background:#cfece0; color:#26846b; font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 8px;">${count}</span></td>
-                    <td><span class="badge-pill-custom badge-paid">Active</span></td>
+                    <td><span class="badge-pill-custom ${statusBadge}">${statusText}</span></td>
                 </tr>
             `);
+        });
+
+        renderPaginationControls('treatmentPagination', 'treatmentPaginationInfo', 'treatmentPaginationWrap', treatmentPage, allTreatmentsData.length, treatmentPageSize, function(newPage) {
+            treatmentPage = newPage;
+            renderTreatmentTable();
         });
     }
 
     function renderTransactionTable(transactions) {
+        if (transactions !== undefined) {
+            allTransactionsData = transactions || [];
+            transactionPage = 1;
+        }
+
         const tbody = $('#transactionReportTableBody');
         tbody.empty();
 
-        if (!transactions || transactions.length === 0) {
+        if (!allTransactionsData || allTransactionsData.length === 0) {
             tbody.append('<tr><td colspan="7" class="text-center py-4 text-muted">No transactions found for this period.</td></tr>');
+            renderPaginationControls('transactionPagination', 'transactionPaginationInfo', 'transactionPaginationWrap', 1, 0, transactionPageSize, null);
             return;
         }
 
-        transactions.forEach(function(item) {
+        const startIndex = (transactionPage - 1) * transactionPageSize;
+        const endIndex = startIndex + transactionPageSize;
+        const pageItems = allTransactionsData.slice(startIndex, endIndex);
+
+        pageItems.forEach(function(item) {
             let status = (item.status || 'Pending').toLowerCase();
             let badgeClass = 'badge-pending';
             if (status === 'paid' || status === 'completed') badgeClass = 'badge-paid';
@@ -948,6 +1141,11 @@
                     <td><span class="badge-pill-custom ${badgeClass}">${item.status || 'Pending'}</span></td>
                 </tr>
             `);
+        });
+
+        renderPaginationControls('transactionPagination', 'transactionPaginationInfo', 'transactionPaginationWrap', transactionPage, allTransactionsData.length, transactionPageSize, function(newPage) {
+            transactionPage = newPage;
+            renderTransactionTable();
         });
     }
 
